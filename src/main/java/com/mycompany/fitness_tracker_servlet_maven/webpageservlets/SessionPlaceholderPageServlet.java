@@ -19,11 +19,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author max
  */
-@WebServlet(name = "SessionPlaceholderServlet", urlPatterns =
+@WebServlet(name = "SessionPlaceholderPageServlet", urlPatterns =
 {
-    "/SessionPlaceholderServlet"
+    "/SessionPlaceholderPageServlet"
 })
-public class SessionPlaceholderServlet extends HttpServlet
+public class SessionPlaceholderPageServlet extends HttpServlet
 {
 
     /**
@@ -40,7 +40,7 @@ public class SessionPlaceholderServlet extends HttpServlet
     {
         System.out.println("SessionPlaceholderServlet executing: " + request.getRequestURL());
         ServletContext sc = request.getServletContext();   
-        String jsessionid = (String) request.getAttribute("jsessionid");
+        //String jsessionid = (String) request.getAttribute("jsessionid");
 //        boolean sessionValid = SessionManager.sessionValidate(request);
 //        //if session invalid, redirect back to login page
 //        if(!sessionValid)
@@ -65,24 +65,16 @@ public class SessionPlaceholderServlet extends HttpServlet
     //        boolean sessionValid = SessionManager.sessionValidate(request);
     //        if(!sessionValid) //path for invalid session
     //        {
-    //            response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getURLLoginPage());
+    //            response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
     //        }
     //        else //path for valid session
     //        {
     //            response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopSessionPlaceholderPage()+ request.getAttribute("jsessionid"));
     //        }
-
-            if(jsessionid == null)
-            {
-                response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getSessionPlaceholderPage());
-            }
-            else
-            {
-                response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getSessionPlaceholderPage()+ request.getAttribute("jsessionid"));
-
-            }
         
-        
+        String encodedURL = response.encodeRedirectURL(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getSessionPlaceholderPage());
+        response.sendRedirect(encodedURL);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

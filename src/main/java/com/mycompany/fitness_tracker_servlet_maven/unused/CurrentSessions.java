@@ -5,7 +5,6 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.unused;
 
-import com.mycompany.fitness_tracker_servlet_maven.core.Jsessionid;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;

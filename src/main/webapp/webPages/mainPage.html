@@ -14,42 +14,57 @@ and open the template in the editor.
         <div>Welcome to the main page</div>
         <form id="goToSessionPageForm" method="GET">
             <input type="submit" value ="Go to session test page">
-            <input type="hidden" name="jsessionid">
+        </form>
+        
+        <form id="testPage" method="GET" action = "/fitness_tracker_servlet_maven/FrontControllerServlet/testDatabase">
+            <input type="submit" value ="Go to database test page">
         </form>
         
         <form id="logoutForm" method="POST">
             <input type="submit" value ="Logout">
-            <input type="hidden" name="jsessionid">
         </form>
         
-        <script type="text/javascript" src="../ServerAPI.js"></script>
-        <script type="text/javascript">
+        <script type="text/javascript" src="../js/ServerAPI.js"></script>
+        <!--<script type="text/javascript">
         window.onload = function()
         {
             //set form actions from ServerAPI
-            document.getElementById("goToSessionPageForm").action = frontController+sessionPlaceholderRequest;
+            document.getElementById("goToSessionPageForm").action = frontController+sessionPlaceholderPageRequest;
             document.getElementById("logoutForm").action = frontController+logoutRequest;
+
+        };
+        </script>-->
+        
+        <script type="text/javascript">
+        window.onload = function()
+        {
             
             //here we get the jsessionID if there is one and attach it to each form attribute
             var currentURL = window.location.href;
             var jsessionidSearchParameter = ";jsessionid=";
             var jsessionidLocation = currentURL.search(jsessionidSearchParameter);
+            var jsessionid="";
             if(jsessionidLocation === -1)
             {
                 //no jSessionID found
             }
             else
             {
-                var jsessionid = currentURL.substring(jsessionidLocation);
-                
-                var elementsList = document.getElementsByName("jsessionid");
-
-                for(var count = 0; count < elementsList.length;count++)
-                {
-                    elementsList[count].value = jsessionid;
-                }
+                jsessionid = currentURL.substring(jsessionidLocation);
             }
+            
+            //set form actions from ServerAPI
+            document.getElementById("goToSessionPageForm").action = frontController+sessionPlaceholderPageRequest+jsessionid;
+            document.getElementById("testPage").action = frontController+testDatabase+jsessionid;
+            document.getElementById("logoutForm").action = frontController+logoutRequest+jsessionid;
+            
+            //just for testing
+            document.getElementById("output").innerHTML = "session page form request: " + document.getElementById("goToSessionPageForm").action.toString();
+
         };
+        
         </script>
+        <p id="output"></p>
+        
     </body>
 </html>

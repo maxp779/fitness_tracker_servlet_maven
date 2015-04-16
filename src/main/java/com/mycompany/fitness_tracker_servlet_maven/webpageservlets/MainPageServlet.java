@@ -47,7 +47,6 @@ public class MainPageServlet extends HttpServlet
     {
         System.out.println("MainPageServlet executing: " + request.getRequestURL());
         ServletContext sc = this.getServletContext();
-        String jsessionid = (String) request.getAttribute("jsessionid");
 
 //            boolean sessionValid = SessionManager.sessionValidate(request);
 //            //if session invalid, redirect back to login page
@@ -71,7 +70,7 @@ public class MainPageServlet extends HttpServlet
     //        boolean sessionValid = SessionManager.sessionValidate(request);
     //        if(!sessionValid) //path for invalid session
     //        {
-    //            response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getURLLoginPage());
+    //            response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFirstLoginServlet());
     //        }
     //        else //path for valid session
     //        {
@@ -81,14 +80,9 @@ public class MainPageServlet extends HttpServlet
     //        view.forward(request, response);
 
 
-            if(jsessionid == null)
-            {
-                response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
-            }
-            else
-            {
-                response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage()+ request.getAttribute("jsessionid"));
-            }
+            String encodedURL = response.encodeRedirectURL(sc.getContextPath()+"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
+            response.sendRedirect(encodedURL);
+
         
         
 

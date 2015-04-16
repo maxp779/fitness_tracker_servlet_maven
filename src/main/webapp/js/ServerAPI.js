@@ -15,10 +15,12 @@ var URLLoginPage = "index.html";
 //FrontController
 var frontController = "/fitness_tracker_servlet_maven/FrontControllerServlet/";
 
-var loginPageRequest = "loginPageRequest";
-var loginRequest = "loginRequest";
-var logoutRequest = "logoutRequest";
-var mainPageRequest = "mainPageRequest";
-var sessionPlaceholderRequest = "sessionPlaceholderRequest";
-var createNewAccountPage = "createNewAccount.html";
-var createAccountRequest = "createAccountRequest";
+
+var loginPageRequest = "loginPage";
+var createAccountPageRequest = "createAccountPage";
+var loginRequest = "login";
+var logoutRequest = "logout";
+var mainPageRequest = "mainPage";
+var sessionPlaceholderPageRequest = "sessionPlaceholderPage";
+var createAccountRequest = "createAccount";
+var testDatabase = "testDatabase";
