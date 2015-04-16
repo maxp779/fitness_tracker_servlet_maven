@@ -12,18 +12,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
- * This servlet logs out the user by invalidating their current session
- * then it redirects them back to the appropriate login page.
+ *
  * @author max
  */
-@WebServlet(name = "LogoutServlet", urlPatterns =
+@WebServlet(name = "CreateAccountPageServlet", urlPatterns =
 {
-    "/LogoutServlet/*"
+    "/CreateAccountPageServlet"
 })
-public class LogoutServlet extends HttpServlet
+public class CreateAccountPageServlet extends HttpServlet
 {
 
     /**
@@ -38,23 +36,12 @@ public class LogoutServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("LogoutServlet: executing");
-        HttpSession session = request.getSession(false);
-        
-        if(session == null)
-        {
-            String jsessionID = (String) request.getAttribute("jsessionid");
-        }
-        else
-        {
-            SessionManager.httpSessionRemove(session);
-        }
-        
-        ServletContext sc = request.getServletContext();
-        
+        System.out.println("CreateNewAccountPageRequestServlet executing: " + request.getRequestURL());
+        ServletContext sc = this.getServletContext();
 
-        response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginPage());
 
+
+        response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getCreateNewAccountPage());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

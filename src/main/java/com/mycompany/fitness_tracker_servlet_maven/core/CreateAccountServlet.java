@@ -53,20 +53,20 @@ public class CreateAccountServlet extends HttpServlet
         {
             RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getCreateNewAccountPage());
             PrintWriter out= response.getWriter();
-            out.println("<font color=red>Password must be at least 6 characters long.</font>");
-            rd.include(request, response);
+            out.println("<div class=\"alert alert-danger\" role=\"alert\">Password must be at least 6 characters long.</div>");
+            rd.forward(request, response);
         }
         else //normal execution with javascript working on the front end to ensure only valid emails and passwords are submitted
         {
             if(UserAccounts.getUserMap().containsKey(newAccountEmail))
             {
                 System.out.println("CreateAccountServlet: account already exists, no action taken");
-                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getURLLoginPage());
+                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
                 
                 RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getCreateNewAccountPage());
                 PrintWriter out= response.getWriter();
-                out.println("<font color=red>Account already exists with that email.</font>");
-                rd.include(request, response);
+                out.println("<div class=\"alert alert-danger\" role=\"alert\">An account for that email already exists. Please try a different email.</div>");
+                rd.forward(request, response);
             }
             else
             {
@@ -76,10 +76,14 @@ public class CreateAccountServlet extends HttpServlet
                 System.out.println("CreateAccountServlet: account created for " + newUser.getEmail());
                 RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getLoginPage());
                 PrintWriter out= response.getWriter();
-                out.println("<font color=green>Account created for " +newAccountEmail+ " </font>");
-                rd.include(request, response);
+                //out.println("<font color=green>Account created for " +newAccountEmail+ " </font>");
+                out.println("<div class=\"alert alert-success\" role=\"alert\">Account created for " +newAccountEmail+ "</div>");
                 
-                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getURLLoginPage());
+                
+                
+                rd.forward(request, response);
+                
+                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
             }
         }
     }

@@ -127,31 +127,17 @@ public class AuthorizationFilter implements Filter
         HttpServletRequest aRequest = (HttpServletRequest) request;
         HttpServletResponse aResponse = (HttpServletResponse) response;
         String currentURL = aRequest.getRequestURL().toString();
-        System.out.println("AuthorizationFilter: currentURI " + currentURL);
+        System.out.println("AuthorizationFilter: currentURL " + currentURL);
         ServletContext sc = getFilterConfig().getServletContext();
         boolean sessionValid;
-        
-        //if URL rewriting session management is in use attach the jsessionid to the request
-        //this is required or else SessionManager.sessionValidate will always
-        //return false with URL rewriting, it wont find the jsessionid if its not attached
-        //obviously
-        String jSessionID = request.getParameter("jsessionid");
-        if(jSessionID != null)
-        {
-            if(jSessionID.contains(";jsessionid="))
-            {
-                System.out.println("AuthorizationFilter: jsessionid detected = " + jSessionID);
-                request.setAttribute("jsessionid", jSessionID);
-            }
-        }
-        
+       
         
 //        String requestPath = aRequest.getRequestURI();
 //
 //        if (needsAuthentication(requestPath) &&
 //            session == null) { // change "user" for the session attribute you have defined
 //
-//            aResponse.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getURLLoginPage()); // No logged-in user found, so redirect to login page.
+//            aResponse.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFirstLoginServlet()); // No logged-in user found, so redirect to login page.
 //        } else {
 //            chain.doFilter(aRequest, aResponse); // Logged-in user found, so just continue request.
 //        }
@@ -181,11 +167,11 @@ public class AuthorizationFilter implements Filter
 //                }
 //                else //if invalid session and contains no login requests, kick back to login page
 //                {
-                    aResponse.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getURLLoginPage());
+                    aResponse.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFirstLoginServlet());
                 //}
             }
         }
-        else //request is not for FrontController servlet so can be ignored
+        else //request dosent need auth so can be ignored
         {
             chain.doFilter(request, response);
         }

@@ -5,40 +5,36 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
-import com.mycompany.fitness_tracker_servlet_maven.core.GlobalValues;
-import com.mycompany.fitness_tracker_servlet_maven.core.ServletRequestGetter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
- *This servlet determines whether to send the client to the mobile login page
- * or the desktop login page, if they are already logged in it will send the client 
- * to the appropriate main page
+ *
  * @author max
  */
-@WebServlet(name = "LoginPageRequestServlet", urlPatterns =
+@WebServlet(name = "TestDatabaseServlet", urlPatterns =
 {
-    "/LoginPageRequestServlet/*"
-    //,"/index.html"
-    //comment out the above line if ditching web.xml welcome file configuration,
-    //without web.xml, index.html is the default initial resource called and this 
-    //servlet is the one that should respond to such a request
+    "/TestDatabaseServlet"
 })
-public class LoginPageRequestServlet extends HttpServlet
+public class TestDatabaseServlet extends HttpServlet
 {
 
     /**
-     * This servlet is called when the client tries to access a login page, the
-     * servlet will determine which login page the client should see, either the mobile 
-     * or desktop login page. Also it will redirect the client accordingly should they already
-     * be logged in.
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
      *
      * @param request servlet request
      * @param response servlet response
@@ -47,31 +43,60 @@ public class LoginPageRequestServlet extends HttpServlet
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
-    {   
-        System.out.println("LoginPageRequestServlet: executing");
-        HttpSession session = request.getSession(false);
-        ServletContext sc = this.getServletContext();
-        
-        //TEST USER REMEMBER TO DELETE!!
-        UserObject testUser = new UserObject("max", "power", "maxp779@gmail.com", "sun");
-        UserAccounts.getUserMap().put(testUser.getEmail(), testUser);
-        
-        //if no session exists i.e. user has to login and is referred to a login page
-        if(session == null)
-        {
-            response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginPage());
-        }
-        else if(session.getAttribute("username") == null) //if no username exists i.e. session is in inconsistent state and user must log in and is referred to a login page
-        {
-            response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginPage());
-        }
-        else //if session is valid user is already logged in, puts them back at the main page
-        {            
-            response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
-        }
-      
-    }
+    {
+        System.out.println("TestDatabaseServlet executing: " + request.getRequestURL());
+        ServletContext sc = request.getServletContext();
+            this.testDatabase();
+            
+            String encodedURL = response.encodeRedirectURL(sc.getContextPath()+"/"+ GlobalValues.getWebPagesDirectory() +"/"+ "testPage.html");
+            response.sendRedirect(encodedURL);
 
+    }
+    
+        //Testing method, can be deleted later
+    public void testDatabase()
+    {
+        Connection aConnection = DatabaseUtils.getDatabaseConnection();
+        ResultSet resultSet = null;
+        Statement statement = null;
+        String query = "SELECT * FROM usertable;";
+        
+        try
+        {
+            //statement = aConnection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            statement = aConnection.createStatement();
+            resultSet = statement.executeQuery(query);
+            
+            //resultSet.first();
+            resultSet.next();
+            resultSet.next();
+            String output = resultSet.getString("email");
+            System.out.println(output);
+            
+            resultSet.close();
+            statement.close();
+            
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally
+        {
+            try
+            {
+                aConnection.close();
+            } catch (SQLException ex)
+            {
+                Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            aConnection = null;
+            
+            DatabaseUtils.closeConnections(aConnection, resultSet, statement);
+        }
+        
+        
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

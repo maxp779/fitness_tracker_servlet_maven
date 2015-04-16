@@ -42,7 +42,7 @@ public class FrontControllerServlet extends HttpServlet
     {
         System.out.println("FrontController: executing");
         System.out.println("FrontController: current request URI = " + request.getRequestURI());
-        String currentRequestString = ServletRequestGetter.getRequest(request);
+        String currentRequestString = ServletRequestFormatter.getRequest(request);
         RequestDispatcher rd;
         System.out.println("FrontController: current request = " + currentRequestString);
         
@@ -51,7 +51,7 @@ public class FrontControllerServlet extends HttpServlet
         if (currentRequestString.equals(ClientAPI.getLoginPageRequest()))
         {
             System.out.println("FrontController: login page request");
-            rd = request.getRequestDispatcher("/LoginPageRequestServlet/" + currentRequestString);
+            rd = request.getRequestDispatcher("/LoginPageServlet/" + currentRequestString);
             rd.forward(request, response);
         }
         else if (currentRequestString.equals(ClientAPI.getLogoutRequest()))
@@ -72,16 +72,28 @@ public class FrontControllerServlet extends HttpServlet
             rd = request.getRequestDispatcher("/MainPageServlet");
             rd.forward(request, response);
         }
-        else if (currentRequestString.equals(ClientAPI.getSessionPlaceholderRequest()))
+        else if (currentRequestString.equals(ClientAPI.getSessionPlaceholderPageRequest()))
         {
             System.out.println("FrontController: session placeholder page request");
-            rd = request.getRequestDispatcher("/SessionPlaceholderServlet");
+            rd = request.getRequestDispatcher("/SessionPlaceholderPageServlet");
             rd.forward(request, response);
         }
         else if (currentRequestString.equals(ClientAPI.getCreateAccountRequest()))
         {
             System.out.println("FrontController: create account request");
             rd = request.getRequestDispatcher("/CreateAccountServlet");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getCreateAccountPageRequest()))
+        {
+            System.out.println("FrontController: create account page request");
+            rd = request.getRequestDispatcher("/CreateAccountPageServlet");
+            rd.forward(request, response);
+        }
+        else if(currentRequestString.equals(ClientAPI.getTestDatabase()))
+        {
+            System.out.println("FrontController: test database request");
+            rd = request.getRequestDispatcher("/TestDatabaseServlet");
             rd.forward(request, response);
         }
         else

@@ -8,11 +8,13 @@ package com.mycompany.fitness_tracker_servlet_maven.core;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.SessionTrackingMode;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -58,30 +60,20 @@ public class AuthenticationServlet extends HttpServlet {
                     //create new session
                     HttpSession session = request.getSession(true);
                     session.setAttribute(ClientAPI.getClientRequestIdentifier(), loginAttemptEmail);
-                    session.setMaxInactiveInterval(GlobalValues.getMaxInactiveInterval());
+                    //session.setMaxInactiveInterval(GlobalValues.getMaxInactiveInterval());
+                    //String encodedURL = response.encodeRedirectURL(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
+                    //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginSuccessReferrer());
                     
                     
-                    /**
-                     * go to main page
-                     * if encodedURL detects cookies are disabled it will add a jsessionid to the end of the response URL
-                     * if cookies are enabled it will do nothing, so we check for a jsessionid with the method getJSessionID to see if one needs to be added
-                     * to the current valid session pool of jsessionids
-                    **/
-                    String encodedURL = response.encodeRedirectURL(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
-                    System.out.println("AuthenticationServlet: enclodedURL = " + encodedURL);
-                    String jsessionid = this.getJsessionid(encodedURL);
-                    if(jsessionid != null)
-                    {                            
-                        Jsessionid jsessionidObject = new Jsessionid(jsessionid, loginAttemptEmail, LocalDateTime.now());  
-                        SessionManager.jsessionidAddSession(jsessionid, jsessionidObject);
-                    }
-                    response.sendRedirect(encodedURL);
+                    RequestDispatcher rd;
+                    rd = request.getRequestDispatcher("/MainPageServlet");
+                    rd.forward(request, response);
                 }
                 else
                 {
                     System.out.println("AuthenticationServlet: wrong password");
                     //if wrong password, back to login page
-                    //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getURLLoginPage());
+                    //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
                     
                     
                     
@@ -96,7 +88,7 @@ public class AuthenticationServlet extends HttpServlet {
             {
                 System.out.println("AuthenticationServlet: account dosent exist");
                 //if account dosent exist, back to login page
-                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getURLLoginPage());
+                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
                 
                 RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getLoginPage());
                 PrintWriter out= response.getWriter();
@@ -106,25 +98,6 @@ public class AuthenticationServlet extends HttpServlet {
         
         }
     
-    /**
-     * Gets the jsessionID from an encoded URL e.g an input of
-     * "/fitness_tracker_servlet_maven/desktopPages/desktopMainPage.html;jsessionid=7dbdcd1141959f4ac2a5945a29b8"
-     * would return "7dbdcd1141959f4ac2a5945a29b8"
-     * @param encodedURL
-     * @return a jsessionID in the URL or an empty string if there is none
-     */
-    public String getJsessionid(String encodedURL)
-    {
-        String jsessionidSearchParameter = ";jsessionid=";
-        int jsessionLocation = encodedURL.indexOf(jsessionidSearchParameter);
-        String jsessionid = "";
-        if(jsessionLocation != -1)
-        {
-             jsessionid = encodedURL.substring(jsessionLocation);
-        }
-
-        return jsessionid;
-    }
         
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -5,10 +5,6 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -22,79 +18,6 @@ import javax.servlet.http.HttpSession;
  */
 public class SessionManager
 {
-    private static final Map<String, Jsessionid> sessionMap = new HashMap<>();
-    private static long timeoutMinutes = GlobalValues.getJessionTimeout(); //only applicable to jSessionID based sessions, 1440 minutes is 24 hours
-    
-    public static synchronized void jsessionidAddSession(String jsessionidString, Jsessionid jsessionidObject)
-    {
-        SessionManager.jsessionidCleanMap();
-        sessionMap.put(jsessionidString, jsessionidObject);
-    }
-    
-    /**
-     * This method returns true if the jSessionID is valid, false otherwise
-     * @param jsessionid
-     * @return boolean
-     */
-    private static boolean jsessionidValidateSession(String jsessionid)
-    {
-        boolean isValid = false;
-        Jsessionid jsessionidObject = sessionMap.get(jsessionid);
-        if(jsessionidObject != null)
-        {
-            if(jsessionidObject.getCreationTime().isBefore(LocalDateTime.now().plusHours(timeoutMinutes)))
-            {
-                isValid = true;
-            }
-            else
-            {
-                SessionManager.jsessionidRemoveSession(jsessionid);
-            }
-        }
-        return isValid;
-    }
-    
-    public static synchronized void jsessionidRemoveSession(String jsessionid)
-    {
-        sessionMap.remove(jsessionid);
-    }
-    
-    private static synchronized void jsessionidCleanMap()
-    {
-//        for (Map.Entry<String, JSessionID> entry : sessionMap.entrySet())
-//        {
-//            LocalDateTime aCreationTime = entry.getValue().getCreationTime();
-//            LocalDateTime timeout = aCreationTime.plusHours(timeoutHours);
-//            if(timeout.isBefore(LocalDateTime.now()))
-//            {
-//                sessionMap.remove(entry);
-//            }
-//        }
-
-        Iterator sessionMapIterator = sessionMap.keySet().iterator();
-        while (sessionMapIterator.hasNext())
-        {
-            String jsessionidString = (String) sessionMapIterator.next();
-            Jsessionid currentValue = sessionMap.get(jsessionidString);
-            
-            LocalDateTime aCreationTime = currentValue.getCreationTime();
-            LocalDateTime timeout = aCreationTime.plusMinutes(timeoutMinutes);
-            if(timeout.isBefore(LocalDateTime.now()))
-            {
-                sessionMap.remove(jsessionidString);
-            }
-        }
-    }
-
-    public static long jsessionidGetTimeoutHours()
-    {
-        return timeoutMinutes;
-    }
-    
-    public static void jsessionidSetTimeoutHours(long timeoutHours)
-    {
-        SessionManager.timeoutMinutes = timeoutHours;
-    }
     
     /**
      * This method returns true if the HttpSession attached to the request is still
@@ -108,12 +31,8 @@ public class SessionManager
         System.out.println("SessionManager: executing");
         System.out.println("SessionManager: current request URL = " + request.getRequestURL());
         HttpSession session = request.getSession(false);
-        String jsessionid = (String) request.getAttribute("jsessionid");
         boolean sessionValid;
-        
-        if(jsessionid == null)
-        {
-        System.out.println("SessionManager: cookie based session detected");   
+
             if(session == null) //path for invalid session
             {
                 System.out.println("SessionManager: session = null");
@@ -127,15 +46,9 @@ public class SessionManager
             }
             else //path for valid session
             {
-                System.out.println("SessionManager: valid session found!");
+                System.out.println("SessionManager: valid session found! " + session.getId());
                 sessionValid = true;
             }
-        }
-        else
-        {
-            System.out.println("SessionManager: jsessionid detected: " + jsessionid);
-            sessionValid = SessionManager.jsessionidValidateSession(jsessionid);
-        }
         System.out.println("SessionManager: current session validation = " + sessionValid);
         return sessionValid;
     }

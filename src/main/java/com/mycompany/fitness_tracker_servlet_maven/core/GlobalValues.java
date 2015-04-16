@@ -5,37 +5,81 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
+import java.sql.Connection;
+
 /**
  * This class contains important values all in one location
  * @author max
  */
 public class GlobalValues
 {
-    //URL's
+    //info
     private static final String webAddress = "http://localhost:8080/fitness_tracker_servlet_maven/";
     private static final String projectName = "fitness_tracker_servlet_maven";
     private static final String webPagesDirectory = "webPages";
+    private static final String FirstLoginServlet = "LoginPageServlet";
     
-    private static final String URLLoginPage = "LoginPageRequestServlet";
-    
+    //html pages
     private static final String loginPage = "loginPage.html";
+    private static final String cookiesPolicy = "cookiesPolicyPage.html";
     private static final String logoutPage = "logoutPage.html";
+    private static final String aboutPage = "aboutPage.html";
     private static final String mainPage = "mainPage.html";
+    private static final String loginSuccessReferrer = "loginSuccessReferrer.html";
     private static final String sessionPlaceholderPage = "sessionPlaceholder.html";
-    private static final String createNewAccountPage = "createNewAccount.html";
+    private static final String createAccountPage = "createAccount.html";
     
-    private static final int maxInactiveInterval = 0;
-    private static final long jsessionTimeout = 1440;
+    //misc values
+    private static final int maxInactiveInterval = -1; // session timeout, not currently used
+    
+    //database values
+    private static String databaseURL = "jdbc:postgresql://localhost:5432/fitnessTrackerDatabase";
+    private static String databaseConnectionPool = "JNDI/fitnessTrackerDatabase";
     
     
     
     private static final String[] nonAuthResources =
-            { "bootstrap-3.3.2-dist","index.html","ServerAPI.js","invalid.html",
-                "loginPage.html","createNewAccount.html","logoutPage.html",
-                "icons","LoginPageRequestServlet", 
+            { "invalid.html",".ico",".css",".js",".png",".jpeg","testPage.html","testDatabase",
+                GlobalValues.cookiesPolicy,
+                GlobalValues.loginPage,
+                GlobalValues.logoutPage,
+                GlobalValues.FirstLoginServlet,
+                GlobalValues.createAccountPage,
+                GlobalValues.aboutPage,
                 ClientAPI.getLoginPageRequest(),
                 ClientAPI.getLoginRequest(),
-                ClientAPI.getCreateAccountRequest()};
+                ClientAPI.getCreateAccountRequest(),
+                ClientAPI.getCreateAccountPageRequest()};
+
+    public static String getDatabaseConnectionPool()
+    {
+        return databaseConnectionPool;
+    }   
+    
+    public static String getCookiesPolicy()
+    {
+        return cookiesPolicy;
+    }
+
+    public static String getAboutPage()
+    {
+        return aboutPage;
+    }
+
+    public static String getCreateAccountPage()
+    {
+        return createAccountPage;
+    }
+
+    public static String getDatabaseURL()
+    {
+        return databaseURL;
+    }
+
+    public static String getLoginSuccessReferrer()
+    {
+        return loginSuccessReferrer;
+    }
 
     /**
      * returns the amount of time in seconds that a cookie based session is 
@@ -46,16 +90,6 @@ public class GlobalValues
     public static int getMaxInactiveInterval()
     {
         return maxInactiveInterval;
-    }
-
-    /**
-     * returns the amount of time in minutes that a jsession based session
-     * is valid for
-     * @return 
-     */
-    public static long getJessionTimeout()
-    {
-        return jsessionTimeout;
     }
   
     public static String[] getNonAuthResources()
@@ -70,7 +104,7 @@ public class GlobalValues
 
     public static String getCreateNewAccountPage()
     {
-        return createNewAccountPage;
+        return createAccountPage;
     }
 
     public static String getSessionPlaceholderPage()
@@ -93,9 +127,9 @@ public class GlobalValues
         return webPagesDirectory;
     }
 
-    public static String getURLLoginPage()
+    public static String getFirstLoginServlet()
     {
-        return URLLoginPage;
+        return FirstLoginServlet;
     }
 
     public static String getLoginPage()

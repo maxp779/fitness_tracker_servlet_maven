@@ -10,10 +10,10 @@ import javax.servlet.http.HttpServletRequest;
 /**
  * This class contains helper methods that are called by servlets enough
  * to warrent a central location avoiding code duplication. It deals with getting
- * sections of URLs and returning them to the requested servlet, gettingthe request 
+ * sections of URLs and returning them to the requested servlet, getting the request 
  * and the jsessionid parts are currently dealt with here.
  */
-public class ServletRequestGetter
+public class ServletRequestFormatter
 {
     /**
      * This method returns the end part of an HttpServletRequest object

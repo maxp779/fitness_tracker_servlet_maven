@@ -16,24 +16,39 @@ public class ClientAPI
     //Client API
     private static final String frontController = "/FrontControllerServlet";
     
-    private static final String loginPageRequest = "loginPageRequest";
-    private static final String loginRequest = "loginRequest";
-    private static final String logoutRequest = "logoutRequest";
-    private static final String mainPageRequest = "mainPageRequest";
-    private static final String sessionPlaceholderRequest = "sessionPlaceholderRequest";
-    private static final String createAccountRequest = "createAccountRequest";
+    private static final String loginRequest = "login";
+    private static final String loginPageRequest = "loginPage";
+    private static final String logoutRequest = "logout";
+    private static final String mainPageRequest = "mainPage";
+    private static final String sessionPlaceholderPageRequest = "sessionPlaceholderPage";
+    private static final String createAccountRequest = "createAccount";
+    private static final String createAccountPageRequest = "createAccountPage";
+    private static final String testDatabase = "testDatabase";
     
     //using what the client will login with, email, username etc, in this case it is email
     private static final String clientRequestIdentifier = "email";
+
+    public static String getCreateAccountPageRequest()
+    {
+        return createAccountPageRequest;
+    }
+
+    public static String getTestDatabase()
+    {
+        return testDatabase;
+    }
+    
+    
+    
 
     public static String getClientRequestIdentifier()
     {
         return clientRequestIdentifier;
     }
    
-    public static String getSessionPlaceholderRequest()
+    public static String getSessionPlaceholderPageRequest()
     {
-        return sessionPlaceholderRequest;
+        return sessionPlaceholderPageRequest;
     }
 
     public static String getCreateAccountRequest()
