@@ -34,7 +34,7 @@ public class GlobalValues
     
     //database values
     private static String databaseURL = "jdbc:postgresql://localhost:5432/fitnessTrackerDatabase";
-    private static String databaseConnectionPool = "JNDI/fitnessTrackerDatabase";
+    private static String databaseConnectionPool = "jdbc/fitnessTrackerDB";
     
     
     

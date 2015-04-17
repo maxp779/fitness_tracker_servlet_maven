@@ -29,14 +29,14 @@ public class StartupWebListener implements ServletContextListener {
         
     //this sets the servlet context to ONLY use URL rewriting, even if the client uses cookies
     //event.getServletContext().setSessionTrackingModes(EnumSet.of(SessionTrackingMode.URL));
-     //DatabaseAccess.testDatabase();
+    
   }
 
   public void contextDestroyed(ServletContextEvent event)
   {
     //do on application destroy
       
-        //deregister database driver
+        //deregister database driver **this may not even be needed**
         DatabaseUtils.dersgisterDatabaseDriver();
       
   }

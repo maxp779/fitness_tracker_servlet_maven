@@ -54,8 +54,8 @@ public class LoginPageServlet extends HttpServlet
         ServletContext sc = this.getServletContext();
         
         //TEST USER REMEMBER TO DELETE!!
-        UserObject testUser = new UserObject("max", "power", "maxp779@gmail.com", "sun");
-        UserAccounts.getUserMap().put(testUser.getEmail(), testUser);
+        //UserObject testUser = new UserObject("max", "power", "maxp779@gmail.com", "sun");
+        //UserAccounts.getUserMap().put(testUser.getEmail(), testUser);
         
         //if no session exists i.e. user has to login and is referred to a login page
         if(session == null)

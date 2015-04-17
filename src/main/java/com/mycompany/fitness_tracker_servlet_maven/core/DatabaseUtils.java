@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
@@ -26,7 +25,7 @@ import javax.sql.DataSource;
  */
 public class DatabaseUtils
 {
-        /**
+    /**
      * This method returns a database connection, the connection MUST be closed
      * by whatever class calls this method otherwise connections will leak and
      * eventually there wont be any left.
@@ -54,7 +53,7 @@ public class DatabaseUtils
         
         try
         {
-            source = (DataSource) initialContext.lookup(GlobalValues.getDatabaseConnectionPool());
+            source = (DataSource) initialContext.lookup("java:/comp/env/jdbc/mydb");
         } catch (NamingException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
@@ -77,18 +76,18 @@ public class DatabaseUtils
     {
         try
         {
-            System.out.println("DatabaseUtilities: loading database driver");
+            System.out.println("DatabaseUtils: loading database driver");
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException ex)
         {
-            System.out.println("DatabaseUtilities: loading database driver failed");
+            System.out.println("DatabaseUtils: loading database driver failed");
             Logger.getLogger(StartupWebListener.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     public static void dersgisterDatabaseDriver()
     {
-        System.out.println("DatabaseUtilities: getting driver list");
+        System.out.println("DatabaseUtils: getting driver list");
         ClassLoader aClassLoader = Thread.currentThread().getContextClassLoader();       
         Enumeration<Driver> driverEnumeration = DriverManager.getDrivers();
         
@@ -101,11 +100,11 @@ public class DatabaseUtils
             {
                 try
                 {
-                    System.out.println("DatabaseUtilities: deregistering driver");
+                    System.out.println("DatabaseUtils: deregistering driver");
                     DriverManager.deregisterDriver(currentDriver);
                 } catch (SQLException ex)
                 {
-                    System.out.println("DatabaseUtilities: deregistering driver failed");
+                    System.out.println("DatabaseUtils: deregistering driver failed");
                     Logger.getLogger(DatabaseUtils.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -136,51 +135,51 @@ public class DatabaseUtils
         {
             try
             {
-                System.out.println("DatabaseUtilities: closing ResultSet object");
+                System.out.println("DatabaseUtils: closing ResultSet object");
                 aResultSet.close();
             } catch (SQLException ex)
             {
-                System.out.println("DatabaseUtilities: closing ResultSet object failed");
+                System.out.println("DatabaseUtils: closing ResultSet object failed");
                 Logger.getLogger(DatabaseUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         else
         {
-            System.out.println("DatabaseUtilities: ResultSet object null detected, no action taken on ResultSet");
+            System.out.println("DatabaseUtils: ResultSet object null detected, no action taken on ResultSet");
         }
         
         if(aStatement !=null)
         {
             try
             {
-                System.out.println("DatabaseUtilities: closing Statement object");
+                System.out.println("DatabaseUtils: closing Statement object");
                 aStatement.close();
             } catch (SQLException ex)
             {
-                System.out.println("DatabaseUtilities: closing Statement object failed");
+                System.out.println("DatabaseUtils: closing Statement object failed");
                 Logger.getLogger(DatabaseUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         else
         {
-            System.out.println("DatabaseUtilities: Statement object null detected, no action taken on Statement");
+            System.out.println("DatabaseUtils: Statement object null detected, no action taken on Statement");
         }
         
         if(aConnection !=null)
         {
             try
             {
-                System.out.println("DatabaseUtilities: closing Connection object");
+                System.out.println("DatabaseUtils: closing Connection object");
                 aConnection.close();
             } catch (SQLException ex)
             {
-                System.out.println("DatabaseUtilities: closing Connection object failed");
+                System.out.println("DatabaseUtils: closing Connection object failed");
                 Logger.getLogger(DatabaseUtils.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         else
         {
-            System.out.println("DatabaseUtilities: Connection object null detected, no action taken on Connection");
+            System.out.println("DatabaseUtils: Connection object null detected, no action taken on Connection");
         }
-    }   
+    }
 }

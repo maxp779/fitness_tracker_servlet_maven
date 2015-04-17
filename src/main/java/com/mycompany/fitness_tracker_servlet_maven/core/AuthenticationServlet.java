@@ -7,10 +7,17 @@ package com.mycompany.fitness_tracker_servlet_maven.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -42,46 +49,51 @@ public class AuthenticationServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException 
     {
+        ServletContext sc = this.getServletContext();
         System.out.println("AuthenticationServlet: executing");
         String loginAttemptEmail = request.getParameter("email");
         String loginAttemptPassword = request.getParameter("password");
-
-        UserObject currentUser = UserAccounts.getUserMap().get(loginAttemptEmail);
-        ServletContext sc = this.getServletContext();
+        Map<String,String> userCredentials;
         
-            //if the account exists
-            if(currentUser != null)
+        //replace with database access
+        //UserObject currentUser = UserAccounts.getUserMap().get(loginAttemptEmail);
+        
+        //obtain user details from database
+        userCredentials = (HashMap) DatabaseAccess.getUserCredentials(loginAttemptEmail);
+        
+            //if account exists
+            if(userCredentials != null)
             {
                 System.out.println("AuthenticationServlet: account exists");
-                //if password is correct
-                if(currentUser.getPassword().equals(loginAttemptPassword))
-                {
-                    System.out.println("AuthenticationServlet: password correct");
-                    //create new session
-                    HttpSession session = request.getSession(true);
-                    session.setAttribute(ClientAPI.getClientRequestIdentifier(), loginAttemptEmail);
-                    //session.setMaxInactiveInterval(GlobalValues.getMaxInactiveInterval());
-                    //String encodedURL = response.encodeRedirectURL(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
-                    //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginSuccessReferrer());
-                    
-                    
-                    RequestDispatcher rd;
-                    rd = request.getRequestDispatcher("/MainPageServlet");
-                    rd.forward(request, response);
-                }
-                else
-                {
-                    System.out.println("AuthenticationServlet: wrong password");
-                    //if wrong password, back to login page
-                    //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
-                    
-                    
-                    
-                    RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getLoginPage());
-                    PrintWriter out= response.getWriter();
-                    out.println("<font color=red>Invalid email or password</font>");
-                    rd.include(request, response);
-                }
+
+                    //if password is correct
+                    if(userCredentials.get(loginAttemptEmail).equals(loginAttemptPassword))
+                    {
+                        System.out.println("AuthenticationServlet: password correct");
+                        
+                        //create new session
+                        HttpSession session = request.getSession(true);
+                        session.setAttribute(ClientAPI.getClientRequestIdentifier(), loginAttemptEmail);
+                        //session.setMaxInactiveInterval(GlobalValues.getMaxInactiveInterval());
+                        //String encodedURL = response.encodeRedirectURL(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
+                        //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginSuccessReferrer());
+
+                        RequestDispatcher rd;
+                        rd = request.getRequestDispatcher("/MainPageServlet");
+                        rd.forward(request, response);
+                    }
+                    else
+                    {
+                        System.out.println("AuthenticationServlet: wrong password");
+                        //if wrong password, back to login page
+                        //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
+
+                        RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getLoginPage());
+                        PrintWriter out= response.getWriter();
+                        out.println("<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>");
+                        rd.include(request, response);
+                    }
+                
 
             }
             else
@@ -92,12 +104,52 @@ public class AuthenticationServlet extends HttpServlet {
                 
                 RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getLoginPage());
                 PrintWriter out= response.getWriter();
-                out.println("<font color=red>Invalid email or password</font>");
+                out.println("<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>");
                 rd.include(request, response);
             }
-        
+
         }
     
+//        private Map<String,String> getUserCredentials(String loginAttemptEmail)
+//        {
+//            Map output = new HashMap<String,String>();
+//            ResultSet resultSet = null;
+//            String retrievedEmail = null;
+//            String retrievedPassword = null;
+//            PreparedStatement getEmailStatement = null;
+//            String getUserEmailString = "SELECT email,password FROM usertable WHERE email = ?";
+//            Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+//            try
+//            {
+//                getEmailStatement = databaseConnection.prepareStatement(getUserEmailString);
+//                getEmailStatement.setString(1,loginAttemptEmail);
+//
+//                resultSet = getEmailStatement.executeQuery();
+//                resultSet.next();
+//                retrievedEmail = resultSet.getString("email");
+//                retrievedPassword = resultSet.getString("password");
+//
+//            }
+//            catch (SQLException ex)
+//            {
+//                Logger.getLogger(AuthenticationServlet.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//            finally
+//            {
+//                DatabaseUtils.closeConnections(databaseConnection, resultSet, getEmailStatement);
+//            }
+//            
+//            if(retrievedEmail != null && retrievedPassword != null)
+//            {
+//                output.put(retrievedEmail, retrievedPassword);
+//                return output;
+//            }
+//            else
+//            {
+//                return null;
+//            }
+
+        
         
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

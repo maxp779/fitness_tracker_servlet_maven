@@ -25,26 +25,24 @@ public class ServletRequestFormatter
     public static String getRequest(HttpServletRequest request)
     {
         //get and format the request from the URL given
-            String currentRequestURL = request.getRequestURI();
-            StringBuilder currentRequestStringBuilder = new StringBuilder();
-            char[] currentRequestCharArray = currentRequestURL.toCharArray();
-            boolean foundSlash = false;
-            int count = currentRequestCharArray.length-1;
-            while(!foundSlash)
-            {
-                char currentChar = currentRequestCharArray[count];
-                if(currentChar == '/')
-                {
-                    foundSlash = true;
-                }
-                else
-                {
-                    currentRequestStringBuilder.append(currentChar);
-                }
-                count--;
-            }
-            currentRequestStringBuilder.reverse();
-            return currentRequestStringBuilder.toString();
+        String output = "";
+        String currentRequestURL = request.getRequestURI();
+        StringBuilder currentRequestStringBuilder = new StringBuilder(currentRequestURL);
+
+        //get the command
+        int slashIndex = currentRequestStringBuilder.lastIndexOf("/");
+        currentRequestStringBuilder = currentRequestStringBuilder.delete(0, slashIndex+1);
+
+        //if jsessionid is part of the URI remove it
+        //strangely enough this seems to be needed with tomee and not glassfish
+        int jsessionidIndex = currentRequestStringBuilder.indexOf(";jsessionid=");            
+        if(jsessionidIndex != -1)
+        {
+            currentRequestStringBuilder = currentRequestStringBuilder.delete(jsessionidIndex, currentRequestStringBuilder.length());
+
+        }
+
+        return currentRequestStringBuilder.toString();
     }
     
 }
