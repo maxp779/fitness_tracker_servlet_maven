@@ -21,6 +21,7 @@ var createAccountPageRequest = "createAccountPage";
 var loginRequest = "login";
 var logoutRequest = "logout";
 var mainPageRequest = "mainPage";
+var workoutTrackerPageRequest = "workoutTracker";
 var sessionPlaceholderPageRequest = "sessionPlaceholderPage";
 var createAccountRequest = "createAccount";
 var testDatabase = "testDatabase";

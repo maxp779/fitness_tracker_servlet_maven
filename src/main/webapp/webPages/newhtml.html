@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+                <!--jquery import-->
+        <script type ="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+        <!--bootstrap import-->
+        <script type="text/javascript" src="../bootstrap-3.3.4-dist/js/bootstrap.js"></script>
+        <link rel="stylesheet" href="../bootstrap-3.3.4-dist/css/bootstrap.css">
+        <!--experimental datepicker-->
+        <script type="text/javascript" src="../bootstrap-datepicker-1.4/dist/js/bootstrap-datepicker.min.js"></script>
+        <link href="../bootstrap-datepicker-1.4/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+        <div class="input-append date" id="test">
+    <input type="text" value="12-02-2012">
+    <span class="add-on"><i class="icon-th"></i></span>
+</div>
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+            $('#test').datepicker({});
+        </script>
+    </body>
+</html>

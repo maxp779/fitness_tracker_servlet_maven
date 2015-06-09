@@ -7,21 +7,11 @@ package com.mycompany.fitness_tracker_servlet_maven.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDateTime;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.SessionTrackingMode;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -54,10 +44,7 @@ public class AuthenticationServlet extends HttpServlet {
         String loginAttemptEmail = request.getParameter("email");
         String loginAttemptPassword = request.getParameter("password");
         Map<String,String> userCredentials;
-        
-        //replace with database access
-        //UserObject currentUser = UserAccounts.getUserMap().get(loginAttemptEmail);
-        
+                
         //obtain user details from database
         userCredentials = (HashMap) DatabaseAccess.getUserCredentials(loginAttemptEmail);
         
@@ -66,8 +53,9 @@ public class AuthenticationServlet extends HttpServlet {
             {
                 System.out.println("AuthenticationServlet: account exists");
 
-                    //if password is correct
-                    if(userCredentials.get(loginAttemptEmail).equals(loginAttemptPassword))
+                    //if password is correct                   
+                    String storedHashedPassword = userCredentials.get(loginAttemptEmail);
+                    if(Security.passwordMatch(loginAttemptPassword, storedHashedPassword))
                     {
                         System.out.println("AuthenticationServlet: password correct");
                         
@@ -109,47 +97,6 @@ public class AuthenticationServlet extends HttpServlet {
             }
 
         }
-    
-//        private Map<String,String> getUserCredentials(String loginAttemptEmail)
-//        {
-//            Map output = new HashMap<String,String>();
-//            ResultSet resultSet = null;
-//            String retrievedEmail = null;
-//            String retrievedPassword = null;
-//            PreparedStatement getEmailStatement = null;
-//            String getUserEmailString = "SELECT email,password FROM usertable WHERE email = ?";
-//            Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-//            try
-//            {
-//                getEmailStatement = databaseConnection.prepareStatement(getUserEmailString);
-//                getEmailStatement.setString(1,loginAttemptEmail);
-//
-//                resultSet = getEmailStatement.executeQuery();
-//                resultSet.next();
-//                retrievedEmail = resultSet.getString("email");
-//                retrievedPassword = resultSet.getString("password");
-//
-//            }
-//            catch (SQLException ex)
-//            {
-//                Logger.getLogger(AuthenticationServlet.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//            finally
-//            {
-//                DatabaseUtils.closeConnections(databaseConnection, resultSet, getEmailStatement);
-//            }
-//            
-//            if(retrievedEmail != null && retrievedPassword != null)
-//            {
-//                output.put(retrievedEmail, retrievedPassword);
-//                return output;
-//            }
-//            else
-//            {
-//                return null;
-//            }
-
-        
         
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -72,7 +72,7 @@ public class DatabaseAccess
     public static boolean addUser(String anEmail, String aPassword)
     {
         boolean userAdded;
-        
+        String hashedPassword = Security.hashPassword(aPassword);
         //if user already exists
         if (DatabaseAccess.userAlreadyExistsCheck(anEmail))
         {
@@ -88,7 +88,7 @@ public class DatabaseAccess
             {
                 addUserStatement = databaseConnection.prepareStatement(GlobalSQLCommands.getAddUserSQL());
                 addUserStatement.setString(1,anEmail);
-                addUserStatement.setString(2,aPassword);
+                addUserStatement.setString(2,hashedPassword);
                 addUserStatement.executeUpdate();
             }
             catch (SQLException ex)

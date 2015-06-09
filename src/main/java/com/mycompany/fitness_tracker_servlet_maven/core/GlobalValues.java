@@ -5,8 +5,6 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
-import java.sql.Connection;
-
 /**
  * This class contains important values all in one location
  * @author max
@@ -25,7 +23,7 @@ public class GlobalValues
     private static final String logoutPage = "logoutPage.html";
     private static final String aboutPage = "aboutPage.html";
     private static final String mainPage = "mainPage.html";
-    private static final String loginSuccessReferrer = "loginSuccessReferrer.html";
+    private static final String workoutTrackerPage = "workoutTracker.html";
     private static final String sessionPlaceholderPage = "sessionPlaceholder.html";
     private static final String createAccountPage = "createAccount.html";
     
@@ -33,11 +31,11 @@ public class GlobalValues
     private static final int maxInactiveInterval = -1; // session timeout, not currently used
     
     //database values
-    private static String databaseURL = "jdbc:postgresql://localhost:5432/fitnessTrackerDatabase";
-    private static String databaseConnectionPool = "jdbc/fitnessTrackerDB";
+    private static final String databaseURL = "jdbc:postgresql://localhost:5432/fitnessTrackerDatabase";
+    private static final String databaseConnectionPool = "jdbc/fitnessTrackerDB"; //JNDI name for connection pool
     
     
-    
+    //AuthenticationFilter will skip the session check when these resources are requested
     private static final String[] nonAuthResources =
             { "invalid.html",".ico",".css",".js",".png",".jpeg","testPage.html","testDatabase",
                 GlobalValues.cookiesPolicy,
@@ -51,6 +49,11 @@ public class GlobalValues
                 ClientAPI.getCreateAccountRequest(),
                 ClientAPI.getCreateAccountPageRequest()};
 
+    public static String getWorkoutTrackerPage()
+    {
+        return workoutTrackerPage;
+    }
+    
     public static String getDatabaseConnectionPool()
     {
         return databaseConnectionPool;
@@ -74,11 +77,6 @@ public class GlobalValues
     public static String getDatabaseURL()
     {
         return databaseURL;
-    }
-
-    public static String getLoginSuccessReferrer()
-    {
-        return loginSuccessReferrer;
     }
 
     /**

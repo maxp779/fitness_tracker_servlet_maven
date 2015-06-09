@@ -90,10 +90,10 @@ public class FrontControllerServlet extends HttpServlet
             rd = request.getRequestDispatcher("/CreateAccountPageServlet");
             rd.forward(request, response);
         }
-        else if(currentRequestString.equals(ClientAPI.getTestDatabase()))
+        else if (currentRequestString.equals(ClientAPI.getWorkoutTrackerPageRequest()))
         {
-            System.out.println("FrontController: test database request");
-            rd = request.getRequestDispatcher("/TestDatabaseServlet");
+            System.out.println("FrontController: workout tracker page request");
+            rd = request.getRequestDispatcher("/WorkoutTrackerPageServlet");
             rd.forward(request, response);
         }
         else

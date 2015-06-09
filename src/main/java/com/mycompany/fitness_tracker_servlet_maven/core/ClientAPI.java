@@ -23,22 +23,24 @@ public class ClientAPI
     private static final String sessionPlaceholderPageRequest = "sessionPlaceholderPage";
     private static final String createAccountRequest = "createAccount";
     private static final String createAccountPageRequest = "createAccountPage";
-    private static final String testDatabase = "testDatabase";
+    private static final String workoutTrackerPageRequest = "workoutTracker";
     
     //using what the client will login with, email, username etc, in this case it is email
     private static final String clientRequestIdentifier = "email";
 
+    public static String getWorkoutTrackerPageRequest()
+    {
+        return workoutTrackerPageRequest;
+    }
+
+    
+    
+    
     public static String getCreateAccountPageRequest()
     {
         return createAccountPageRequest;
     }
-
-    public static String getTestDatabase()
-    {
-        return testDatabase;
-    }
-    
-    
+  
     
 
     public static String getClientRequestIdentifier()
