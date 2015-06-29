@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.fitness_tracker_servlet_maven.webpageservlets.AJAXServlets;
+package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
