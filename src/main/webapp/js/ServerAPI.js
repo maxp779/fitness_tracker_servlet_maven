@@ -16,12 +16,22 @@ var URLLoginPage = "index.html";
 var frontController = "/fitness_tracker_servlet_maven/FrontControllerServlet/";
 
 
-var loginPageRequest = "loginPage";
-var createAccountPageRequest = "createAccountPage";
+//action requests
 var loginRequest = "login";
 var logoutRequest = "logout";
-var mainPageRequest = "mainPage";
-var workoutTrackerPageRequest = "workoutTracker";
-var sessionPlaceholderPageRequest = "sessionPlaceholderPage";
 var createAccountRequest = "createAccount";
 var testDatabase = "testDatabase";
+
+//page requests
+var customFoodsPageRequest = "customFoodsPage";
+var mainPageRequest = "mainPage";
+var workoutTrackerPageRequest = "workoutTrackerPage";
+var sessionPlaceholderPageRequest = "sessionPlaceholderPage";
+var loginPageRequest = "loginPage";
+var createAccountPageRequest = "createAccountPage";
+
+//AJAX requests
+var AJAX_GetCustomFoodList = "AJAX_GetCustomFood";
+var AJAX_RemoveCustomFood = "AJAX_RemoveCustomFood";
+var AJAX_AddCustomFood = "AJAX_AddCustomFood";
+var AJAX_EditCustomFood = "AJAX_EditCustomFood";

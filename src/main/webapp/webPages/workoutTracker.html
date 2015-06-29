@@ -52,6 +52,7 @@
                 document.getElementById("workoutTracker").href = frontController + workoutTrackerPageRequest;
                 document.getElementById("logout").href = frontController + logoutRequest;
                 document.getElementById("mainPage").href = frontController + mainPageRequest;
+                document.getElementById("customFoods").href = frontController + customFoodsPageRequest;
                 
                 //call script to add jsessionid for people who disable cookies
                 //must be done after links above are set
@@ -80,7 +81,7 @@
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li><a id="mainPage" class="jsessionid">Nutrition Log</a></li>
-                        <li><a>Custom Foods</a></li>
+                        <li><a id="customFoods" class="jsessionid">Custom Foods</a></li>
                         <li class="active"><a id="workoutTracker" class="jsessionid">Workout Log</a></li>
                         <li><a >My Stats</a></li>
                         <li><a id="logout" class="jsessionid">Logout</a></li>

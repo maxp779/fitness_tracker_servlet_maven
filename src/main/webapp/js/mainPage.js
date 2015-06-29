@@ -4,9 +4,15 @@
  * and open the template in the editor.
  */
 
+
+var customFoodListJSON;
+var eatenFoodListJSON;
+var selectedFood = null; //the id_food of the food currently selected by the user
+
+
 //this focuses the page on the currently opened accordion panel
 $(function () {
-    $('#accordion1').on('shown.bs.collapse', function (e) {
+    $('#accordion2').on('shown.bs.collapse', function (e) {
         var offset = $('.panel.panel-default > .panel-collapse.in').offset();
         if (offset) {
             $('html,body').animate({
@@ -29,14 +35,14 @@ var eventTriggered = false;
 $(document).ready(function () {
     viewDate = new Date();
 
-        //create food datepicker
+    //create food datepicker and macro datepicker
+    //both datepickers will be synced so they show the same date at all times
     $('#foodDatepicker').datepicker({
         autoclose: true,
         todayBtn: "linked",
         format: "dd/mm/yyyy"
     });
 
-    //create macro datepicker
     $('#macroDatepicker').datepicker({
         autoclose: true,
         todayBtn: "linked",
@@ -78,6 +84,9 @@ $(document).ready(function () {
         }
         eventTriggered = false;
     });
+    
+    //get and populate custom foods list
+    getCustomFoodsList();
 });
 
 //create a DD/MM/YYYY string from a dateObject
@@ -123,6 +132,70 @@ function removeFood()
 {
     //PLACEHOLDER
 }
+
+function populateCustomFoodList()
+{
+    //list must be emptied first, if not then the final list item will still show
+    //even if it was deleted from the database
+    $('#customFoodList').empty();
+
+    //iterate through each array (database record) in the JSON
+    for (var index in customFoodListJSON)
+    {
+        var innerHTML = "";
+
+        //populate the list, give the links an id that corresponds to the id_food value of the food from the database
+        // e.g. if there are two foods named "tasty pie" the id_food will allow us to tell them apart
+        for (var index in customFoodListJSON)
+        {
+            innerHTML = innerHTML.concat("<a href=\"javascript:void(0)\" class=\"list-group-item\" id=\"" + customFoodListJSON[index].id_food + "\">" + customFoodListJSON[index].foodname + "</a>");
+        }
+        document.getElementById("customFoodList").innerHTML = innerHTML;
+    }
+}
+
+function populateFoodEatenTable()
+{
+    //empty table
+    $('#foodEatenTable').empty();
+
+    //iterate through each array (database record) in the JSON
+    for (var index in eatenFoodListJSON)
+    {
+        var innerHTML = "";
+
+        //FIX ME** populate the table!
+        for (var index in eatenFoodListJSON)
+        {
+            innerHTML = innerHTML.concat("<a href=\"javascript:void(0)\" class=\"list-group-item\" id=\"" + customFoodListJSON[index].id_food + "\">" + customFoodListJSON[index].foodname + "</a>");
+        }
+        document.getElementById("foodEatenTable").innerHTML = innerHTML;
+    }
+}
+
+//AJAX REQUESTS
+function getFoodEatenList()
+{
+    //TO DO!
+}
+
+function getCustomFoodsList()
+{
+    //this is an AJAX request to the server, it invokes the AJAX_GetCustomFoodsServlet which returns a JSON object
+    //containing all custom foods in full detail from the database
+    $.getJSON(frontController + AJAX_GetCustomFoodList, function (JSONObject) {
+
+        console.log("getCustomFoodsList " + JSON.stringify(JSONObject));
+        customFoodListJSON = JSONObject;
+        populateCustomFoodList();
+
+    });
+}
+
+
+
+
+
 
 
 /**

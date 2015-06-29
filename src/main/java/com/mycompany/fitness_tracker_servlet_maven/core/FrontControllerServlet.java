@@ -96,6 +96,36 @@ public class FrontControllerServlet extends HttpServlet
             rd = request.getRequestDispatcher("/WorkoutTrackerPageServlet");
             rd.forward(request, response);
         }
+        else if (currentRequestString.equals(ClientAPI.getCustomFoodsPageRequest()))
+        {
+            System.out.println("FrontController: custom foods page request");
+            rd = request.getRequestDispatcher("/CustomFoodsPageServlet");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAXgetCustomFood()))
+        {
+            System.out.println("FrontController: custom foods list AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_GetCustomFoods");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAXremoveCustomFood()))
+        {
+            System.out.println("FrontController: remove a custom food AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_RemoveCustomFood");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAXaddCustomFood()))
+        {
+            System.out.println("FrontController: add a custom food AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_AddCustomFood");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAXeditCustomFood()))
+        {
+            System.out.println("FrontController: edit a custom food AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_EditCustomFood");
+            rd.forward(request, response);
+        }
         else
         {
             response.sendRedirect("/fitness_tracker_servlet_maven/invalid.html");

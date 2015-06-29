@@ -78,8 +78,8 @@ public class MainPageServlet extends HttpServlet
     //        }
     //        RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
     //        view.forward(request, response);
-
-
+        
+            System.out.println("CURRENT USER ID IS:" + request.getSession().getAttribute("id_user"));
             String encodedURL = response.encodeRedirectURL(sc.getContextPath()+"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
             response.sendRedirect(encodedURL);
 

@@ -23,14 +23,48 @@ public class ClientAPI
     private static final String sessionPlaceholderPageRequest = "sessionPlaceholderPage";
     private static final String createAccountRequest = "createAccount";
     private static final String createAccountPageRequest = "createAccountPage";
-    private static final String workoutTrackerPageRequest = "workoutTracker";
+    private static final String workoutTrackerPageRequest = "workoutTrackerPage";
+    private static final String customFoodsPageRequest = "customFoodsPage";
+    
+    //AJAX requests
+    private static final String AJAXgetCustomFood = "AJAX_GetCustomFood";
+    private static final String AJAXremoveCustomFood = "AJAX_RemoveCustomFood";
+    private static final String AJAXaddCustomFood = "AJAX_AddCustomFood";
+    private static final String AJAXeditCustomFood = "AJAX_EditCustomFood";
+    
     
     //using what the client will login with, email, username etc, in this case it is email
     private static final String clientRequestIdentifier = "email";
 
+    public static String getAJAXeditCustomFood()
+    {
+        return AJAXeditCustomFood;
+    }
+
+        
+    public static String getAJAXaddCustomFood()
+    {
+        return AJAXaddCustomFood;
+    }
+
+    public static String getAJAXremoveCustomFood()
+    {
+        return AJAXremoveCustomFood;
+    }
+
+    public static String getAJAXgetCustomFood()
+    {
+        return AJAXgetCustomFood;
+    }
+
     public static String getWorkoutTrackerPageRequest()
     {
         return workoutTrackerPageRequest;
+    }
+
+    public static String getCustomFoodsPageRequest()
+    {
+        return customFoodsPageRequest;
     }
 
     

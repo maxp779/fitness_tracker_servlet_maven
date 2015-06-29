@@ -26,6 +26,7 @@ public class GlobalValues
     private static final String workoutTrackerPage = "workoutTracker.html";
     private static final String sessionPlaceholderPage = "sessionPlaceholder.html";
     private static final String createAccountPage = "createAccount.html";
+    private static final String customFoodsPage = "customFoods.html";
     
     //misc values
     private static final int maxInactiveInterval = -1; // session timeout, not currently used
@@ -33,7 +34,6 @@ public class GlobalValues
     //database values
     private static final String databaseURL = "jdbc:postgresql://localhost:5432/fitnessTrackerDatabase";
     private static final String databaseConnectionPool = "jdbc/fitnessTrackerDB"; //JNDI name for connection pool
-    
     
     //AuthenticationFilter will skip the session check when these resources are requested
     private static final String[] nonAuthResources =
@@ -47,7 +47,13 @@ public class GlobalValues
                 ClientAPI.getLoginPageRequest(),
                 ClientAPI.getLoginRequest(),
                 ClientAPI.getCreateAccountRequest(),
-                ClientAPI.getCreateAccountPageRequest()};
+                ClientAPI.getCreateAccountPageRequest()
+            };
+
+    public static String getCustomFoodsPage()
+    {
+        return customFoodsPage;
+    } 
 
     public static String getWorkoutTrackerPage()
     {

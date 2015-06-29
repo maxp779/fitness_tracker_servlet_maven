@@ -52,6 +52,7 @@
                 document.getElementById("workoutTracker").href = frontController + workoutTrackerPageRequest;
                 document.getElementById("logout").href = frontController + logoutRequest;
                 document.getElementById("mainPage").href = frontController + mainPageRequest;
+                document.getElementById("customFoods").href = frontController + customFoodsPageRequest;
 
                 //call script to add jsessionid for people who disable cookies
                 //must be done after links above are set
@@ -80,7 +81,7 @@
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li class="active"><a id="mainPage" class="jsessionid">Nutrition Log</a></li>
-                        <li><a>Custom Foods</a></li>
+                        <li><a id="customFoods" class="jsessionid">Custom Foods</a></li>
                         <li><a id="workoutTracker" class="jsessionid">Workout Log</a></li>
                         <li><a >My Stats</a></li>
                         <li><a id="logout" class="jsessionid">Logout</a></li>
@@ -207,11 +208,11 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion1" href="#collapseFoodlog" class="bottomAccordion">
+                            <a data-toggle="collapse" data-parent="#accordion1" href="#collapseFoodlog">
                                 Food Log</a>
                         </h4>
                     </div>
-                    <div id="collapseFoodlog" class="panel-collapse collapse">
+                    <div id="collapseFoodlog" class="panel-collapse collapse in">
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-sm-4">
@@ -256,7 +257,7 @@
                                                     <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Calories:</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id="foodEatenTable">
                                                 <tr>
                                                     <td>Steak and kidney pie with onions</td>
                                                     <td>20g</td>
@@ -287,6 +288,37 @@
                                                             <span class="glyphicon glyphicon-remove"></span>
                                                         </button></td>
                                                 </tr>
+                                                <tr>
+                                                    <td>Chips</td>
+                                                    <td>20g</td>
+                                                    <td>2g</td>
+                                                    <td>10g</td>
+                                                    <td>400</td>
+                                                    <td><button type="button" class="btn btn-danger" onclick="removeFood()" id="incrementFoodDateButton">
+                                                            <span class="glyphicon glyphicon-remove"></span>
+                                                        </button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Chips</td>
+                                                    <td>20g</td>
+                                                    <td>2g</td>
+                                                    <td>10g</td>
+                                                    <td>400</td>
+                                                    <td><button type="button" class="btn btn-danger" onclick="removeFood()" id="incrementFoodDateButton">
+                                                            <span class="glyphicon glyphicon-remove"></span>
+                                                        </button></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Chips</td>
+                                                    <td>20g</td>
+                                                    <td>2g</td>
+                                                    <td>10g</td>
+                                                    <td>400</td>
+                                                    <td><button type="button" class="btn btn-danger" onclick="removeFood()" id="incrementFoodDateButton">
+                                                            <span class="glyphicon glyphicon-remove"></span>
+                                                        </button></td>
+                                                </tr>
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -295,10 +327,12 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="panel-group" id="accordion2">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion1" href="#collapseCustomFoods" class="bottomAccordion">
+                            <a data-toggle="collapse" data-parent="#accordion2" href="#collapseCustomFoods" class="bottomAccordion">
                                 Add to food log from custom foods</a>
                         </h4>
                     </div>
@@ -308,19 +342,8 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         Click or tap to add a food to your nutrition log.
-                                        <div class="list-group scrollable">
-                                            <a href="#" class="list-group-item">First item</a>
-                                            <a href="#" class="list-group-item">Second item</a>
-                                            <a href="#" class="list-group-item">Third item</a>
-                                            <a href="#" class="list-group-item">First item</a>
-                                            <a href="#" class="list-group-item">Second item</a>
-                                            <a href="#" class="list-group-item">Third item</a>
-                                            <a href="#" class="list-group-item">First item</a>
-                                            <a href="#" class="list-group-item">Second item</a>
-                                            <a href="#" class="list-group-item">Third item</a>
-                                            <a href="#" class="list-group-item">First item</a>
-                                            <a href="#" class="list-group-item">Second item</a>
-                                            <a href="#" class="list-group-item">Third item</a>
+                                        <div class="list-group scrollable" id="customFoodList">
+                                            
                                         </div>
                                     </div>
                                 </div>
@@ -331,7 +354,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion1" href="#collapseManualFoods" class="bottomAccordion">
+                            <a data-toggle="collapse" data-parent="#accordion2" href="#collapseManualFoods" class="bottomAccordion">
                                 Add to food log manually</a>
                         </h4>
                     </div>
@@ -376,7 +399,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion1" href="#collapseDatabaseFoods" class="bottomAccordion">
+                            <a data-toggle="collapse" data-parent="#accordion2" href="#collapseDatabaseFoods" class="bottomAccordion">
                                 Add to food log from database</a>
                         </h4>
                     </div>

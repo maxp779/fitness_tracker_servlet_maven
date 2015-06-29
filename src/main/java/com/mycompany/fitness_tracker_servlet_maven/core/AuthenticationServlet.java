@@ -59,9 +59,10 @@ public class AuthenticationServlet extends HttpServlet {
                     {
                         System.out.println("AuthenticationServlet: password correct");
                         
-                        //create new session
+                        //create new session and add email/user_id values to it
                         HttpSession session = request.getSession(true);
                         session.setAttribute(ClientAPI.getClientRequestIdentifier(), loginAttemptEmail);
+                        session.setAttribute("id_user", DatabaseAccess.getuser_id(loginAttemptEmail));
                         //session.setMaxInactiveInterval(GlobalValues.getMaxInactiveInterval());
                         //String encodedURL = response.encodeRedirectURL(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
                         //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginSuccessReferrer());
