@@ -102,28 +102,64 @@ public class FrontControllerServlet extends HttpServlet
             rd = request.getRequestDispatcher("/CustomFoodsPageServlet");
             rd.forward(request, response);
         }
-        else if (currentRequestString.equals(ClientAPI.getAJAXgetCustomFood()))
+        else if (currentRequestString.equals(ClientAPI.getAJAX_GetCustomFoodList()))
         {
-            System.out.println("FrontController: custom foods list AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_GetCustomFoods");
+            System.out.println("FrontController: get custom food list AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_GetCustomFoodList");
             rd.forward(request, response);
         }
-        else if (currentRequestString.equals(ClientAPI.getAJAXremoveCustomFood()))
+        else if (currentRequestString.equals(ClientAPI.getAJAX_RemoveCustomFood()))
         {
             System.out.println("FrontController: remove a custom food AJAX request");
             rd = request.getRequestDispatcher("/AJAX_RemoveCustomFood");
             rd.forward(request, response);
         }
-        else if (currentRequestString.equals(ClientAPI.getAJAXaddCustomFood()))
+        else if (currentRequestString.equals(ClientAPI.getAJAX_AddCustomFood()))
         {
             System.out.println("FrontController: add a custom food AJAX request");
             rd = request.getRequestDispatcher("/AJAX_AddCustomFood");
             rd.forward(request, response);
         }
-        else if (currentRequestString.equals(ClientAPI.getAJAXeditCustomFood()))
+        else if (currentRequestString.equals(ClientAPI.getAJAX_EditCustomFood()))
         {
             System.out.println("FrontController: edit a custom food AJAX request");
             rd = request.getRequestDispatcher("/AJAX_EditCustomFood");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAX_AddEatenFood()))
+        {
+            System.out.println("FrontController: add a food that was eaten AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_AddEatenFood");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAX_GetEatenFoodList()))
+        {
+            System.out.println("FrontController: get eaten food list AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_GetEatenFoodList");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAX_RemoveEatenFood()))
+        {
+            System.out.println("FrontController: remove eaten food AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_RemoveEatenFood");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAX_SearchForFood()))
+        {
+            System.out.println("FrontController: food search AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_SearchForFood");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAX_ModifySelectedAttributes()))
+        {
+            System.out.println("FrontController: modify selected food attributes AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_ModifySelectedAttributes");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAX_GetSelectedAttributesList()))
+        {
+            System.out.println("FrontController: get selected food attributes list AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_GetSelectedAttributesList");
             rd.forward(request, response);
         }
         else

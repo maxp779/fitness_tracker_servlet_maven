@@ -24,7 +24,7 @@
         <link rel="icon" href="../icons/favicon.ico">
 
         <!--custom styles for this page-->
-        <link href="../css/starter-template.css" rel="stylesheet">
+        <link href="../css/mainpage.css" rel="stylesheet">
         <link href="../css/sticky-footer-navbar.css" rel="stylesheet">
 
         <!--custom scripts needed for this page-->
@@ -108,7 +108,7 @@
                                         <label for="fats">Fats:</label>
                                         <input type="number" max="2147483647" class="form-control" id="fat" name="fat" placeholder="How much fat?">
                                         <label for="calories">Calories:</label>
-                                        <input type="number" max="2147483647" class="form-control" id="calories" name="calorie" placeholder="Total calories?">
+                                        <input type="number" max="2147483647" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
                                         <div class="row-spacer"></div>
                                         <button id="addFoodButton" type="submit" class="btn btn-primary">Create food</button>
                                     </div>
@@ -152,9 +152,8 @@
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
-                                Click or tap to add a food to your nutrition log.
-
-                                <div id="customFoodList" class="list-group scrollable">
+                                Click or tap to select a custom food, then click or tap the edit/remove button
+                                <div id="customFoodList" class="list-group">
                                 </div>
                             </div>
                         </div>
@@ -187,8 +186,7 @@
                         <h4 class="modal-title">Edit food</h4>
                     </div>
                     <div class="modal-body">
-                        <form id="editFoodForm" role="form" onsubmit="editCustomFood();
-                                return false;">
+                        <form id="editFoodForm" role="form">
                             <div class="form-group">
                                 <label for="food">Food:</label>
                                 <input type="text" class="form-control" id="editfoodname" name="foodname" placeholder="Name of the food?" required autofocus>
@@ -201,12 +199,13 @@
                                 <label for="calories">Calories:</label>
                                 <input type="number" max="2147483647" class="form-control" id="editcalorie" name="calorie" placeholder="Total calories?">
                                 <div class="row-spacer"></div>
-                                <button id="saveEditButton" type="submit" data-dismiss="modal" class="btn btn-primary">Save</button>
+                                
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+                        <button id="saveEditButton" type="submit"  class="btn btn-primary" form="editFoodForm">Save changes</button>
                     </div>
                 </div>
 

@@ -5,6 +5,7 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
@@ -21,11 +22,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author max
  */
-@WebServlet(name = "AJAX_EditCustomFood", urlPatterns =
+@WebServlet(name = "AJAX_RemoveEatenFood", urlPatterns =
 {
-    "/AJAX_EditCustomFood"
+    "/AJAX_RemoveEatenFood"
 })
-public class AJAX_EditCustomFood extends HttpServlet
+public class AJAX_RemoveEatenFood extends HttpServlet
 {
 
     /**
@@ -40,35 +41,28 @@ public class AJAX_EditCustomFood extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("AJAX_EditCustomFood executing: " + request.getRequestURL());
-        boolean output = false;
-        Integer id_user = (Integer) request.getSession().getAttribute("id_user");
+        System.out.println("AJAX_RemoveEatenFood executing: " + request.getRequestURL());
 
         //get request data, should be a string with json formatting
-        //JsonReader jsonReader = new JsonReader(request.getReader());
         BufferedReader reader = request.getReader();
         StringBuilder buffer = new StringBuilder();
         String currentLine = "";
-
-        //reader.readLine() is within the while head to avoid "null" being
-        //appended on at the end, this happens if it is in the body
         while ((currentLine = reader.readLine()) != null)
         {
             buffer.append(currentLine);
         }
         String jsonString = buffer.toString();
 
-        //parse string into json object and add the id_user
+        //parse string into json object and get relevant property from it
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-        //jsonObject.addProperty("id_user", userID);
-
-        System.out.println("AJAX_EditCustomFood editing food: " + jsonObject);
+        JsonElement jsonElement = jsonObject.get("id_eatenfood");
+        int id_eatenfood = jsonElement.getAsInt();
 
         //execute database command and send response to client
-        output = DatabaseAccess.editCustomFood(jsonObject, id_user);
+        boolean removeEatenFood = DatabaseAccess.removeEatenFood(id_eatenfood);
         PrintWriter writer = response.getWriter();
-        writer.print(output);
+        writer.print(removeEatenFood);
         writer.close();
     }
 

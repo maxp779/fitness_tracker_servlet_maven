@@ -21,11 +21,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author max
  */
-@WebServlet(name = "AJAX_EditCustomFood", urlPatterns =
+@WebServlet(name = "AJAX_ModifySelectedAttributes", urlPatterns =
 {
-    "/AJAX_EditCustomFood"
+    "/AJAX_ModifySelectedAttributes"
 })
-public class AJAX_EditCustomFood extends HttpServlet
+public class AJAX_ModifySelectedAttributes extends HttpServlet
 {
 
     /**
@@ -40,12 +40,11 @@ public class AJAX_EditCustomFood extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("AJAX_EditCustomFood executing: " + request.getRequestURL());
+        System.out.println("AJAX_ModifySelectedAttributes executing: " + request.getRequestURL());
         boolean output = false;
         Integer id_user = (Integer) request.getSession().getAttribute("id_user");
 
         //get request data, should be a string with json formatting
-        //JsonReader jsonReader = new JsonReader(request.getReader());
         BufferedReader reader = request.getReader();
         StringBuilder buffer = new StringBuilder();
         String currentLine = "";
@@ -57,16 +56,16 @@ public class AJAX_EditCustomFood extends HttpServlet
             buffer.append(currentLine);
         }
         String jsonString = buffer.toString();
-
+        System.out.println("AJAX_ModifySelectedAttributes attribute string: " + jsonString);
         //parse string into json object and add the id_user
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-        //jsonObject.addProperty("id_user", userID);
+        //jsonObject.addProperty("id_user", id_user);  
 
-        System.out.println("AJAX_EditCustomFood editing food: " + jsonObject);
+        System.out.println("AJAX_ModifySelectedAttributes setting attributes: " + jsonObject);
 
         //execute database command and send response to client
-        output = DatabaseAccess.editCustomFood(jsonObject, id_user);
+        output = DatabaseAccess.modifySelectedAttributes(jsonObject, id_user);
         PrintWriter writer = response.getWriter();
         writer.print(output);
         writer.close();

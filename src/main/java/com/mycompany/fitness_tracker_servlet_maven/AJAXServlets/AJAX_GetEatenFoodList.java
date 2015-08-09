@@ -5,12 +5,13 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,11 +22,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author max
  */
-@WebServlet(name = "AJAX_EditCustomFood", urlPatterns =
+@WebServlet(name = "AJAX_GetEatenFoodList", urlPatterns =
 {
-    "/AJAX_EditCustomFood"
+    "/AJAX_GetEatenFoodList"
 })
-public class AJAX_EditCustomFood extends HttpServlet
+public class AJAX_GetEatenFoodList extends HttpServlet
 {
 
     /**
@@ -40,36 +41,30 @@ public class AJAX_EditCustomFood extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("AJAX_EditCustomFood executing: " + request.getRequestURL());
-        boolean output = false;
-        Integer id_user = (Integer) request.getSession().getAttribute("id_user");
-
-        //get request data, should be a string with json formatting
-        //JsonReader jsonReader = new JsonReader(request.getReader());
-        BufferedReader reader = request.getReader();
-        StringBuilder buffer = new StringBuilder();
-        String currentLine = "";
-
-        //reader.readLine() is within the while head to avoid "null" being
-        //appended on at the end, this happens if it is in the body
-        while ((currentLine = reader.readLine()) != null)
-        {
-            buffer.append(currentLine);
-        }
-        String jsonString = buffer.toString();
-
-        //parse string into json object and add the id_user
+        System.out.println("AJAX_GetEatenFoodList executing: " + request.getRequestURL());
+        System.out.println("AJAX_GetEatenFoodList query string: " + request.getQueryString());
+        Integer userID = (Integer) request.getSession().getAttribute("id_user");
+        
+        //format query string correctly so it can be a valid JSON
+        String queryString = request.getQueryString();
+        queryString = queryString.replaceAll("%22", "\"");
+               
+        //parse string into json object and get relevant property from it
         JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-        //jsonObject.addProperty("id_user", userID);
-
-        System.out.println("AJAX_EditCustomFood editing food: " + jsonObject);
-
-        //execute database command and send response to client
-        output = DatabaseAccess.editCustomFood(jsonObject, id_user);
-        PrintWriter writer = response.getWriter();
-        writer.print(output);
-        writer.close();
+        JsonObject jsonObject = jsonParser.parse(queryString).getAsJsonObject();
+        JsonElement jsonElement = jsonObject.get("UNIXtime");
+        String UNIXtimeString = jsonElement.getAsString();
+        Timestamp timestamp = new Timestamp(Long.parseLong(UNIXtimeString));
+        System.out.println("Getting eaten foods for user " + userID + " for date " + timestamp.toString() + " UNIX time:" + UNIXtimeString);
+        
+        String JSONObject = DatabaseAccess.getEatenFoodList(userID,timestamp);
+        System.out.println("AJAX_GetEatenFoodList sending JSON object: " + JSONObject);
+        response.setContentType("application/json");
+        //Get the printwriter object from response to write the required json object to the output stream      
+        PrintWriter out = response.getWriter();
+        //Assuming your json object is **jsonObject**, perform the following, it will return your json object  
+        out.print(JSONObject);
+        out.close();
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

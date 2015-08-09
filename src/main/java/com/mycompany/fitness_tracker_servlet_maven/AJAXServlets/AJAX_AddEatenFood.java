@@ -21,11 +21,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author max
  */
-@WebServlet(name = "AJAX_EditCustomFood", urlPatterns =
+@WebServlet(name = "AJAX_AddEatenFood", urlPatterns =
 {
-    "/AJAX_EditCustomFood"
+    "/AJAX_AddEatenFood"
 })
-public class AJAX_EditCustomFood extends HttpServlet
+public class AJAX_AddEatenFood extends HttpServlet
 {
 
     /**
@@ -40,7 +40,7 @@ public class AJAX_EditCustomFood extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("AJAX_EditCustomFood executing: " + request.getRequestURL());
+        System.out.println("AJAX_AddEatenFood executing: " + request.getRequestURL());
         boolean output = false;
         Integer id_user = (Integer) request.getSession().getAttribute("id_user");
 
@@ -57,16 +57,16 @@ public class AJAX_EditCustomFood extends HttpServlet
             buffer.append(currentLine);
         }
         String jsonString = buffer.toString();
-
+        System.out.println("AJAX_AddEatenFood string of food: " + jsonString);
         //parse string into json object and add the id_user
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
         //jsonObject.addProperty("id_user", userID);
 
-        System.out.println("AJAX_EditCustomFood editing food: " + jsonObject);
+        System.out.println("AJAX_AddEatenFood adding food: " + jsonObject);
 
         //execute database command and send response to client
-        output = DatabaseAccess.editCustomFood(jsonObject, id_user);
+        output = DatabaseAccess.addEatenFood(jsonObject, id_user);
         PrintWriter writer = response.getWriter();
         writer.print(output);
         writer.close();

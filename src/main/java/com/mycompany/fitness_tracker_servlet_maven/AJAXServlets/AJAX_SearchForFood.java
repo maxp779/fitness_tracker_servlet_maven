@@ -5,7 +5,11 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -18,11 +22,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author max
  */
-@WebServlet(name = "AJAX_GetCustomFoods", urlPatterns =
+@WebServlet(name = "AJAX_SearchForFood", urlPatterns =
 {
-    "/AJAX_GetCustomFoods"
+    "/AJAX_SearchForFood"
 })
-public class AJAX_GetCustomFood extends HttpServlet
+public class AJAX_SearchForFood extends HttpServlet
 {
 
     /**
@@ -37,10 +41,21 @@ public class AJAX_GetCustomFood extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("AJAX_GetCustomFoods executing: " + request.getRequestURL());
+        System.out.println("AJAX_SearchForFood executing: " + request.getRequestURL());
 
-        Integer userID = (Integer) request.getSession().getAttribute("id_user");
-        String JSONObject = DatabaseAccess.getCustomFoods(userID);
+        //format query string correctly so it can be a valid JSON
+        String queryString = request.getQueryString();
+        queryString = queryString.replaceAll("%22", "\"");
+        System.out.println("AJAX_SearchForFood: request data: " + queryString);
+        
+        //parse string into json object and get relevant property from it
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = jsonParser.parse(queryString).getAsJsonObject();
+        JsonElement jsonElement = jsonObject.get("searchInput");
+        String food = jsonElement.getAsString();
+        
+        
+        String JSONObject = DatabaseAccess.searchForFood(food);
         //System.out.println("AJAX_GetCustomFoods sending JSON object: " + JSONObject);
         response.setContentType("application/json");
         // Get the printwriter object from response to write the required json object to the output stream      

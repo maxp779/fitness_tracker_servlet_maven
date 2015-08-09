@@ -45,7 +45,7 @@ public class AJAX_AddCustomFood extends HttpServlet
     {
         System.out.println("AJAX_AddCustomFood executing: " + request.getRequestURL());
         boolean output = false;
-        Integer userID = (Integer) request.getSession().getAttribute("id_user");
+        Integer id_user = (Integer) request.getSession().getAttribute("id_user");
 
         //get request data, should be a string with json formatting
         //JsonReader jsonReader = new JsonReader(request.getReader());
@@ -60,16 +60,16 @@ public class AJAX_AddCustomFood extends HttpServlet
             buffer.append(currentLine);
         }
         String jsonString = buffer.toString();
-
+        System.out.println("AJAX_AddCustomFood string of food: " + jsonString);
         //parse string into json object and add the id_user
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-        jsonObject.addProperty("id_user", userID);
+        //jsonObject.addProperty("id_user", userID);
 
         System.out.println("AJAX_AddCustomFood adding food: " + jsonObject);
 
         //execute database command and send response to client
-        output = DatabaseAccess.addCustomFood(jsonObject);
+        output = DatabaseAccess.addCustomFood(jsonObject, id_user);
         PrintWriter writer = response.getWriter();
         writer.print(output);
         writer.close();

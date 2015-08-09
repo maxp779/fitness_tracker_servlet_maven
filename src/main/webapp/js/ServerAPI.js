@@ -31,7 +31,13 @@ var loginPageRequest = "loginPage";
 var createAccountPageRequest = "createAccountPage";
 
 //AJAX requests
-var AJAX_GetCustomFoodList = "AJAX_GetCustomFood";
+var AJAX_GetCustomFoodList = "AJAX_GetCustomFoodList";
+var AJAX_GetEatenFoodList = "AJAX_GetEatenFoodList";
 var AJAX_RemoveCustomFood = "AJAX_RemoveCustomFood";
 var AJAX_AddCustomFood = "AJAX_AddCustomFood";
 var AJAX_EditCustomFood = "AJAX_EditCustomFood";
+var AJAX_AddEatenFood = "AJAX_AddEatenFood";
+var AJAX_RemoveEatenFood = "AJAX_RemoveEatenFood";
+var AJAX_SearchForFood = "AJAX_SearchForFood";
+var AJAX_ModifySelectedAttributes = "AJAX_ModifySelectedAttributes";
+var AJAX_GetSelectedAttributesList = "AJAX_GetSelectedAttributesList";

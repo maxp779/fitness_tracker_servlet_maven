@@ -32,11 +32,16 @@
         <script src="../d3pie-master/d3pie/d3pie.min.js"></script>
 
         <!--custom styles for this page-->
-        <link href="../css/starter-template.css" rel="stylesheet">
+        <link href="../css/mainpage.css" rel="stylesheet">
         <link href="../css/sticky-footer-navbar.css" rel="stylesheet">
 
         <!--custom scripts needed for this page-->
-        <script type="text/javascript" src="../js/mainPage.js"></script>
+        <script type="text/javascript" src="../js/mainPage/mainPage.js"></script>
+        <script type="text/javascript" src="../js/mainPage/mainPageAJAX.js"></script>
+        <script type="text/javascript" src="../js/mainPage/mainPageEvents.js"></script>
+        <script type="text/javascript" src="../js/mainPage/mainPageGlobalVars.js"></script>
+        <script type="text/javascript" src="../js/mainPage/mainPageSetup.js"></script>
+        <script type="text/javascript" src="../js/mainPage/mainPagePiechart.js"></script>
 
         <title>Nutrition & Calorie Tracker</title>
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -109,11 +114,11 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-2">
-                                    <button type="button" class="btn btn-primary" onclick="decrementDate()" id="decrementMacroDateButton">
+                                    <button type="button" class="btn btn-primary" id="decrementMacroDateButton">
                                         <span class="glyphicon glyphicon-chevron-left"></span>
 
                                     </button>
-                                    <button type="button" class="btn btn-primary" onclick="incrementDate()" id="incrementMacroDateButton">
+                                    <button type="button" class="btn btn-primary" id="incrementMacroDateButton">
                                         <span class="glyphicon glyphicon-chevron-right"></span>
 
                                     </button>
@@ -223,14 +228,18 @@
 
                                 </div>
                                 <div class="col-sm-2">
-                                    <button type="button" class="btn btn-primary" onclick="decrementDate()" id="decrementFoodDateButton">
+                                    <button type="button" class="btn btn-primary" id="decrementFoodDateButton">
                                         <span class="glyphicon glyphicon-chevron-left"></span>
 
                                     </button>
-                                    <button type="button" class="btn btn-primary" onclick="incrementDate()" id="incrementFoodDateButton">
+                                    <button type="button" class="btn btn-primary" id="incrementFoodDateButton">
                                         <span class="glyphicon glyphicon-chevron-right"></span>
 
                                     </button>
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <button type="button" class="btn btn-primary selectAttributesButton" data-toggle="modal" data-target="#foodAttributeModal">Select attributes</button>
                                 </div>
 
                             </div>
@@ -246,82 +255,9 @@
 
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Food:</th>
-                                                    <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Protein:</th>
-                                                    <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Carbs:</th>
-                                                    <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Fats:</th>
-                                                    <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Calories:</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="foodEatenTable">
-                                                <tr>
-                                                    <td>Steak and kidney pie with onions</td>
-                                                    <td>20g</td>
-                                                    <td>2g</td>
-                                                    <td>10g</td>
-                                                    <td>400</td>
-                                                    <td><button type="button" class="btn btn-danger" onclick="removeFood()" id="incrementFoodDateButton">
-                                                            <span class="glyphicon glyphicon-remove"></span>
-                                                        </button></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Chips</td>
-                                                    <td>20g</td>
-                                                    <td>2g</td>
-                                                    <td>10g</td>
-                                                    <td>400</td>
-                                                    <td><button type="button" class="btn btn-danger" onclick="removeFood()" id="incrementFoodDateButton">
-                                                            <span class="glyphicon glyphicon-remove"></span>
-                                                        </button></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Cake</td>
-                                                    <td>20g</td>
-                                                    <td>2g</td>
-                                                    <td>10g</td>
-                                                    <td>400</td>
-                                                    <td><button type="button" class="btn btn-danger" onclick="removeFood()" id="incrementFoodDateButton">
-                                                            <span class="glyphicon glyphicon-remove"></span>
-                                                        </button></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Chips</td>
-                                                    <td>20g</td>
-                                                    <td>2g</td>
-                                                    <td>10g</td>
-                                                    <td>400</td>
-                                                    <td><button type="button" class="btn btn-danger" onclick="removeFood()" id="incrementFoodDateButton">
-                                                            <span class="glyphicon glyphicon-remove"></span>
-                                                        </button></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Chips</td>
-                                                    <td>20g</td>
-                                                    <td>2g</td>
-                                                    <td>10g</td>
-                                                    <td>400</td>
-                                                    <td><button type="button" class="btn btn-danger" onclick="removeFood()" id="incrementFoodDateButton">
-                                                            <span class="glyphicon glyphicon-remove"></span>
-                                                        </button></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Chips</td>
-                                                    <td>20g</td>
-                                                    <td>2g</td>
-                                                    <td>10g</td>
-                                                    <td>400</td>
-                                                    <td><button type="button" class="btn btn-danger" onclick="removeFood()" id="incrementFoodDateButton">
-                                                            <span class="glyphicon glyphicon-remove"></span>
-                                                        </button></td>
-                                                </tr>
+                                    <ul id="eatenFoodList" class="list-group">
 
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    </ul>   
                                 </div>
                             </div>
                         </div>
@@ -343,7 +279,7 @@
                                     <div class="col-sm-12">
                                         Click or tap to add a food to your nutrition log.
                                         <div class="list-group scrollable" id="customFoodList">
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -363,28 +299,29 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-sm-4">
-                                        <div class="form-group">
-                                            <label for="food">Food:</label>
-                                            <input type="text" class="form-control" id="food" placeholder="Name of the food?">
-                                            <label for="protein">Protein:</label>
-                                            <input type="text" class="form-control" id="protein" placeholder="How much protein?">
-                                            <label for="carbs">Carbs:</label>
-                                            <input type="text" class="form-control" id="carbs" placeholder="How many carbs?">
-                                            <label for="fats">Fats:</label>
-                                            <input type="text" class="form-control" id="fats" placeholder="How much fat?">
-                                            <label for="calories">Calories:</label>
-                                            <input type="text" class="form-control" id="calories" placeholder="Total calories?">
-                                        </div>
+                                        <form id="addEatenFoodForm" role="form">
+                                            <div class="form-group">
+                                                <label for="food">Food:</label>
+                                                <input type="text" class="form-control" id="foodname" name="foodname" placeholder="Name of the food?" required autofocus>
+                                                <label for="protein">Protein:</label>
+                                                <input type="number" max="2147483647" class="form-control" id="protein" name="protein" placeholder="How much protein?">
+                                                <label for="carbs">Carbs:</label>
+                                                <input type="number" max="2147483647" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
+                                                <label for="fats">Fats:</label>
+                                                <input type="number" max="2147483647" class="form-control" id="fat" name="fat" placeholder="How much fat?">
+                                                <label for="calories">Calories:</label>
+                                                <input type="number" max="2147483647" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
+                                                <div class="row-spacer"></div>
+                                                <button id="addFoodEatenButton" type="submit" class="btn btn-primary">Add food</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-sm-4">
-                                        <button type="button" class="btn btn-primary">Add food</button>
-                                    </div>
-                                </div>
+
                                 <div class="row-spacer">
                                     <!-- spacer-->
                                 </div>
+
                                 <div class="row">
                                     <div class="col-sm-12">
                                         Note: You don't need to fill in every field. Only the food name and 1 other 
@@ -410,7 +347,7 @@
                                     <div class="input-group">
                                         <input type="text" class="form-control" placeholder="Name of the food to search for e.g &quot;potato&quot;" id="searchInput">
                                         <span class="input-group-btn">
-                                            <button class="btn btn-primary" type="button">Search</button>
+                                            <button class="btn btn-primary" type="button" id="searchButton">Search</button>
                                         </span>
                                     </div>
                                 </div>
@@ -426,22 +363,9 @@
 
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <div class="list-group scrollable">
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                            <a href="#" class="list-group-item">Search result</a>
-                                        </div>
-                                    </div>
+                                    <div id="searchResultList" class="list-group">
+
+                                    </div>                                   
                                 </div>
                             </div>
 
@@ -462,5 +386,96 @@
                 </ul>
             </div>
         </footer>
+
+        <!--modal-->
+        <div id="foodAttributeModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Select attributes</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editSelectedAttributesForm" role="form">
+                            <div class="form-group">
+                                <div class="row">
+
+                                    <div class="col-sm-4">
+
+                                        <div class="checkbox">
+                                            <label><input id="proteincheckbox" type="checkbox" value="protein">Protein</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="carbohydratecheckbox" type="checkbox" value="carbohydrate">Carbohydrates</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="fatcheckbox" type="checkbox" value="fat">Fat</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="caloriecheckbox" type="checkbox" value="calorie">Calories</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="satfodcheckbox" type="checkbox" value="satfod">Saturated Fat</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="monofodcheckbox" type="checkbox" value="monofod">Monounsaturated Fat</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="polyfodcheckbox" type="checkbox" value="polyfod">Polyunsaturated Fat</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <div class="checkbox">
+                                            <label><input id="aoacfibcheckbox" type="checkbox" value="aoacfib">Fibre</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="totsugcheckbox" type="checkbox" value="totsug">Sugar</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="sodiumcheckbox" type="checkbox" value="sodium">Sodium</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="watercheckbox" type="checkbox" value="water">Water</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="starchcheckbox" type="checkbox" value="star">Starch</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="galactcheckbox" type="checkbox" value="galact">Galactose</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="fructcheckbox" type="checkbox" value="fruct">Fructose</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="checkbox">
+                                            <label><input id="sucrcheckbox" type="checkbox" value="sucr">Sucrose</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="maltcheckbox" type="checkbox" value="malt">Maltose</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <label><input id="lactcheckbox" type="checkbox" value="lact">Lactose</label>
+                                        </div>
+                                    </div>
+                                    <div class="row-spacer"></div>
+                                </div>                                                                  
+                            </div>                           
+                        </form>
+                    </div>        
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button id="saveEditedAttributesButton" type="submit" class="btn btn-primary" form="editSelectedAttributesForm">Save changes</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
     </body>
 </html>

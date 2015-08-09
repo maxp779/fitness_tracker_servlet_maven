@@ -29,7 +29,7 @@ public class GlobalValues
     private static final String customFoodsPage = "customFoods.html";
     
     //misc values
-    private static final int maxInactiveInterval = -1; // session timeout, not currently used
+    private static final int maxInactiveInterval = 0; // session timeout, 0 or less will never timeout
     
     //database values
     private static final String databaseURL = "jdbc:postgresql://localhost:5432/fitnessTrackerDatabase";

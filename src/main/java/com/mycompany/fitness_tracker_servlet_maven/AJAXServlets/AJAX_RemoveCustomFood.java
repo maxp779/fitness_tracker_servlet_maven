@@ -57,11 +57,11 @@ public class AJAX_RemoveCustomFood extends HttpServlet
         //parse string into json object and get relevant property from it
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-        JsonElement jsonElement = jsonObject.get("id_food");
-        int id_food = jsonElement.getAsInt();
+        JsonElement jsonElement = jsonObject.get("id_customfood");
+        int id_customfood = jsonElement.getAsInt();
         
         //execute database command and send response to client
-        boolean removeCustomFood = DatabaseAccess.removeCustomFood(id_food);     
+        boolean removeCustomFood = DatabaseAccess.removeCustomFood(id_customfood);     
         PrintWriter writer = response.getWriter();
         writer.print(removeCustomFood);
         writer.close();

@@ -6,7 +6,7 @@
 
 
 var customFoodListJSON;
-var selectedFood = null; //the id_food of the food currently selected by the user
+var selectedFood = null; //the id_customfood of the food currently selected by the user
 
 //this focuses the page on the currently opened accordion panel
 //$(function () {
@@ -27,7 +27,7 @@ $(document).ready(function () {
     //listener to keep track of which food the user has selected
     $(document).on("click", ".list-group-item", function () {
         selectedFood = $(this).attr("id");
-        console.log("id_food " + selectedFood + " selected");
+        console.log("id_customfood " + selectedFood + " selected");
     });
 
     //remove food listener
@@ -38,15 +38,29 @@ $(document).ready(function () {
 
     //edit food listener
     $(document).on("click", "#editFoodButton", function () {
-        editCustomFood(); //load the selected foods current values onto the form
         console.log("edit button clicked");
+        editCustomFood(); //load the selected foods current values onto the form
     });
 
     //save food listener
-    $(document).on("click", "#saveEditButton", function () {
+//    $(document).on("click", "#saveEditButton", function () {
+//        console.log("save button clicked");
+//        saveEditedCustomFood();
+//    });
+    
+    $(document).on("submit", "#editFoodForm", function (e) {
+    console.log("EVENT FIRING!");
         saveEditedCustomFood();
-        console.log("save button clicked");
+            $('#editFoodModal').modal('hide');
+        return false;
     });
+
+    
+//        $('#editFoodForm').submit(function () {
+//            console.log("EVENT FIRING!");
+//        saveEditedCustomFood();
+//        return false;
+//    });
 
     //add food listener, not needed as form is used
 //    $(document).on("click", "#addFoodButton", function () {
@@ -65,11 +79,18 @@ function populateCustomFoodList()
     {
         var innerHTML = "";
 
-        //populate the list, give the links an id that corresponds to the id_food value of the food from the database
-        // e.g. if there are two foods named "tasty pie" the id_food will allow us to tell them apart
+        //populate the list, give the links an id that corresponds to the id_customfood value of the food from the database
+        // e.g. if there are two foods named "tasty pie" the id_customfood will allow us to tell them apart
         for (var index in customFoodListJSON)
         {
-            innerHTML = innerHTML.concat("<a href=\"javascript:void(0)\" class=\"list-group-item\" id=\"" + customFoodListJSON[index].id_food + "\">" + customFoodListJSON[index].foodname + "</a>");
+            innerHTML = innerHTML.concat("<a href='javascript:void(0)' class='list-group-item' id='" + customFoodListJSON[index].id_customfood + "'>" + customFoodListJSON[index].foodname 
+                    + "<br>"
+                    + " <font color='green'>Protein: " + customFoodListJSON[index].protein + "</font>"
+                    + " <font color='blue'>Carb: " + customFoodListJSON[index].carbohydrate + "</font>"
+                    + " <font color='orange'>Fat: " + customFoodListJSON[index].fat + "</font>"
+                    + " <font color='red'>Cals: " + customFoodListJSON[index].calorie + "</font>"                 
+                    + "</a>"
+                    );
         }
         document.getElementById("customFoodList").innerHTML = innerHTML;
     }
@@ -97,7 +118,7 @@ function removeCustomFood()
         $.ajax({
             url: frontController + AJAX_RemoveCustomFood,
             type: "POST",
-            data: JSON.stringify({id_food: selectedFood}),
+            data: JSON.stringify({id_customfood: selectedFood}),
             contentType: "application/json",
             success: function (data)
             {
@@ -153,6 +174,9 @@ function addCustomFood()
             {
                 console.log("food add suceeded");
                 getCustomFoodsList();
+                
+                //clear form
+                document.getElementById("addFoodForm").reset();
             }
             else
             {
@@ -169,16 +193,12 @@ function addCustomFood()
 
 function editCustomFood()
 {
-    var selectedFoodObject = findFood(selectedFood);
+    var selectedFoodObject = findCustomFood(selectedFood);
     
     console.log(JSON.stringify(selectedFoodObject)); 
     
     //clear form
-    document.getElementById("editfoodname").value = "";
-    document.getElementById("editprotein").value = "";
-    document.getElementById("editcarbohydrate").value = "";
-    document.getElementById("editfat").value = "";
-    document.getElementById("editcalorie").value = "";
+    document.getElementById("editFoodForm").reset();
     
     //populate form
     if(selectedFoodObject.hasOwnProperty("foodname"))
@@ -211,7 +231,7 @@ function saveEditedCustomFood()
     var formData = $("#editFoodForm").serializeArray();
 
     //prepare the JSON to send to server
-    var outputJSON = {"id_food":selectedFood};
+    var outputJSON = {"id_customfood":selectedFood};
     for (var count in formData)
     {
         if (formData[count]["value"] !== "")
@@ -250,14 +270,14 @@ function saveEditedCustomFood()
 
 
 
-//find food from id_food, this may be useful in future
-function findFood(id_food)
+//find food from id_customfood, this may be useful in future
+function findCustomFood(id_customfood)
 {
     var foodObject;
 
     for (var index in customFoodListJSON)
     {
-        if (customFoodListJSON[index].id_food === id_food)
+        if (customFoodListJSON[index].id_customfood === id_customfood)
         {
             foodObject = customFoodListJSON[index];
         }

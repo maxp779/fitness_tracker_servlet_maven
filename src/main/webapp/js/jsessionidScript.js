@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+var jsessionid;
 function jsessionidSetup() {
 //here we get the jsessionID if there is one and attach it to the end of each link
-    var jsessionid;
     var currentURL = window.location.href;
     var jsessionidSearchParameter = ";jsessionid=";
     var jsessionidLocation = currentURL.search(jsessionidSearchParameter);
