@@ -53,11 +53,13 @@ public class DatabaseAccess
     //private static final String editcustomfoodSQL = "UPDATE customfoodtable SET foodname=?,protein=?,carbohydrate=?,fat=?,calorie=? WHERE id_customfood=?";
     private static final String searchForFoodSQL = "SELECT * FROM searchablefoodtable WHERE FOODNAME LIKE ?;";
     private static final String setupFoodAttributesSQL = "INSERT INTO selectedattributestable (id_user) VALUES (?)";
-//    private static final String modifyFoodAttributesSQL = "UPDATE selectedattributestable SET foodcode=?,foodname=?,foodnameoriginal=?,description=?,foodgroup=?,previous=?,foodreferences=?,footnote=?,water=?,"
+    private static final String setupUserStatsSQL = "INSERT INTO userstatstable (id_user) VALUES (?)";
+//    private static final String modifyUserStatsSQL = "UPDATE selectedattributestable SET foodcode=?,foodname=?,foodnameoriginal=?,description=?,foodgroup=?,previous=?,foodreferences=?,footnote=?,water=?,"
 //            + "totnit=?,protein=?,fat=?,carbohydrate=?,calorie=?,kj=?,star=?,oligo=?,totsug=?,gluc=?,galact=?,fruct=?,sucr=?,malt=?,lact=?,alco=?,engfib=?,aoacfib=?,satfac=?,"
 //            + "satfod=?,totn6pfac=?,totn6pfod=?,totn3pfac=?,totn3pfod=?,monofacc=?,monofodc=?,monofac=?,monofod=?,polyfacc=?,polyfodc=?,polyfac=?,polyfod=?,satfacx6=?,satfodx6=?,"
 //            + "totbrfac=?,totbrfod=?,factrans=?,fodtrans=?,chol=?,weight=?,sodium=? WHERE id_user=?";
     private static final String getSelectedAttributesSQL = "SELECT * FROM selectedattributestable WHERE id_user = ?";
+    private static final String getuserstatsSQL = "SELECT * FROM userstatstable WHERE id_user = ?";
 
     //Supported food attributes, this omits items that are added automatically
     private static final List<String> supportedAttributeList = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote", "water",
@@ -68,6 +70,11 @@ public class DatabaseAccess
     private static final List<String> varcharAttributeList = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
     private static final List<String> integerAttributeList = (Arrays.asList("calorie", "kj", "weight", "id_user"));
 
+//    private static final List<String> supportedUserStatsList = (Arrays.asList("idealprotein", "idealcarbohydrate", "idealfat", "TEE","goalTEE"));
+    //Supported user stats
+    private static final List<String> supportedUserStatsList = (Arrays.asList("weight", "height", "proteingoal", "carbohydrategoal", "fatgoal", "tee", "teegoal", "dateofbirth",
+            "proteingoalpercentage", "carbohydratepercentage", "fatgoalpercentage", "gender", "activitylevel", "excerciseintensity", "excercisedaysperweek", "excerciseminutesperday"));
+
     /**
      *
      * @param loginAttemptEmail
@@ -76,7 +83,7 @@ public class DatabaseAccess
      */
     public static Map<String, String> getUserCredentials(String loginAttemptEmail)
     {
-        System.out.println("DatabaseAccess: getting user credentials");
+        System.out.println("DatabaseAccess: getUserCredentials() for email " + loginAttemptEmail);
         Map output = new HashMap<>();
         ResultSet resultSet = null;
         String retrievedEmail = null;
@@ -116,12 +123,12 @@ public class DatabaseAccess
 
     public static boolean addUser(String anEmail, String aPassword)
     {
-        boolean userAdded;
+        System.out.println("DatabaseAccess: addUser() email " + anEmail);
+        boolean userAdded = false;
         String hashedPassword = Security.hashPassword(aPassword);
         //if user already exists
         if (DatabaseAccess.userAlreadyExistsCheck(anEmail))
         {
-            userAdded = false;
             System.out.println("DatabaseAccess: user already exists, no action taken");
         } else //if user does not exist
         {
@@ -134,6 +141,12 @@ public class DatabaseAccess
                 addUserStatement.setString(1, anEmail);
                 addUserStatement.setString(2, hashedPassword);
                 addUserStatement.executeUpdate();
+                userAdded = true;
+
+                //setup defaults for the new user
+                int id_user = getid_user(anEmail);
+                setupSelectedAttributes(id_user);
+                setupUserStats(id_user);
             } catch (SQLException ex)
             {
                 Logger.getLogger(AuthenticationServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,17 +154,13 @@ public class DatabaseAccess
             {
                 DatabaseUtils.closeConnections(databaseConnection, null, addUserStatement);
             }
-            userAdded = true;
-
-            setupSelectedAttributes(getid_user(anEmail));
         }
-
         return userAdded;
     }
 
     public static boolean userAlreadyExistsCheck(String anEmail)
     {
-        System.out.println("DatabaseAccess: checking if the user is already in the database");
+        System.out.println("DatabaseAccess: userAlreadyExistsCheck() for email" + anEmail);
         boolean userAlreadyExists = true;
         PreparedStatement checkUserStatement = null;
         ResultSet resultSet = null;
@@ -186,7 +195,7 @@ public class DatabaseAccess
 
     public static Integer getid_user(String anEmail)
     {
-        System.out.println("DatabaseAccess: getting id_user");
+        System.out.println("DatabaseAccess: getid_user() for email" + anEmail);
         Integer userID = null;
         PreparedStatement getuserIDStatement = null;
         ResultSet resultSet = null;
@@ -215,7 +224,7 @@ public class DatabaseAccess
 
     public static String getCustomFoodList(Integer aUserID)
     {
-        System.out.println("DatabaseAccess: getting custom food list for user " + aUserID);
+        System.out.println("DatabaseAccess: getCustomFoodList() " + aUserID);
         PreparedStatement getCustomFoodListStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -242,7 +251,7 @@ public class DatabaseAccess
     {
         boolean output = false;
         int returnValue = 0;
-        System.out.println("DatabaseAccess: removing custom food number " + id_food);
+        System.out.println("DatabaseAccess: removeCustomFood() " + id_food);
         PreparedStatement removeCustomFoodStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -335,7 +344,7 @@ public class DatabaseAccess
 //    }
     public static boolean addCustomFood(JsonObject jsonObject, Integer id_user)
     {
-        System.out.println("DatabaseAccess: adding custom food" + jsonObject);
+        System.out.println("DatabaseAccess: addCustomFood() " + jsonObject);
         Gson gson = new Gson();
         Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
         {
@@ -356,16 +365,16 @@ public class DatabaseAccess
             String currentAttribute = supportedAttributeList.get(count);
 
             addCustomFoodColumns.append(currentAttribute);
-            
-            if(!"id_user".equals(currentAttribute))
+
+            if (!"id_user".equals(currentAttribute))
             {
-            if (varcharAttributeList.contains(currentAttribute))
-            {
-                addCustomFoodValues.append("'").append(foodMap.get(currentAttribute)).append("'");
-            } else
-            {
-                addCustomFoodValues.append(foodMap.get(currentAttribute));
-            }
+                if (varcharAttributeList.contains(currentAttribute))
+                {
+                    addCustomFoodValues.append("'").append(foodMap.get(currentAttribute)).append("'");
+                } else
+                {
+                    addCustomFoodValues.append(foodMap.get(currentAttribute));
+                }
             }
 
             //if not at the last attribute put a comma to separate it from the next attribute
@@ -551,13 +560,13 @@ public class DatabaseAccess
     public static boolean editCustomFood(JsonObject jsonObject, Integer id_user)
     {
 
-        System.out.println("DatabaseAccess: editing custom food" + jsonObject);
+        System.out.println("DatabaseAccess: editCustomFood() " + jsonObject);
         Gson gson = new Gson();
         Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
         {
         }.getType();
         Map<String, String> foodMap = gson.fromJson(jsonObject, stringStringMap);
-        
+
         //create SQL query e.g
         //UPDATE customfoodtable SET foodname=?,protein=?,carbohydrate=?,fat=?,calorie=? WHERE id_customfood=?
         StringBuilder editCustomFoodSQL = new StringBuilder();
@@ -702,7 +711,7 @@ public class DatabaseAccess
 
     public static String getEatenFoodList(Integer id_user, Timestamp timestamp)
     {
-        System.out.println("DatabaseAccess: getting food eaten list for user " + id_user);
+        System.out.println("DatabaseAccess: getEatenFoodList() for user " + id_user);
         PreparedStatement getFoodEatenStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -744,7 +753,7 @@ public class DatabaseAccess
 
     public static boolean addEatenFood(JsonObject jsonObject, Integer id_user)
     {
-        System.out.println("DatabaseAccess: adding eaten food" + jsonObject);
+        System.out.println("DatabaseAccess: addEatenFood() " + jsonObject);
         Gson gson = new Gson();
         Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
         {
@@ -786,7 +795,7 @@ public class DatabaseAccess
                 Timestamp timestamp = new Timestamp(UNIXtimeElement.getAsLong());
                 Long timestampLong = timestamp.getTime(); //get unix time in milliseconds
                 timestampLong = timestampLong / 1000; //convert to seconds
-                addEatenFoodValues.append(",").append("to_timestamp(").append(timestampLong).append(")").append(id_user).append(")");
+                addEatenFoodValues.append(",").append("to_timestamp(").append(timestampLong).append("),").append(id_user).append(")");
             }
         }
 
@@ -879,7 +888,7 @@ public class DatabaseAccess
     {
         boolean output = false;
         int returnValue = 0;
-        System.out.println("DatabaseAccess: removing eaten food number " + id_eatenfood);
+        System.out.println("DatabaseAccess: removeEatenFood() " + id_eatenfood);
         PreparedStatement removeEatenFoodStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -909,7 +918,7 @@ public class DatabaseAccess
 
     public static String searchForFood(String food)
     {
-        System.out.println("DatabaseAccess: searching for " + food);
+        System.out.println("DatabaseAccess: searchForFood() " + food);
         PreparedStatement searchForFood = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -937,7 +946,7 @@ public class DatabaseAccess
         boolean output = false;
         int returnValue = 0;
 
-        System.out.println("DatabaseAccess: setting up user attributes for user " + id_user);
+        System.out.println("DatabaseAccess: setupSelectedAttributes() for user " + id_user);
         PreparedStatement setupFoodAttributesStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -967,7 +976,7 @@ public class DatabaseAccess
 
     public static boolean modifySelectedAttributes(JsonObject jsonObject, Integer id_user)
     {
-        System.out.println("DatabaseAccess: modifying selected food attributes for user " + id_user);
+        System.out.println("DatabaseAccess: modifySelectedAttributes() for user " + id_user);
         Gson gson = new Gson();
         Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
         {
@@ -1033,56 +1042,56 @@ public class DatabaseAccess
             //ALSO CHANGE DATABASE CL
             //TRY TO REJIG TO USE LINKEDHASHMAP AND A LOOP!! LINKEDHASHMAP PRESERVES INSERTION ORDER
             modifySelectedAttributesStatement = databaseConnection.prepareStatement(modifyFoodAttributesSQLString);
-//            modifySelectedAttributesStatement.setBoolean(1, attributeMapBoolean.get("foodcode"));
-//            modifySelectedAttributesStatement.setBoolean(2, attributeMapBoolean.get("foodname"));
-//            modifySelectedAttributesStatement.setBoolean(3, attributeMapBoolean.get("foodnameoriginal"));
-//            modifySelectedAttributesStatement.setBoolean(4, attributeMapBoolean.get("description"));
-//            modifySelectedAttributesStatement.setBoolean(5, attributeMapBoolean.get("foodgroup"));
-//            modifySelectedAttributesStatement.setBoolean(6, attributeMapBoolean.get("previous"));
-//            modifySelectedAttributesStatement.setBoolean(7, attributeMapBoolean.get("foodreferences"));
-//            modifySelectedAttributesStatement.setBoolean(8, attributeMapBoolean.get("footnote"));
-//            modifySelectedAttributesStatement.setBoolean(9, attributeMapBoolean.get("water"));
-//            modifySelectedAttributesStatement.setBoolean(10, attributeMapBoolean.get("totnit"));
-//            modifySelectedAttributesStatement.setBoolean(11, attributeMapBoolean.get("protein"));
-//            modifySelectedAttributesStatement.setBoolean(12, attributeMapBoolean.get("fat"));
-//            modifySelectedAttributesStatement.setBoolean(13, attributeMapBoolean.get("carbohydrate"));
-//            modifySelectedAttributesStatement.setBoolean(14, attributeMapBoolean.get("calorie"));
-//            modifySelectedAttributesStatement.setBoolean(15, attributeMapBoolean.get("kj"));
-//            modifySelectedAttributesStatement.setBoolean(16, attributeMapBoolean.get("star"));
-//            modifySelectedAttributesStatement.setBoolean(17, attributeMapBoolean.get("oligo"));
-//            modifySelectedAttributesStatement.setBoolean(18, attributeMapBoolean.get("totsug"));
-//            modifySelectedAttributesStatement.setBoolean(19, attributeMapBoolean.get("gluc"));
-//            modifySelectedAttributesStatement.setBoolean(20, attributeMapBoolean.get("galact"));
-//            modifySelectedAttributesStatement.setBoolean(21, attributeMapBoolean.get("fruct"));
-//            modifySelectedAttributesStatement.setBoolean(22, attributeMapBoolean.get("sucr"));
-//            modifySelectedAttributesStatement.setBoolean(23, attributeMapBoolean.get("malt"));
-//            modifySelectedAttributesStatement.setBoolean(24, attributeMapBoolean.get("lact"));
-//            modifySelectedAttributesStatement.setBoolean(25, attributeMapBoolean.get("alco"));
-//            modifySelectedAttributesStatement.setBoolean(26, attributeMapBoolean.get("engfib"));
-//            modifySelectedAttributesStatement.setBoolean(27, attributeMapBoolean.get("aoacfib"));
-//            modifySelectedAttributesStatement.setBoolean(28, attributeMapBoolean.get("satfac"));
-//            modifySelectedAttributesStatement.setBoolean(29, attributeMapBoolean.get("satfod"));
-//            modifySelectedAttributesStatement.setBoolean(30, attributeMapBoolean.get("totn6pfac"));
-//            modifySelectedAttributesStatement.setBoolean(31, attributeMapBoolean.get("totn6pfod"));
-//            modifySelectedAttributesStatement.setBoolean(32, attributeMapBoolean.get("totn3pfac"));
-//            modifySelectedAttributesStatement.setBoolean(33, attributeMapBoolean.get("totn3pfod"));
-//            modifySelectedAttributesStatement.setBoolean(34, attributeMapBoolean.get("monofacc"));
-//            modifySelectedAttributesStatement.setBoolean(35, attributeMapBoolean.get("monofodc"));
-//            modifySelectedAttributesStatement.setBoolean(36, attributeMapBoolean.get("monofac"));
-//            modifySelectedAttributesStatement.setBoolean(37, attributeMapBoolean.get("monofod"));
-//            modifySelectedAttributesStatement.setBoolean(38, attributeMapBoolean.get("polyfacc"));
-//            modifySelectedAttributesStatement.setBoolean(39, attributeMapBoolean.get("polyfodc"));
-//            modifySelectedAttributesStatement.setBoolean(40, attributeMapBoolean.get("polyfac"));
-//            modifySelectedAttributesStatement.setBoolean(41, attributeMapBoolean.get("polyfod"));
-//            modifySelectedAttributesStatement.setBoolean(42, attributeMapBoolean.get("satfacx6"));
-//            modifySelectedAttributesStatement.setBoolean(43, attributeMapBoolean.get("satfodx6"));
-//            modifySelectedAttributesStatement.setBoolean(44, attributeMapBoolean.get("totbrfac"));
-//            modifySelectedAttributesStatement.setBoolean(45, attributeMapBoolean.get("totbrfod"));
-//            modifySelectedAttributesStatement.setBoolean(46, attributeMapBoolean.get("factrans"));
-//            modifySelectedAttributesStatement.setBoolean(47, attributeMapBoolean.get("fodtrans"));
-//            modifySelectedAttributesStatement.setBoolean(48, attributeMapBoolean.get("chol"));
-//            modifySelectedAttributesStatement.setBoolean(49, attributeMapBoolean.get("weight"));
-//            modifySelectedAttributesStatement.setBoolean(50, attributeMapBoolean.get("sodium"));           
+//            modifyUserStatsStatement.setBoolean(1, attributeMapBoolean.get("foodcode"));
+//            modifyUserStatsStatement.setBoolean(2, attributeMapBoolean.get("foodname"));
+//            modifyUserStatsStatement.setBoolean(3, attributeMapBoolean.get("foodnameoriginal"));
+//            modifyUserStatsStatement.setBoolean(4, attributeMapBoolean.get("description"));
+//            modifyUserStatsStatement.setBoolean(5, attributeMapBoolean.get("foodgroup"));
+//            modifyUserStatsStatement.setBoolean(6, attributeMapBoolean.get("previous"));
+//            modifyUserStatsStatement.setBoolean(7, attributeMapBoolean.get("foodreferences"));
+//            modifyUserStatsStatement.setBoolean(8, attributeMapBoolean.get("footnote"));
+//            modifyUserStatsStatement.setBoolean(9, attributeMapBoolean.get("water"));
+//            modifyUserStatsStatement.setBoolean(10, attributeMapBoolean.get("totnit"));
+//            modifyUserStatsStatement.setBoolean(11, attributeMapBoolean.get("protein"));
+//            modifyUserStatsStatement.setBoolean(12, attributeMapBoolean.get("fat"));
+//            modifyUserStatsStatement.setBoolean(13, attributeMapBoolean.get("carbohydrate"));
+//            modifyUserStatsStatement.setBoolean(14, attributeMapBoolean.get("calorie"));
+//            modifyUserStatsStatement.setBoolean(15, attributeMapBoolean.get("kj"));
+//            modifyUserStatsStatement.setBoolean(16, attributeMapBoolean.get("star"));
+//            modifyUserStatsStatement.setBoolean(17, attributeMapBoolean.get("oligo"));
+//            modifyUserStatsStatement.setBoolean(18, attributeMapBoolean.get("totsug"));
+//            modifyUserStatsStatement.setBoolean(19, attributeMapBoolean.get("gluc"));
+//            modifyUserStatsStatement.setBoolean(20, attributeMapBoolean.get("galact"));
+//            modifyUserStatsStatement.setBoolean(21, attributeMapBoolean.get("fruct"));
+//            modifyUserStatsStatement.setBoolean(22, attributeMapBoolean.get("sucr"));
+//            modifyUserStatsStatement.setBoolean(23, attributeMapBoolean.get("malt"));
+//            modifyUserStatsStatement.setBoolean(24, attributeMapBoolean.get("lact"));
+//            modifyUserStatsStatement.setBoolean(25, attributeMapBoolean.get("alco"));
+//            modifyUserStatsStatement.setBoolean(26, attributeMapBoolean.get("engfib"));
+//            modifyUserStatsStatement.setBoolean(27, attributeMapBoolean.get("aoacfib"));
+//            modifyUserStatsStatement.setBoolean(28, attributeMapBoolean.get("satfac"));
+//            modifyUserStatsStatement.setBoolean(29, attributeMapBoolean.get("satfod"));
+//            modifyUserStatsStatement.setBoolean(30, attributeMapBoolean.get("totn6pfac"));
+//            modifyUserStatsStatement.setBoolean(31, attributeMapBoolean.get("totn6pfod"));
+//            modifyUserStatsStatement.setBoolean(32, attributeMapBoolean.get("totn3pfac"));
+//            modifyUserStatsStatement.setBoolean(33, attributeMapBoolean.get("totn3pfod"));
+//            modifyUserStatsStatement.setBoolean(34, attributeMapBoolean.get("monofacc"));
+//            modifyUserStatsStatement.setBoolean(35, attributeMapBoolean.get("monofodc"));
+//            modifyUserStatsStatement.setBoolean(36, attributeMapBoolean.get("monofac"));
+//            modifyUserStatsStatement.setBoolean(37, attributeMapBoolean.get("monofod"));
+//            modifyUserStatsStatement.setBoolean(38, attributeMapBoolean.get("polyfacc"));
+//            modifyUserStatsStatement.setBoolean(39, attributeMapBoolean.get("polyfodc"));
+//            modifyUserStatsStatement.setBoolean(40, attributeMapBoolean.get("polyfac"));
+//            modifyUserStatsStatement.setBoolean(41, attributeMapBoolean.get("polyfod"));
+//            modifyUserStatsStatement.setBoolean(42, attributeMapBoolean.get("satfacx6"));
+//            modifyUserStatsStatement.setBoolean(43, attributeMapBoolean.get("satfodx6"));
+//            modifyUserStatsStatement.setBoolean(44, attributeMapBoolean.get("totbrfac"));
+//            modifyUserStatsStatement.setBoolean(45, attributeMapBoolean.get("totbrfod"));
+//            modifyUserStatsStatement.setBoolean(46, attributeMapBoolean.get("factrans"));
+//            modifyUserStatsStatement.setBoolean(47, attributeMapBoolean.get("fodtrans"));
+//            modifyUserStatsStatement.setBoolean(48, attributeMapBoolean.get("chol"));
+//            modifyUserStatsStatement.setBoolean(49, attributeMapBoolean.get("weight"));
+//            modifyUserStatsStatement.setBoolean(50, attributeMapBoolean.get("sodium"));           
 
             //modifySelectedAttributesStatement.setInt(51, id_user);
             returnValue = modifySelectedAttributesStatement.executeUpdate();
@@ -1105,7 +1114,7 @@ public class DatabaseAccess
 
     public static String getSelectedAttributeList(Integer aUserID)
     {
-        System.out.println("DatabaseAccess: getting selected attribute list for user " + aUserID);
+        System.out.println("DatabaseAccess: getSelectedAttributeList() for user " + aUserID);
         PreparedStatement getSelectedAttributesListStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -1124,6 +1133,124 @@ public class DatabaseAccess
         } finally
         {
             DatabaseUtils.closeConnections(databaseConnection, resultSet, getSelectedAttributesListStatement);
+        }
+        return JSONObject;
+    }
+
+    public static boolean setupUserStats(Integer id_user)
+    {
+        boolean output = false;
+        int returnValue = 0;
+
+        System.out.println("DatabaseAccess: setupUserStats() for user " + id_user);
+        PreparedStatement setupUserStatsStatement = null;
+        ResultSet resultSet = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+
+        try
+        {
+            setupUserStatsStatement = databaseConnection.prepareStatement(setupUserStatsSQL);
+            setupUserStatsStatement.setInt(1, id_user);
+            returnValue = setupUserStatsStatement.executeUpdate();
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, setupUserStatsStatement);
+        }
+
+        //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
+        if (returnValue != 0)
+        {
+            output = true;
+        }
+
+        return output;
+    }
+
+    public static boolean modifyUserStats(JsonObject jsonObject, Integer id_user)
+    {
+        System.out.println("DatabaseAccess: modifyUserStats() for user " + id_user);
+        Gson gson = new Gson();
+        Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
+        {
+        }.getType();
+        Map<String, String> statsMap = gson.fromJson(jsonObject, stringStringMap);
+
+        //create SQL query e.g
+        //UPDATE userstatstable SET weight=?,height=?,proteingoal=?,carbohydrategoal=?,fatgoal=? WHERE id_user=?
+        StringBuilder modifyUserStatsSQL = new StringBuilder();
+        modifyUserStatsSQL.append("UPDATE userstatstable SET ");
+        for (int count = 0; count < supportedUserStatsList.size(); count++)
+        {
+            String currentStat = supportedUserStatsList.get(count);
+
+            if (statsMap.get(currentStat) != null)
+            {
+                modifyUserStatsSQL.append(currentStat).append("=").append(statsMap.get(currentStat));
+                modifyUserStatsSQL.append(",");
+
+            }
+            
+            //if at end of list remove the trailing ","
+            if (count == supportedUserStatsList.size() - 1)
+            {
+                modifyUserStatsSQL.deleteCharAt(modifyUserStatsSQL.length() - 1);
+            }
+        }
+        modifyUserStatsSQL.append(" WHERE id_user=").append(id_user);
+        String modifyUserStatsSQLString = modifyUserStatsSQL.toString();
+        System.out.println("DatabaseAccess: SQL query is:" + modifyUserStatsSQLString);
+
+        PreparedStatement modifyUserStatsStatement = null;
+        ResultSet resultSet = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+        boolean output = false;
+        int returnValue = 0;
+        try
+        {
+            modifyUserStatsStatement = databaseConnection.prepareStatement(modifyUserStatsSQLString);
+            returnValue = modifyUserStatsStatement.executeUpdate();
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, modifyUserStatsStatement);
+        }
+
+        //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
+        if (returnValue != 0)
+        {
+            output = true;
+        }
+        return output;
+    }
+
+    public static String getUserStats(Integer aUserID)
+    {
+        System.out.println("DatabaseAccess: getting user stats for user " + aUserID);
+        PreparedStatement getUserStatsStatement = null;
+        ResultSet resultSet = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+        String JSONObject = null;
+
+        try
+        {
+            getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);
+            getUserStatsStatement.setInt(1, aUserID);
+            resultSet = getUserStatsStatement.executeQuery();
+            JSONObject = convertResultSetToJSONArray(resultSet);
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, getUserStatsStatement);
         }
         return JSONObject;
     }

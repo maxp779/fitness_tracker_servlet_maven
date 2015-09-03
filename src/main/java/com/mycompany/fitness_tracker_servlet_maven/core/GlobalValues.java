@@ -23,10 +23,11 @@ public class GlobalValues
     private static final String logoutPage = "logoutPage.html";
     private static final String aboutPage = "aboutPage.html";
     private static final String mainPage = "mainPage.html";
-    private static final String workoutTrackerPage = "workoutTracker.html";
+    private static final String workoutLogPage = "workoutLogPage.html";
     private static final String sessionPlaceholderPage = "sessionPlaceholder.html";
     private static final String createAccountPage = "createAccount.html";
     private static final String customFoodsPage = "customFoods.html";
+    private static final String myStatsPage = "myStatsPage.html";
     
     //misc values
     private static final int maxInactiveInterval = 0; // session timeout, 0 or less will never timeout
@@ -50,14 +51,19 @@ public class GlobalValues
                 ClientAPI.getCreateAccountPageRequest()
             };
 
+    public static String getMyStatsPage()
+    {
+        return myStatsPage;
+    }
+
     public static String getCustomFoodsPage()
     {
         return customFoodsPage;
     } 
 
-    public static String getWorkoutTrackerPage()
+    public static String getWorkoutLogPage()
     {
-        return workoutTrackerPage;
+        return workoutLogPage;
     }
     
     public static String getDatabaseConnectionPool()

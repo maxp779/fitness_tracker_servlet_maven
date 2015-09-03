@@ -101,7 +101,7 @@ function getCustomFoodsList()
 {
     //this is an AJAX request to the server, it invokes the AJAX_GetCustomFoodsServlet which returns a JSON object
     //containing all custom foods in full detail from the database
-    $.getJSON(frontController + AJAX_GetCustomFoodList, function (JSONObject) {
+    $.getJSON(serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_GetCustomFoodList"], function (JSONObject) {
 
         console.log("getCustomFoodsList " + JSON.stringify(JSONObject));
         customFoodListJSON = JSONObject;
@@ -116,7 +116,7 @@ function removeCustomFood()
     {
         console.log("attempting to remove " + selectedFood);
         $.ajax({
-            url: frontController + AJAX_RemoveCustomFood,
+            url: serverAPI["requests"][frontController] + serverAPI["requests"][AJAX_RemoveCustomFood],
             type: "POST",
             data: JSON.stringify({id_customfood: selectedFood}),
             contentType: "application/json",
@@ -164,7 +164,7 @@ function addCustomFood()
     }
     console.log("attempting to add food " + JSON.stringify(outputJSON));
     $.ajax({
-        url: frontController + AJAX_AddCustomFood,
+        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_AddCustomFood"],
         type: "POST",
         data: JSON.stringify(outputJSON),
         contentType: "application/json",
@@ -241,7 +241,7 @@ function saveEditedCustomFood()
     }
     console.log("attempting to edit food " + JSON.stringify(outputJSON));
     $.ajax({
-        url: frontController + AJAX_EditCustomFood,
+        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_EditCustomFood"],
         type: "POST",
         data: JSON.stringify(outputJSON),
         contentType: "application/json",

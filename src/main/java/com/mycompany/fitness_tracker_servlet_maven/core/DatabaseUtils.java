@@ -53,7 +53,8 @@ public class DatabaseUtils
         
         try
         {
-            source = (DataSource) initialContext.lookup("java:/comp/env/jdbc/mydb");
+            //source = (DataSource) initialContext.lookup("java:/comp/env/jdbc/mydb");
+            source = (DataSource) initialContext.lookup("java:/comp/env/jdbc/fitnesstrackerdatabaseJNDI");
         } catch (NamingException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);

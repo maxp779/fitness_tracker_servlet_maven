@@ -5,39 +5,42 @@
  */
 
 //Events
-$(document).ready(function () {
+function setupEvents(callback)
+{
 
-    //when fooddatepicker changes the date, update the viewDate object
-    //eventTriggered is needed to prevent both datepicker events triggering
+    //when fooddatepicker changes the date, update the globalValues["viewDate"] object
+    //globalValues["eventTriggered"] is needed to prevent both datepicker events triggering
     //eachother in an infinite loop
     $('#foodDatepicker').datepicker().on('changeDate', function () {
         var updatedDate = $("#foodDatepicker").datepicker("getDate");
-        viewDate = updatedDate;
-        if (!eventTriggered)
+        globalValues["viewDate"] = updatedDate;
+        if (!globalValues["eventTriggered"])
         {
-            eventTriggered = true;
+            globalValues["eventTriggered"] = true;
 
-            $('#macroDatepicker').datepicker('setDate', viewDate);
-            getEatenFoodList();
-
+            $('#macroDatepicker').datepicker('setDate', globalValues["viewDate"]);
+            globalFunctionsAJAX["getEatenFoodList"](function () {
+                updateMainPage();
+            });
         }
-        eventTriggered = false;
+        globalValues["eventTriggered"] = false;
 
     });
 
     //same as above but for macroDatepicker
     $('#macroDatepicker').datepicker().on('changeDate', function () {
         var updatedDate = $("#macroDatepicker").datepicker("getDate");
-        viewDate = updatedDate;
-        if (!eventTriggered)
+        globalValues["viewDate"] = updatedDate;
+        if (!globalValues["eventTriggered"])
         {
-            eventTriggered = true;
+            globalValues["eventTriggered"] = true;
 
-            $('#foodDatepicker').datepicker('setDate', viewDate);
-            getEatenFoodList();
-
+            $('#foodDatepicker').datepicker('setDate', globalValues["viewDate"]);
+            globalFunctionsAJAX["getEatenFoodList"](function () {
+                updateMainPage();
+            });
         }
-        eventTriggered = false;
+        globalValues["eventTriggered"] = false;
     });
 
     //listener for adding food manually
@@ -45,7 +48,17 @@ $(document).ready(function () {
     $("#addEatenFoodForm").submit(function (event) {
         console.log("add food manually button triggered");
         event.preventDefault(); //this prevents the default actions of the form
-        addEatenFoodManually();
+        addEatenFoodManually(function () {
+
+            globalFunctionsAJAX["getEatenFoodList"](function () {
+//                    populateEatenFoodList();
+//                    calculateTotalMacros();
+//                    updatePieCharts();
+//                    updateGraphs();
+                updateMainPage();
+
+            });
+        });
     });
 
     //listener for remove food buttons on food eaten table
@@ -54,7 +67,9 @@ $(document).ready(function () {
         var id_eatenfood = $(this).attr("id");
         console.log("id_eatenfood " + id_eatenfood + " selected for removal");
         id_eatenfood = removeCharacters(id_eatenfood);
-        removeEatenFood(id_eatenfood);
+        removeEatenFood(id_eatenfood, function () {
+            updateMainPage();
+        });
     });
 
     //listener to add a food to eaten foods from the custom foods list
@@ -62,22 +77,31 @@ $(document).ready(function () {
         var id_customFood = $(this).attr("id");
         console.log("id_customfood " + id_customFood + " will be added");
         id_customFood = removeCharacters(id_customFood);
-        addEatenFoodFromCustomFood(id_customFood);
+        addEatenFoodFromCustomFood(id_customFood, function () {
+
+            updateMainPage();
+        });
     });
+
 
     //listener to add a food to eaten foods from the search result list
     $(document).on("click", ".searchresult", function () {
         var id_searchablefood = $(this).attr("id");
         console.log("id_searchablefood " + id_searchablefood + " will be added");
         id_searchablefood = removeCharacters(id_searchablefood);
-        addEatenFoodFromSearchResult(id_searchablefood);
+        addEatenFoodFromSearchResult(id_searchablefood, function () {
+            updateMainPage();
+
+        });
     });
 
     //listener to respond to searchButton click for searching the database
     $(document).on("click", "#searchButton", function () {
         var searchInput = document.getElementById("searchInput").value;
         console.log("searching for " + searchInput);
-        searchForFood(searchInput);
+        searchForFood(searchInput, function () {
+            updateMainPage();
+        });
     });
 
     //listener for datepicker increment date buttons
@@ -123,13 +147,20 @@ $(document).ready(function () {
 
     $(document).on("click", ".selectAttributesButton", function (e) {
         console.log("edit attributes button clicked");
-        editSelectedAttributes();
+        globalFunctions["editSelectedAttributes"](function () {
+            updateMainPage();
+        });
     });
 
     $('#editSelectedAttributesForm').submit(function () {
-        updateSelectedAttributes();
+        globalFunctionsAJAX["updateSelectedAttributes"](function () {
+            updateMainPage();
+        });
         $('#foodAttributeModal').modal('hide');
         return false;
     });
-
-});
+    if (callback)
+    {
+        callback();
+    }
+}

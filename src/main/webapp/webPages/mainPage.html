@@ -16,8 +16,9 @@
         <script type="text/javascript" src="../bootstrap-3.3.4-dist/js/bootstrap.js"></script>
         <link rel="stylesheet" href="../bootstrap-3.3.4-dist/css/bootstrap.css">
 
-        <!--ServerAPI/jsessionid imports-->
-        <script type="text/javascript" src="../js/ServerAPI.js"></script>
+        <!--GlobalValues/jsessionid import-->
+        <script type="text/javascript" src="../js/GlobalValues.js"></script>
+        <script type="text/javascript" src="../js/GlobalFunctions.js"></script>
         <script type="text/javascript" src="../js/jsessionidScript.js"></script>
 
         <!--icon-->
@@ -27,21 +28,29 @@
         <script type="text/javascript" src="../bootstrap-datepicker-1.4/dist/js/bootstrap-datepicker.min.js"></script>
         <link href="../bootstrap-datepicker-1.4/dist/css/bootstrap-datepicker3.min.css" rel="stylesheet">
 
-        <!--piechart imports-->
+        <!--OLD piechart imports
         <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-        <script src="../d3pie-master/d3pie/d3pie.min.js"></script>
+        <script src="../d3pie-pr-54/d3pie/d3pie.min.js"></script>-->
+
+        <!--Chart.js import
+        <script src="https://cdnjs.com/libraries/chart.js"></script>-->
+
+        <!--highcharts.js import-->
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/modules/no-data-to-display.js"></script>
+        <!--<script src="http://code.highcharts.com/modules/exporting.js"></script>-->
 
         <!--custom styles for this page-->
         <link href="../css/mainpage.css" rel="stylesheet">
         <link href="../css/sticky-footer-navbar.css" rel="stylesheet">
 
         <!--custom scripts needed for this page-->
-        <script type="text/javascript" src="../js/mainPage/mainPage.js"></script>
+        <script type="text/javascript" src="../js/mainPage/mainPagePresentation.js"></script>
         <script type="text/javascript" src="../js/mainPage/mainPageAJAX.js"></script>
         <script type="text/javascript" src="../js/mainPage/mainPageEvents.js"></script>
-        <script type="text/javascript" src="../js/mainPage/mainPageGlobalVars.js"></script>
-        <script type="text/javascript" src="../js/mainPage/mainPageSetup.js"></script>
-        <script type="text/javascript" src="../js/mainPage/mainPagePiechart.js"></script>
+        <!--<script type="text/javascript" src="../js/mainPage/mainPagePiechart.js"></script>
+        <script type="text/javascript" src="../js/mainPage/mainPageGraph.js"></script>-->
+        <script type="text/javascript" src="../js/mainPage/mainPageStartup.js"></script>
 
         <title>Nutrition & Calorie Tracker</title>
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -53,11 +62,11 @@
             $(document).ready(function () {
 
                 //set navbar links from ServerAPI.js
-                document.getElementById("sessionTest").href = frontController + sessionPlaceholderPageRequest;
-                document.getElementById("workoutTracker").href = frontController + workoutTrackerPageRequest;
-                document.getElementById("logout").href = frontController + logoutRequest;
-                document.getElementById("mainPage").href = frontController + mainPageRequest;
-                document.getElementById("customFoods").href = frontController + customFoodsPageRequest;
+                document.getElementById("myStats").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["myStatsPageRequest"];
+                document.getElementById("workoutLog").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["workoutLogPageRequest"];
+                document.getElementById("logout").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["logoutRequest"];
+                document.getElementById("mainPage").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["mainPageRequest"];
+                document.getElementById("customFoods").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["customFoodsPageRequest"];
 
                 //call script to add jsessionid for people who disable cookies
                 //must be done after links above are set
@@ -87,10 +96,9 @@
                     <ul class="nav navbar-nav">
                         <li class="active"><a id="mainPage" class="jsessionid">Nutrition Log</a></li>
                         <li><a id="customFoods" class="jsessionid">Custom Foods</a></li>
-                        <li><a id="workoutTracker" class="jsessionid">Workout Log</a></li>
-                        <li><a >My Stats</a></li>
+                        <li><a id="workoutLog" class="jsessionid">Workout Log</a></li>
+                        <li><a id="myStats" class="jsessionid">My Stats</a></li>
                         <li><a id="logout" class="jsessionid">Logout</a></li>
-                        <li><a id="sessionTest" class="jsessionid">SessionTestPage</a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
@@ -102,8 +110,7 @@
             <div class="panel-group" id="accordion0">
                 <div  class="panel panel-default">
                     <div class="panel-heading"><h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion0" href="#collapseMacros">
-                                Macro Log</a>
+                                Macro Log
                         </h4></div>
                     <div id="collapseMacros" class="panel-collapse collapse in">
                         <div class="panel-body">
@@ -125,22 +132,46 @@
                                 </div>
 
                             </div>
-
+                            <hr>
+                           <!--<div class="row">
+                                <div class="col-sm-12">
+                                    <h4 class="infoTitle">Macro info</h4>
+                                </div>
+                            </div>-->
 
                             <div class="row">
-                                <div class="col-sm-6">
-                                    <div id="macroPie">
-
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <div id="macroGoalsPie">
-
-                                    </div>
+                                <div class="col-sm-12">
+                                    <div id="macroChart" style="width:100%; height:300px;"></div>
+                                    <!-- <div id="macroChart" style="min-width: 200px; height: 400px; margin: 0 auto"></div>-->
                                 </div>
                             </div>
+                           
+                           <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="calorieChart" style="width:100%; height:200px;"></div>
+                                    <!-- <div id="macroChart" style="min-width: 200px; height: 400px; margin: 0 auto"></div>-->
+                                </div>
+                            </div>
+                            <hr>
                             <div class="row">
+                                <div class="col-sm-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Macros needed to meet your daily goal</div>
+                                    <div class="panel-body">
+                                        <div id="currentMacros">
+                                            <p><font color="green">Protein needed:</font></p>
+                                            <p><font color="blue">Carbs needed:</font></p>
+                                            <p><font color="orange">Fats needed:</font></p>
+                                            <hr>
+                                            <p>Calories needed:</p>                                           
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>                              
+                            </div>
+
+
+                            <!--<div class="row">
                                 <div class="col-sm-12">
                                     <h4 class="infoTitle">Macros needed for today (g)</h4>
                                 </div>
@@ -165,13 +196,14 @@
                                         </table>
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
 
-                            <div class="row-spacer">
-                                <!-- spacer-->
-                            </div>
+                            <!--<div class="row-spacer">
+                            
+                            </div>-->
+                           
 
-                            <div class="row">
+                           <!-- <div class="row">
                                 <div class="col-sm-12">
                                     <h4 class="infoTitle">Calorie info (kcal)</h4>
                                 </div>
@@ -204,7 +236,7 @@
 
                                     </div>
                                 </div>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -277,7 +309,8 @@
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        Click or tap to add a food to your nutrition log.
+                                        <h4 class="infoTitle">My custom foods</h4>
+                                        <p>Click or tap to add a custom food to your food log</p>
                                         <div class="list-group scrollable" id="customFoodList">
 
                                         </div>
@@ -304,13 +337,13 @@
                                                 <label for="food">Food:</label>
                                                 <input type="text" class="form-control" id="foodname" name="foodname" placeholder="Name of the food?" required autofocus>
                                                 <label for="protein">Protein:</label>
-                                                <input type="number" max="2147483647" class="form-control" id="protein" name="protein" placeholder="How much protein?">
+                                                <input type="number" max="100000" class="form-control" id="protein" name="protein" placeholder="How much protein?">
                                                 <label for="carbs">Carbs:</label>
-                                                <input type="number" max="2147483647" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
+                                                <input type="number" max="100000" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
                                                 <label for="fats">Fats:</label>
-                                                <input type="number" max="2147483647" class="form-control" id="fat" name="fat" placeholder="How much fat?">
+                                                <input type="number" max="100000" class="form-control" id="fat" name="fat" placeholder="How much fat?">
                                                 <label for="calories">Calories:</label>
-                                                <input type="number" max="2147483647" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
+                                                <input type="number" max="100000" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
                                                 <div class="row-spacer"></div>
                                                 <button id="addFoodEatenButton" type="submit" class="btn btn-primary">Add food</button>
                                             </div>
@@ -429,7 +462,7 @@
 
                                     <div class="col-sm-4">
                                         <div class="checkbox">
-                                            <label><input id="aoacfibcheckbox" type="checkbox" value="aoacfib">Fibre</label>
+                                            <label><input id="engfibcheckbox" type="checkbox" value="engfib">Dietary Fibre</label>
                                         </div>
                                         <div class="checkbox">
                                             <label><input id="totsugcheckbox" type="checkbox" value="totsug">Sugar</label>

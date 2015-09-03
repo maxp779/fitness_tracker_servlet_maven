@@ -5,6 +5,9 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This class contains the commands the client will send to FrontController, e.g
  * "FrontController/desktopMainPage" these are kept separate from
@@ -14,10 +17,11 @@ package com.mycompany.fitness_tracker_servlet_maven.core;
  */
 public class ClientAPI
 {
+    //using what the client will login with, email, username etc, in this case it is email
+    private static final String clientRequestIdentifier = "email";
 
     //Client API
     private static final String frontController = "/FrontControllerServlet";
-
     private static final String loginRequest = "login";
     private static final String loginPageRequest = "loginPage";
     private static final String logoutRequest = "logout";
@@ -25,8 +29,9 @@ public class ClientAPI
     private static final String sessionPlaceholderPageRequest = "sessionPlaceholderPage";
     private static final String createAccountRequest = "createAccount";
     private static final String createAccountPageRequest = "createAccountPage";
-    private static final String workoutTrackerPageRequest = "workoutTrackerPage";
+    private static final String workoutLogPageRequest = "workoutLogPage";
     private static final String customFoodsPageRequest = "customFoodsPage";
+    private static final String myStatsPageRequest = "myStatsPage";
 
     //AJAX requests
     private static final String AJAX_GetCustomFoodList = "AJAX_GetCustomFoodList";
@@ -39,8 +44,79 @@ public class ClientAPI
     private static final String AJAX_SearchForFood = "AJAX_SearchForFood";
     private static final String AJAX_ModifySelectedAttributes = "AJAX_ModifySelectedAttributes";
     private static final String AJAX_GetSelectedAttributesList = "AJAX_GetSelectedAttributesList";
-    //using what the client will login with, email, username etc, in this case it is email
-    private static final String clientRequestIdentifier = "email";
+    private static final String AJAX_GetFriendlyNames = "AJAX_GetFriendlyNames";
+    private static final String AJAX_ModifyUserStats = "AJAX_ModifyUserStats";
+    private static final String AJAX_GetUserStats = "AJAX_GetUserStats";
+
+    //Values client will need
+    private static final Map<String, String> friendlyValuesMap;
+    static
+    {
+        friendlyValuesMap = new HashMap<String, String>();
+        friendlyValuesMap.put("gluc", "Glucose");
+        friendlyValuesMap.put("totsug", "Total Sugar");
+        friendlyValuesMap.put("fruct", "Fructose");
+        friendlyValuesMap.put("carbohydrate", "Carbohydrates");
+        friendlyValuesMap.put("protein", "Protein");
+        friendlyValuesMap.put("fat", "Fat");
+        friendlyValuesMap.put("polyfod", "Polyunsaturated fat");
+        friendlyValuesMap.put("weight", "Weight (g)");
+        friendlyValuesMap.put("chol", "Cholesterol(mg)");
+        friendlyValuesMap.put("water", "Water");
+        friendlyValuesMap.put("malt", "Maltose");
+        friendlyValuesMap.put("calorie", "Calories");
+        friendlyValuesMap.put("foodname", "Food Name");
+        friendlyValuesMap.put("description", "Description");
+        friendlyValuesMap.put("monofod", "Monounsaturated fat");
+        friendlyValuesMap.put("kj", "Energy(kj)");
+        friendlyValuesMap.put("satfod", "Saturated fat");
+        friendlyValuesMap.put("totnit", "Total Nitrogen");
+        friendlyValuesMap.put("star", "Starch");
+        friendlyValuesMap.put("sucr", "Sucrose");
+        friendlyValuesMap.put("engfib", "Dietary Fibre");
+        friendlyValuesMap.put("galact", "Galactose");
+        friendlyValuesMap.put("lact", "Lactose");
+        friendlyValuesMap.put("alco", "Alcohol");
+        friendlyValuesMap.put("aoacfib", "AOAC Fibre");
+        friendlyValuesMap.put("fodtrans", "Trans Fats");
+        friendlyValuesMap.put("sodium", "Sodium");
+        friendlyValuesMap.put("potassium", "Potassium");
+        friendlyValuesMap.put("calcium", "Calcium");
+        friendlyValuesMap.put("magnesium", "Magnesium");
+        friendlyValuesMap.put("phosphorus", "Phosphorus");
+        friendlyValuesMap.put("iron", "Iron");
+        friendlyValuesMap.put("copper", "Copper");
+        friendlyValuesMap.put("zinc", "Zinc");
+        friendlyValuesMap.put("chloride", "Chloride");
+        friendlyValuesMap.put("manganese", "Manganese");
+        friendlyValuesMap.put("selenium", "Selenium");
+        friendlyValuesMap.put("iodine", "Iodine");
+    }
+
+    public static String getAJAX_GetUserStats()
+    {
+        return AJAX_GetUserStats;
+    } 
+
+    public static String getAJAX_ModifyUserStats()
+    {
+        return AJAX_ModifyUserStats;
+    }
+
+    public static String getMyStatsPageRequest()
+    {
+        return myStatsPageRequest;
+    }
+   
+    public static Map<String, String> getFriendlyValuesMap()
+    {
+        return friendlyValuesMap;
+    }
+
+    public static String getAJAX_GetFriendlyNames()
+    {
+        return AJAX_GetFriendlyNames;
+    }
 
     public static String getAJAX_GetSelectedAttributesList()
     {
@@ -92,9 +168,9 @@ public class ClientAPI
         return AJAX_ModifySelectedAttributes;
     }
 
-    public static String getWorkoutTrackerPageRequest()
+    public static String getWorkoutLogPageRequest()
     {
-        return workoutTrackerPageRequest;
+        return workoutLogPageRequest;
     }
 
     public static String getCustomFoodsPageRequest()

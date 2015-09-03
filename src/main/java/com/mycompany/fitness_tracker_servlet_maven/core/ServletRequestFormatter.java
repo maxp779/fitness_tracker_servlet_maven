@@ -6,7 +6,7 @@
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
 import javax.servlet.http.HttpServletRequest;
-
+//COULD POTENTIALLY REMOVE THIS CLASS.. PRETTY SURE request.getQueryString() does the same thing...
 /**
  * This class contains helper methods that are called by servlets enough
  * to warrent a central location avoiding code duplication. It deals with getting
@@ -28,7 +28,7 @@ public class ServletRequestFormatter
         String output = "";
         String currentRequestURL = request.getRequestURI();
         StringBuilder currentRequestStringBuilder = new StringBuilder(currentRequestURL);
-
+        
         //get the command
         int slashIndex = currentRequestStringBuilder.lastIndexOf("/");
         currentRequestStringBuilder = currentRequestStringBuilder.delete(0, slashIndex+1);

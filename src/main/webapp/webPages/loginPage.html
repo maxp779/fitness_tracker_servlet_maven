@@ -18,8 +18,9 @@
         <script type="text/javascript" src="../bootstrap-3.3.4-dist/js/bootstrap.js"></script>
         <link rel="stylesheet" href="../bootstrap-3.3.4-dist/css/bootstrap.css">
 
-        <!--ServerAPI import-->
-        <script type="text/javascript" src="../js/ServerAPI.js"></script>
+        <!--GlobalValues import-->
+        <script type="text/javascript" src="../js/GlobalValues.js"></script>
+        
         <!--icon-->
         <link rel="icon" href="../icons/favicon.ico">
 
@@ -87,8 +88,8 @@
                 {
                     createDiv();
                 }
-                document.getElementById("loginForm").action = frontController + loginRequest;
-                document.getElementById("createAccountForm").action = frontController + createAccountPageRequest;
+                document.getElementById("loginForm").action = serverAPI["requests"]["frontController"] + serverAPI["requests"]["loginRequest"];
+                document.getElementById("createAccountForm").action = serverAPI["requests"]["frontController"] + serverAPI["requests"]["createAccountPageRequest"];
 
             }
         </script>

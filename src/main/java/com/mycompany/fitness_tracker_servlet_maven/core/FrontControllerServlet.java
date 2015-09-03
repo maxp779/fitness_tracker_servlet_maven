@@ -90,16 +90,22 @@ public class FrontControllerServlet extends HttpServlet
             rd = request.getRequestDispatcher("/CreateAccountPageServlet");
             rd.forward(request, response);
         }
-        else if (currentRequestString.equals(ClientAPI.getWorkoutTrackerPageRequest()))
+        else if (currentRequestString.equals(ClientAPI.getWorkoutLogPageRequest()))
         {
-            System.out.println("FrontController: workout tracker page request");
-            rd = request.getRequestDispatcher("/WorkoutTrackerPageServlet");
+            System.out.println("FrontController: workout log page request");
+            rd = request.getRequestDispatcher("/WorkoutLogPageServlet");
             rd.forward(request, response);
         }
         else if (currentRequestString.equals(ClientAPI.getCustomFoodsPageRequest()))
         {
             System.out.println("FrontController: custom foods page request");
             rd = request.getRequestDispatcher("/CustomFoodsPageServlet");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getMyStatsPageRequest()))
+        {
+            System.out.println("FrontController: my stats page request");
+            rd = request.getRequestDispatcher("/MyStatsPageServlet");
             rd.forward(request, response);
         }
         else if (currentRequestString.equals(ClientAPI.getAJAX_GetCustomFoodList()))
@@ -160,6 +166,24 @@ public class FrontControllerServlet extends HttpServlet
         {
             System.out.println("FrontController: get selected food attributes list AJAX request");
             rd = request.getRequestDispatcher("/AJAX_GetSelectedAttributesList");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAX_GetFriendlyNames()))
+        {
+            System.out.println("FrontController: get selected friendly names for food attributes AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_GetFriendlyNames");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAX_ModifyUserStats()))
+        {
+            System.out.println("FrontController: modify user stats AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_ModifyUserStats");
+            rd.forward(request, response);
+        }
+        else if (currentRequestString.equals(ClientAPI.getAJAX_GetUserStats()))
+        {
+            System.out.println("FrontController: get user stats AJAX request");
+            rd = request.getRequestDispatcher("/AJAX_GetUserStats");
             rd.forward(request, response);
         }
         else
