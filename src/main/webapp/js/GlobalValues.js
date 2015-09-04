@@ -9,7 +9,7 @@ var globalValues = {
     userStats: {}, //an object containing the users ideal protein/carb/fat/calorie consumption values, they set these up themselves
     customFoodJSONArray: [], //an array of objects which represent the current users custom foods
     eatenFoodJSONArray: [], //an array of objects which represent the current users eaten foods
-    searchResultFoodJSONArray: [], //an array js objects which represent the current users search results if they searched the database
+    searchResultFoodJSONArray: [], //an array of js objects which represent the current users search results if they searched the database
     selectedFoodAttributeJSONArray: [], //a single object containing food attributes the user wants to see e.g protein,carbs,saturated fats
     friendlyNamesJSON: {}, //friendly names for the food attributes e.g {"satfod":"Saturated fat","totsug":"Total Sugar"}
     totalMacrosToday: {},
@@ -33,7 +33,8 @@ var serverAPI = {
         loginRequest: "login",
         logoutRequest: "logout",
         createAccountRequest: "createAccount",
-        frontController: "/FrontControllerServlet/",
+        //frontController: "/fitness_tracker_servlet_maven/FrontControllerServlet/", //for when webapp is non ROOT
+        frontController: "/FrontControllerServlet/", //for when webapp is hosted as ROOT
         //page requests
         customFoodsPageRequest: "customFoodsPage",
         mainPageRequest: "mainPage",

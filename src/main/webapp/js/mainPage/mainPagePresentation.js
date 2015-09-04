@@ -79,7 +79,7 @@ function populateCustomFoodList()
         var currentFoodJSON = globalValues["customFoodJSONArray"][index];
 
         innerHTML = innerHTML.concat("<a href='javascript:void(0)' class='list-group-item customfood' id='" + currentFoodJSON["id_customfood"] + "customfood" + "'>"
-                + createFoodAttributesHTML(currentFoodJSON)
+                + createFoodAttributesHTML(currentFoodJSON, "id_customfood")
                 + "</a>"
                 );
 
@@ -172,7 +172,7 @@ var sort_by = function (field, reverse, primer) {
  * @returns {undefined} 
  */
 function populateSearchResultList()
-{
+{    
     //empty table
     $('#searchResultList').empty();
 
@@ -193,10 +193,10 @@ function populateSearchResultList()
         //populates the foods eaten table, one row = one food item
         for (var index = 0; index < globalValues["searchResultFoodJSONArray"].length; index++)
         {
-            var currentFoodJSON = globalValues["searchResultFoodJSONArray"][index];
+            var currentFoodObject = globalValues["searchResultFoodJSONArray"][index];
             innerHTML = innerHTML.concat("<div class='row'>"
                     + "<div class='col-sm-12'>"
-                    + "<a href='javascript:void(0)' class='list-group-item searchresult' id='" + currentFoodJSON["id_searchablefood"] + "searchablefood" + "'>"
+                    + "<a href='javascript:void(0)' class='list-group-item searchresult' id='" + currentFoodObject["id_searchablefood"] + "searchablefood" + "'>"
                     + "<div class='row'>"
                     + "<div class='col-sm-8'>"
 //                    + "<strong>Name: </strong>" + currentFoodJSON["foodname"]
@@ -204,7 +204,7 @@ function populateSearchResultList()
 //                    + "<div id='" + currentFoodJSON["id_searchablefood"] + "macros'>"
 
 
-                    + createFoodAttributesHTML(currentFoodJSON)
+                    + createFoodAttributesHTML(currentFoodObject,"id_searchablefood")
 //                    + " <strong>Macros: </strong>"
 //                    + " <font color='green'>Protein:" + globalValues["searchResultFoodJSONArray"][currentFood].protein + "</font>"
 //                    + " <font color='blue'>Carb:" + globalValues["searchResultFoodJSONArray"][currentFood].carbohydrate + "</font>"
@@ -216,11 +216,11 @@ function populateSearchResultList()
                     + "<strong>Weight(g):</strong>"
                     + "<div class='input-group'>"
                     + "<span class='input-group-btn'>"
-                    + "<button class='btn btn-primary decrementWeightButton' type='button' id='" + currentFoodJSON["id_searchablefood"] + "decrementweight" + "'>-</button>"
+                    + "<button class='btn btn-primary decrementWeightButton' type='button' id='" + currentFoodObject["id_searchablefood"] + "decrementweight" + "'>-</button>"
                     + "</span>"
-                    + "<input type='number' class='form-control searchresultInput' placeholder='Weight(g)' step='100' min='0' max='100000' id='" + currentFoodJSON["id_searchablefood"] + "weight'" + "value='" + currentFoodJSON["weight"] + "'>"
+                    + "<input type='number' class='form-control searchresultInput' placeholder='Weight(g)' step='100' min='0' max='100000' id='" + currentFoodObject["id_searchablefood"] + "weight'" + "value='" + currentFoodObject["weight"] + "'>"
                     + "<span class='input-group-btn'>"
-                    + "<button class='btn btn-primary incrementWeightButton' type='button' id='" + currentFoodJSON["id_searchablefood"] + "incrementweight" + "'>+</button>"
+                    + "<button class='btn btn-primary incrementWeightButton' type='button' id='" + currentFoodObject["id_searchablefood"] + "incrementweight" + "'>+</button>"
                     + "</span>"
                     + "</div>"
                     + "</div>"
@@ -256,7 +256,7 @@ function getSelectedAttributes(aJSON)
     return outputArray;
 }
 
-function createFoodAttributesHTML(currentFoodJSON)
+function createFoodAttributesHTML(currentFoodJSON, foodIDFormat) //food ID is "id_searchablefood" or "id_customfood" etc, it defines the category of food object to look for
 {
     var outputHTML = "";
     var selectedFoodAttributeJSON = globalValues["selectedFoodAttributeJSONArray"][0];
@@ -338,9 +338,9 @@ function createFoodAttributesHTML(currentFoodJSON)
 //        }
 //    }
 
-    outputHTML = outputHTML.concat("<strong>Name: </strong>" + currentFoodJSON["foodname"]
+    outputHTML = outputHTML.concat("<div id='" + currentFoodJSON[foodIDFormat] + "macros'>"           
+            + "<strong>Name: </strong>" + currentFoodJSON["foodname"]
             + "<br>"
-            + "<div id='" + currentFoodJSON["id_eatenfood"] + "macros'>"
             + "<strong>Primary Macros: </strong>");
 
     for (var index = 0; index < primaryAttributeArray.length; index++)
@@ -545,7 +545,7 @@ function getSelectedUNIXdate()
  * @param {type} aFoodJSON
  * @returns {JSON}
  */
-function calculateMacrosFromWeight(id_searchablefood, aFoodJSON)
+function calculateMacrosFromWeight(id_searchablefood, foodObject)
 {
     console.log("calculating macros for:" + id_searchablefood);
     var currentWeightID = id_searchablefood + "weight";
@@ -571,11 +571,11 @@ function calculateMacrosFromWeight(id_searchablefood, aFoodJSON)
 //    var globalValues["wholeIntegerAttributes"] = ["calorie","kj","weight"];
 
     //calculate the macros from the stored weight of the food
-    var multiplier = currentWeightValue / aFoodJSON["weight"];
+    var multiplier = currentWeightValue / foodObject["weight"];
 
-    for (var aProperty in aFoodJSON)
+    for (var aProperty in foodObject)
     {
-        var currentValue = aFoodJSON[aProperty];
+        var currentValue = foodObject[aProperty];
 
         //if non operable e.g "foodname" then ignore
         if (globalValues["nonOperableAttributes"].indexOf(aProperty) === -1)
@@ -584,17 +584,17 @@ function calculateMacrosFromWeight(id_searchablefood, aFoodJSON)
             if (globalValues["wholeIntegerAttributes"].indexOf(aProperty) === -1)
             {
                 currentValue = currentValue * multiplier;
-                aFoodJSON[aProperty] = currentValue.toFixed(1);
+                foodObject[aProperty] = currentValue.toFixed(1);
             }
             else //if operable but integer
             {
                 currentValue = currentValue * multiplier;
-                aFoodJSON[aProperty] = currentValue.toFixed(0);
+                foodObject[aProperty] = currentValue.toFixed(0);
             }
         }
     }
 
-    return aFoodJSON;
+    return foodObject;
 }
 
 function calculateTotalMacros(callback)
@@ -1299,15 +1299,18 @@ function updateSearchResultMacros(id)
             }
         }
     }
-    currentFood = calculateMacrosFromWeight(id_searchablefood, currentFood);
+    var updatedFood = calculateMacrosFromWeight(id_searchablefood, currentFood);
 
-    var updatedHTML = "<strong>Macros: </strong>"
-            + " <font color='green'>Protein: " + currentFood["protein"] + "</font>"
-            + " <font color='blue'>Carb: " + currentFood["carbohydrate"] + "</font>"
-            + " <font color='orange'>Fat: " + currentFood["fat"] + "</font>"
-            + " <font color='red'>Cals: " + currentFood["calorie"] + "</font>";
-
-    id_searchablefoodmacros.innerHTML = updatedHTML;
+    var innerHTML = createFoodAttributesHTML(updatedFood,"id_searchablefood");
+            
+//            "<strong>Macros: </strong>"
+//            + " <font color='green'>Protein: " + updatedFood["protein"] + "</font>"
+//            + " <font color='blue'>Carb: " + updatedFood["carbohydrate"] + "</font>"
+//            + " <font color='orange'>Fat: " + updatedFood["fat"] + "</font>"
+//            + " <font color='red'>Cals: " + updatedFood["calorie"] + "</font>";
+    
+    //$(id_searchablefood).empty();
+    id_searchablefoodmacros.innerHTML = innerHTML;
 
 }
 
