@@ -65,7 +65,6 @@ $(document).ready(function () {
                     globalFunctionsAJAX["getCustomFoodList"](function () {
                         globalFunctionsAJAX["getEatenFoodList"](function () {
                             updateMainPage();
-
                         });
                     });
                 });

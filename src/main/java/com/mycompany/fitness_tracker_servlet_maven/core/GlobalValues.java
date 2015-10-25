@@ -38,7 +38,7 @@ public class GlobalValues
     
     //AuthenticationFilter will skip the session check when these resources are requested
     private static final String[] nonAuthResources =
-            { "invalid.html",".ico",".css",".js",".png",".jpeg","testPage.html","testDatabase",
+            { "invalid.html",".ico",".css",".js",".png",".jpeg",".jpg","testPage.html","testDatabase",
                 GlobalValues.cookiesPolicy,
                 GlobalValues.loginPage,
                 GlobalValues.logoutPage,

@@ -772,9 +772,8 @@ public class DatabaseAccess
         for (int count = 0; count < supportedAttributeList.size(); count++)
         {
             String currentAttribute = supportedAttributeList.get(count);
-
             addEatenFoodColumns.append(currentAttribute);
-
+            
             if (varcharAttributeList.contains(currentAttribute))
             {
                 addEatenFoodValues.append("'").append(foodMap.get(currentAttribute)).append("'");
@@ -782,6 +781,7 @@ public class DatabaseAccess
             {
                 addEatenFoodValues.append(foodMap.get(currentAttribute));
             }
+            
 
             //if not at the last attribute put a comma to separate it from the next attribute
             if (count != supportedAttributeList.size() - 1)
@@ -813,58 +813,6 @@ public class DatabaseAccess
         try
         {
             addEatenFoodStatement = databaseConnection.prepareStatement(addEatenFoodSQLString);
-
-            /**
-             * it is possible some attributes were not entered by the client,
-             * e.g they may record the foodname and the calories but omit the
-             * protein, carbohydrate and fat values, in this case we set
-             * java.sql.Types.NULL because the SQL query "INSERT INTO
-             * eatenfoodtable
-             * (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES
-             * (?,?,?,?,?,?)" is expecting 6 values
-             */
-//            if (jsonObject.has("id_user"))
-//            {
-//                addEatenFoodStatement.setInt(1, jsonObject.get("id_user").getAsInt());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(1, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("foodname"))
-//            {
-//                addEatenFoodStatement.setString(2, jsonObject.get("foodname").getAsString());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(2, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("protein"))
-//            {
-//                addEatenFoodStatement.setFloat(3, jsonObject.get("protein").getAsFloat());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(3, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("carbohydrate"))
-//            {
-//                addEatenFoodStatement.setFloat(4, jsonObject.get("carbohydrate").getAsFloat());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(4, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("fat"))
-//            {
-//                addEatenFoodStatement.setFloat(5, jsonObject.get("fat").getAsFloat());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(5, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("calorie"))
-//            {
-//                addEatenFoodStatement.setInt(6, jsonObject.get("calorie").getAsInt());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(6, java.sql.Types.NULL);
-//            }
             returnValue = addEatenFoodStatement.executeUpdate();
 
         } catch (SQLException ex)

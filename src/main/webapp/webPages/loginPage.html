@@ -20,14 +20,15 @@
 
         <!--GlobalValues import-->
         <script type="text/javascript" src="../js/GlobalValues.js"></script>
-        
+
         <!--icon-->
         <link rel="icon" href="../icons/favicon.ico">
 
 
         <!--Custom CSS. THIS MUST COME AFTER OTHER CSS TO TAKE EFFECT!!-->
-        <link href="../css/signin.css" rel="stylesheet">
+        <link href="../css/loginPage.css" rel="stylesheet">
         <link href="../css/sticky-footer-navbar.css" rel="stylesheet">
+        <link href="../css/footer.css" rel="stylesheet">
         <!-- Style for the noscript message -->
         <link href="../css/noscriptstyle.css" rel="stylesheet">
 
@@ -46,26 +47,46 @@
     <body>
         <noscript><div>JavaScript must be enabled for this site to work correctly!</div></noscript>
         <div class="container">
-
-            <form id="loginForm" class="form-signin" method="POST">
-                <h2 class="form-signin-heading">Please sign in</h2>
-                <label for="inputEmail" class="sr-only">Email address</label>
-                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" name ="email" required autofocus>
-                <label for="inputPassword" class="sr-only">Password</label>
-                <input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password" required>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" value="remember-me"> Remember me
-                    </label>
+            <div class="row">
+                <div class="col-sm-3">
+                    
                 </div>
-                <br>
-                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-            </form>
+                <div id="logodiv" class="col-sm-8" style="background: rgba(255,255,255);">
+                    <!--<p class="logo">Welcome to simplfitness</p>-->
+                    <p class="logo">Welcome to <span id="logo1">simpl</span><span id="logo2">fitness</span><img src="../img/logopic.png" class="img-responsive" alt="logo pic">
+</p>
+                </div>
+                <div class="col-sm-3">
+                    <!--<img src="../img/logopic.png" class="img-responsive" alt="logo pic">-->
+                </div>
+            </div>
 
-            <form id="createAccountForm" class="form-signin">
-                <button class="btn btn-lg btn-primary btn-block" type="submit">Create new account</button>
-            </form>
 
+
+            <div class="row">
+                <div class="col-sm-3"></div>
+                <div id="logindiv" class="col-sm-6" style="background: rgba(255,255,255,0.3);">                  
+                    <form id="loginForm" class="form-signin" method="POST">
+                        <h3 class="form-signin-heading">Please sign in</h3>
+                        <label for="inputEmail" class="sr-only">Email address</label>
+                        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" name ="email" required autofocus>
+                        <label for="inputPassword" class="sr-only">Password</label>
+                        <input type="password" id="inputPassword" class="form-control" placeholder="Password" name="password" required>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="remember-me"> Remember me
+                            </label>
+                        </div>
+                        <br>
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+                    </form>
+
+                    <form id="createAccountForm" class="form-signin">
+                        <button class="btn btn-lg btn-primary btn-block" type="submit">Create new account</button>
+                    </form>
+                </div>
+                <div class="col-sm-3"></div>
+            </div>
         </div> <!-- /container -->
 
 
@@ -159,7 +180,7 @@
                 element.parentNode.removeChild(element);
             }
         </script>
-        <footer class="footer">
+        <footer class="footer" style="background: rgba(255,255,255,0.3);">
             <div class="container">
                 <ul class="nav navbar-nav">
                     <li><a href="cookiesPolicyPage.html">Cookies Policy</a></li>

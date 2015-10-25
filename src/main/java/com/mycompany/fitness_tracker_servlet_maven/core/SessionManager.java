@@ -27,7 +27,7 @@ public class SessionManager
      * @return true if session is valid, false otherwise
      */
     public static boolean sessionValidate(HttpServletRequest request)
-    {       
+    {
         System.out.println("SessionManager: executing");
         System.out.println("SessionManager: current request URL = " + request.getRequestURL());
         HttpSession session = request.getSession(false);

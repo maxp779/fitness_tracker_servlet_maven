@@ -29,7 +29,7 @@
         <script src="http://code.highcharts.com/modules/no-data-to-display.js"></script>
 
         <!--custom styles for this page-->
-        <link href="../css/mainpage.css" rel="stylesheet">
+        <link href="../css/mystats.css" rel="stylesheet">
         <link href="../css/sticky-footer-navbar.css" rel="stylesheet">
 
         <!--custom scripts needed for this page-->
@@ -66,9 +66,10 @@
     </head>
 
     <body>
+        <div class="container">
 
         <nav class="navbar navbar-default navbar-fixed-top">
-            <div class="container">
+            <div class="container-fluid">
                 <div class="navbar-header">
                     <!--note: removed "aria-expanded="false" argument from below line because netbeans moaned about it-->
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-controls="navbar">
@@ -78,7 +79,7 @@
                         <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand"><img style="max-width:40px; margin-top: -10px;"
-                                                 src="../img/awesomeface.png"></a>
+                                                 src="../img/logopic.png"></a>
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
@@ -86,12 +87,13 @@
                         <li><a id="customFoods" class="jsessionid">Custom Foods</a></li>
                         <li><a id="workoutLog" class="jsessionid">Workout Log</a></li>
                         <li class="active"><a id="myStats" class="jsessionid">My Stats</a></li>
+                        <li><a href="cookiesPolicyPage.html">Cookies Policy</a></li>
+                        <li><a href="aboutPage.html">About</a></li>
                         <li><a id="logout" class="jsessionid">Logout</a></li>
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
         </nav>
-        <div class="container">
             <div class="row-spacer">
                 <!-- spacer-->
             </div>

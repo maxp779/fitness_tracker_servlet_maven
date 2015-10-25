@@ -8,8 +8,20 @@ and open the template in the editor.
     Author     : max
 */
 
+html
+{
+
+    background: url(../img/mainpagepic.jpg) no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;   
+}
+
 body {
     padding-top: 50px;
+    background-color: transparent;
+
 }
 
 .row-spacer
@@ -22,6 +34,7 @@ body {
     text-decoration: underline;
 }
 
+
 .scrollable
 {
     height:200px;
@@ -31,20 +44,20 @@ body {
 
 .searchresult
 {
-    
+
 }
 
 .customfood
 {
-    
+
 }
 
 .incrementWeightButton
 {
-    
+
 }
 
 .decrementWeightButton
 {
-    
+
 }
