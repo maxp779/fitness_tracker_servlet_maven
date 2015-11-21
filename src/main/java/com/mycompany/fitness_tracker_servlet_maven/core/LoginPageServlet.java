@@ -5,8 +5,7 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
-import com.mycompany.fitness_tracker_servlet_maven.core.GlobalValues;
-import com.mycompany.fitness_tracker_servlet_maven.core.ServletRequestFormatter;
+import com.mycompany.fitness_tracker_servlet_maven.unused.ServletRequestFormatter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;

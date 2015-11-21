@@ -103,6 +103,18 @@ function setupEvents(callback)
             updateMainPage();
         });
     });
+    //listener to respond to enter keypress for searching the database
+    $("#searchInput").keypress(function(event) {
+    if (event.which === 13) 
+    {
+        var searchInput = document.getElementById("searchInput").value;
+        console.log("searching for " + searchInput);
+        searchForFood(searchInput, function () {
+            updateMainPage();
+        });
+    }
+  });
+    
 
     //listener for datepicker increment date buttons
     $(document).on("click", "#incrementMacroDateButton, #incrementFoodDateButton", function (e) {
@@ -159,6 +171,8 @@ function setupEvents(callback)
         $('#foodAttributeModal').modal('hide');
         return false;
     });
+   
+
     if (callback)
     {
         callback();

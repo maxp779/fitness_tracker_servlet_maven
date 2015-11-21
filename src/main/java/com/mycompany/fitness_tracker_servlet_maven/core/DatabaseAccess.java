@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,28 +40,15 @@ import java.util.logging.Logger;
 public class DatabaseAccess
 {
 
-    //SQL Commands
-    private static final String checkforuserSQL = "SELECT email FROM usertable WHERE email = ?";
-    private static final String getusercredentialsSQL = "SELECT email,password FROM usertable WHERE email = ?";
-    private static final String adduserSQL = "INSERT INTO usertable (email,password) VALUES (?,?)";
-    private static final String getid_userSQL = "SELECT id_user FROM usertable WHERE email = ?";
-    private static final String getcustomfoodlistSQL = "SELECT * FROM customfoodtable WHERE id_user = ?";
-    private static final String getfoodeatenlistSQL = "SELECT * FROM eatenfoodtable WHERE id_user = ? AND timestamp >= ? AND timestamp < ?";
-    private static final String removecustomfoodSQL = "DELETE FROM customfoodtable WHERE id_customfood= ?";
-    private static final String removeeatenfoodSQL = "DELETE FROM eatenfoodtable WHERE id_eatenfood= ?";
-    //private static final String addcustomfoodSQL = "INSERT INTO customfoodtable (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES (?,?,?,?,?,?)";
-    //private static final String addeatenfoodSQL = "INSERT INTO eatenfoodtable (id_user,foodname,protein,carbohydrate,fat,calorie,timestamp) VALUES (?,?,?,?,?,?,?)";
-    //private static final String editcustomfoodSQL = "UPDATE customfoodtable SET foodname=?,protein=?,carbohydrate=?,fat=?,calorie=? WHERE id_customfood=?";
-    private static final String searchForFoodSQL = "SELECT * FROM searchablefoodtable WHERE FOODNAME LIKE ?;";
-    private static final String setupFoodAttributesSQL = "INSERT INTO selectedattributestable (id_user) VALUES (?)";
-    private static final String setupUserStatsSQL = "INSERT INTO userstatstable (id_user) VALUES (?)";
+//    Old SQL Commands, methods that used these were refactored to create their command dynamically as they execute with a StringBuilder object
+//    private static final String addcustomfoodSQL = "INSERT INTO customfoodtable (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES (?,?,?,?,?,?)";
+//    private static final String addeatenfoodSQL = "INSERT INTO eatenfoodtable (id_user,foodname,protein,carbohydrate,fat,calorie,timestamp) VALUES (?,?,?,?,?,?,?)";
+//    private static final String editcustomfoodSQL = "UPDATE customfoodtable SET foodname=?,protein=?,carbohydrate=?,fat=?,calorie=? WHERE id_customfood=?";
 //    private static final String modifyUserStatsSQL = "UPDATE selectedattributestable SET foodcode=?,foodname=?,foodnameoriginal=?,description=?,foodgroup=?,previous=?,foodreferences=?,footnote=?,water=?,"
 //            + "totnit=?,protein=?,fat=?,carbohydrate=?,calorie=?,kj=?,star=?,oligo=?,totsug=?,gluc=?,galact=?,fruct=?,sucr=?,malt=?,lact=?,alco=?,engfib=?,aoacfib=?,satfac=?,"
 //            + "satfod=?,totn6pfac=?,totn6pfod=?,totn3pfac=?,totn3pfod=?,monofacc=?,monofodc=?,monofac=?,monofod=?,polyfacc=?,polyfodc=?,polyfac=?,polyfod=?,satfacx6=?,satfodx6=?,"
 //            + "totbrfac=?,totbrfod=?,factrans=?,fodtrans=?,chol=?,weight=?,sodium=? WHERE id_user=?";
-    private static final String getSelectedAttributesSQL = "SELECT * FROM selectedattributestable WHERE id_user = ?";
-    private static final String getuserstatsSQL = "SELECT * FROM userstatstable WHERE id_user = ?";
-
+    
     //Supported food attributes, this omits items that are added automatically
     private static final List<String> supportedAttributeList = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote", "water",
             "totnit", "protein", "fat", "carbohydrate", "calorie", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", "engfib", "aoacfib", "satfac",
@@ -70,7 +58,6 @@ public class DatabaseAccess
     private static final List<String> varcharAttributeList = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
     private static final List<String> integerAttributeList = (Arrays.asList("calorie", "kj", "weight", "id_user"));
 
-//    private static final List<String> supportedUserStatsList = (Arrays.asList("idealprotein", "idealcarbohydrate", "idealfat", "TEE","goalTEE"));
     //Supported user stats
     private static final List<String> supportedUserStatsList = (Arrays.asList("weight", "height", "proteingoal", "carbohydrategoal", "fatgoal", "tee", "teegoal", "dateofbirth",
             "proteingoalpercentage", "carbohydratepercentage", "fatgoalpercentage", "gender", "activitylevel", "excerciseintensity", "excercisedaysperweek", "excerciseminutesperday"));
@@ -81,29 +68,33 @@ public class DatabaseAccess
      * @return A Map object containing the users email and password or null if
      * they were not found
      */
-    public static Map<String, String> getUserCredentials(String loginAttemptEmail)
+    public static Map<String, String> getUserCredentialsFromEmail(String loginAttemptEmail)
     {
-        System.out.println("DatabaseAccess: getUserCredentials() for email " + loginAttemptEmail);
+        String getusercredentialsfromemailSQL = "SELECT email,password,id_user FROM usertable WHERE email = ?";
+
+        System.out.println("DatabaseAccess: getUserCredentialsFromEmail() for email " + loginAttemptEmail);
         Map output = new HashMap<>();
         ResultSet resultSet = null;
         String retrievedEmail = null;
         String retrievedPassword = null;
+        String retrieved_id_user = null;
         PreparedStatement getEmailStatement = null;
         Connection databaseConnection = null;
 
         //if user exists
-        if (DatabaseAccess.userAlreadyExistsCheck(loginAttemptEmail))
+        if (DatabaseAccess.userAlreadyExistsCheckEmail(loginAttemptEmail))
         {
             databaseConnection = DatabaseUtils.getDatabaseConnection();
             try
             {
-                getEmailStatement = databaseConnection.prepareStatement(getusercredentialsSQL);
+                getEmailStatement = databaseConnection.prepareStatement(getusercredentialsfromemailSQL);
                 getEmailStatement.setString(1, loginAttemptEmail);
 
                 resultSet = getEmailStatement.executeQuery();
                 resultSet.next();
                 retrievedEmail = resultSet.getString("email");
                 retrievedPassword = resultSet.getString("password");
+                retrieved_id_user = resultSet.getString("id_user");
 
             } catch (SQLException ex)
             {
@@ -113,7 +104,56 @@ public class DatabaseAccess
                 DatabaseUtils.closeConnections(databaseConnection, resultSet, getEmailStatement);
             }
 
-            output.put(retrievedEmail, retrievedPassword);
+            output.put("email", retrievedEmail);
+            output.put("hashedPassword", retrievedPassword);
+            output.put("id_user", retrieved_id_user);
+            return output;
+        } else //user dosent exist
+        {
+            return null;
+        }
+    }
+
+    public static Map<String, String> getUserCredentialsFromid_user(String id_user)
+    {
+        String getusercredentialsfromid_userSQL = "SELECT email,password,id_user FROM usertable WHERE id_user = ?";
+
+        System.out.println("DatabaseAccess: getUserCredentialsFromid_user() for user " + id_user);
+        Map output = new HashMap<>();
+        ResultSet resultSet = null;
+        String retrievedEmail = null;
+        String retrievedPassword = null;
+        String retrieved_id_user = null;
+        PreparedStatement getEmailStatement = null;
+        Connection databaseConnection = null;
+        Long id_userlong = Long.parseLong(id_user);
+
+        //if user exists
+        if (DatabaseAccess.userAlreadyExistsCheckid_user(id_user))
+        {
+            databaseConnection = DatabaseUtils.getDatabaseConnection();
+            try
+            {
+                getEmailStatement = databaseConnection.prepareStatement(getusercredentialsfromid_userSQL);
+                getEmailStatement.setLong(1, id_userlong);
+
+                resultSet = getEmailStatement.executeQuery();
+                resultSet.next();
+                retrievedEmail = resultSet.getString("email");
+                retrievedPassword = resultSet.getString("password");
+                retrieved_id_user = resultSet.getString("id_user");
+
+            } catch (SQLException ex)
+            {
+                Logger.getLogger(AuthenticationServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } finally
+            {
+                DatabaseUtils.closeConnections(databaseConnection, resultSet, getEmailStatement);
+            }
+
+            output.put("email", retrievedEmail);
+            output.put("hashedPassword", retrievedPassword);
+            output.put("id_user", retrieved_id_user);
             return output;
         } else //user dosent exist
         {
@@ -123,11 +163,12 @@ public class DatabaseAccess
 
     public static boolean addUser(String anEmail, String aPassword)
     {
+        String adduserSQL = "INSERT INTO usertable (email,password) VALUES (?,?)";
+
         System.out.println("DatabaseAccess: addUser() email " + anEmail);
         boolean userAdded = false;
-        String hashedPassword = Security.hashPassword(aPassword);
         //if user already exists
-        if (DatabaseAccess.userAlreadyExistsCheck(anEmail))
+        if (DatabaseAccess.userAlreadyExistsCheckEmail(anEmail))
         {
             System.out.println("DatabaseAccess: user already exists, no action taken");
         } else //if user does not exist
@@ -139,12 +180,12 @@ public class DatabaseAccess
             {
                 addUserStatement = databaseConnection.prepareStatement(adduserSQL);
                 addUserStatement.setString(1, anEmail);
-                addUserStatement.setString(2, hashedPassword);
+                addUserStatement.setString(2, aPassword);
                 addUserStatement.executeUpdate();
                 userAdded = true;
 
                 //setup defaults for the new user
-                int id_user = getid_user(anEmail);
+                String id_user = getid_user(anEmail);
                 setupSelectedAttributes(id_user);
                 setupUserStats(id_user);
             } catch (SQLException ex)
@@ -158,9 +199,11 @@ public class DatabaseAccess
         return userAdded;
     }
 
-    public static boolean userAlreadyExistsCheck(String anEmail)
+    public static boolean userAlreadyExistsCheckEmail(String anEmail)
     {
-        System.out.println("DatabaseAccess: userAlreadyExistsCheck() for email" + anEmail);
+        String checkforuseremailSQL = "SELECT email FROM usertable WHERE email = ?";
+
+        System.out.println("DatabaseAccess: userAlreadyExistsCheckEmail() for email" + anEmail);
         boolean userAlreadyExists = true;
         PreparedStatement checkUserStatement = null;
         ResultSet resultSet = null;
@@ -168,7 +211,7 @@ public class DatabaseAccess
 
         try
         {
-            checkUserStatement = databaseConnection.prepareStatement(checkforuserSQL);
+            checkUserStatement = databaseConnection.prepareStatement(checkforuseremailSQL);
             checkUserStatement.setString(1, anEmail);
             resultSet = checkUserStatement.executeQuery();
 
@@ -193,10 +236,51 @@ public class DatabaseAccess
         return userAlreadyExists;
     }
 
-    public static Integer getid_user(String anEmail)
+    public static boolean userAlreadyExistsCheckid_user(String id_user)
     {
+        String checkforuserid_userSQL = "SELECT id_user FROM usertable WHERE id_user = ?";
+
+        System.out.println("DatabaseAccess: userAlreadyExistsCheckid_user() for user" + id_user);
+        boolean userAlreadyExists = true;
+        PreparedStatement checkUserStatement = null;
+        ResultSet resultSet = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+        Long id_userlong = Long.parseLong(id_user);
+
+        try
+        {
+            checkUserStatement = databaseConnection.prepareStatement(checkforuserid_userSQL);
+            checkUserStatement.setLong(1, id_userlong);
+            resultSet = checkUserStatement.executeQuery();
+
+            if (resultSet.next())
+            {
+                System.out.println("DatabaseAccess: user already in the database");
+                userAlreadyExists = true;
+            } else
+            {
+                System.out.println("DatabaseAccess: user is not in the database");
+                userAlreadyExists = false;
+            }
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, checkUserStatement);
+        }
+
+        return userAlreadyExists;
+    }
+
+    public static String getid_user(String anEmail)
+    {
+        String getid_userSQL = "SELECT id_user FROM usertable WHERE email = ?";
+
         System.out.println("DatabaseAccess: getid_user() for email" + anEmail);
-        Integer userID = null;
+        Long id_user_long = null;
+        String id_user_string = null;
         PreparedStatement getuserIDStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -209,7 +293,8 @@ public class DatabaseAccess
 
             if (resultSet.next())
             {
-                userID = resultSet.getInt(1);
+                id_user_long = resultSet.getLong(1);
+                id_user_string = id_user_long.toString();
             }
 
         } catch (SQLException ex)
@@ -219,21 +304,24 @@ public class DatabaseAccess
         {
             DatabaseUtils.closeConnections(databaseConnection, resultSet, getuserIDStatement);
         }
-        return userID;
+        return id_user_string;
     }
 
-    public static String getCustomFoodList(Integer aUserID)
+    public static String getCustomFoodList(String id_user)
     {
-        System.out.println("DatabaseAccess: getCustomFoodList() " + aUserID);
+        String getcustomfoodlistSQL = "SELECT * FROM customfoodtable WHERE id_user = ?";
+
+        System.out.println("DatabaseAccess: getCustomFoodList() " + id_user);
         PreparedStatement getCustomFoodListStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
         String JSONObject = null;
+        Long id_user_long = Long.parseLong(id_user);
 
         try
         {
             getCustomFoodListStatement = databaseConnection.prepareStatement(getcustomfoodlistSQL);
-            getCustomFoodListStatement.setInt(1, aUserID);
+            getCustomFoodListStatement.setLong(1, id_user_long);
             resultSet = getCustomFoodListStatement.executeQuery();
             JSONObject = convertResultSetToJSONArray(resultSet);
 
@@ -249,6 +337,8 @@ public class DatabaseAccess
 
     public static boolean removeCustomFood(Integer id_food)
     {
+        String removecustomfoodSQL = "DELETE FROM customfoodtable WHERE id_customfood= ?";
+
         boolean output = false;
         int returnValue = 0;
         System.out.println("DatabaseAccess: removeCustomFood() " + id_food);
@@ -342,7 +432,7 @@ public class DatabaseAccess
 //
 //        return JSONObject;
 //    }
-    public static boolean addCustomFood(JsonObject jsonObject, Integer id_user)
+    public static boolean addCustomFood(JsonObject jsonObject, String id_user)
     {
         System.out.println("DatabaseAccess: addCustomFood() " + jsonObject);
         Gson gson = new Gson();
@@ -557,7 +647,7 @@ public class DatabaseAccess
 //        return output;
     }
 
-    public static boolean editCustomFood(JsonObject jsonObject, Integer id_user)
+    public static boolean editCustomFood(JsonObject jsonObject, String id_user)
     {
 
         System.out.println("DatabaseAccess: editCustomFood() " + jsonObject);
@@ -709,13 +799,16 @@ public class DatabaseAccess
 //        return output;
     }
 
-    public static String getEatenFoodList(Integer id_user, Timestamp timestamp)
+    public static String getEatenFoodList(String id_user, Timestamp timestamp)
     {
+        String getfoodeatenlistSQL = "SELECT * FROM eatenfoodtable WHERE id_user = ? AND timestamp >= ? AND timestamp < ?";
+
         System.out.println("DatabaseAccess: getEatenFoodList() for user " + id_user);
         PreparedStatement getFoodEatenStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
         String JSONObject = null;
+        Long id_user_long = Long.parseLong(id_user);
 
         //get start of current day and start of next day both in UNIX time
         //this is to retrieve all foods within a single day, so between those two times
@@ -735,7 +828,7 @@ public class DatabaseAccess
         try
         {
             getFoodEatenStatement = databaseConnection.prepareStatement(getfoodeatenlistSQL);
-            getFoodEatenStatement.setInt(1, id_user);
+            getFoodEatenStatement.setLong(1, id_user_long);
             getFoodEatenStatement.setTimestamp(2, currentDayStartTimestamp);
             getFoodEatenStatement.setTimestamp(3, nextDayStartTimestamp);
             resultSet = getFoodEatenStatement.executeQuery();
@@ -751,7 +844,7 @@ public class DatabaseAccess
         return JSONObject;
     }
 
-    public static boolean addEatenFood(JsonObject jsonObject, Integer id_user)
+    public static boolean addEatenFood(JsonObject jsonObject, String id_user)
     {
         System.out.println("DatabaseAccess: addEatenFood() " + jsonObject);
         Gson gson = new Gson();
@@ -773,7 +866,7 @@ public class DatabaseAccess
         {
             String currentAttribute = supportedAttributeList.get(count);
             addEatenFoodColumns.append(currentAttribute);
-            
+
             if (varcharAttributeList.contains(currentAttribute))
             {
                 addEatenFoodValues.append("'").append(foodMap.get(currentAttribute)).append("'");
@@ -781,7 +874,6 @@ public class DatabaseAccess
             {
                 addEatenFoodValues.append(foodMap.get(currentAttribute));
             }
-            
 
             //if not at the last attribute put a comma to separate it from the next attribute
             if (count != supportedAttributeList.size() - 1)
@@ -834,6 +926,8 @@ public class DatabaseAccess
 
     public static boolean removeEatenFood(int id_eatenfood)
     {
+        String removeeatenfoodSQL = "DELETE FROM eatenfoodtable WHERE id_eatenfood= ?";
+
         boolean output = false;
         int returnValue = 0;
         System.out.println("DatabaseAccess: removeEatenFood() " + id_eatenfood);
@@ -866,6 +960,8 @@ public class DatabaseAccess
 
     public static String searchForFood(String food)
     {
+        String searchForFoodSQL = "SELECT * FROM searchablefoodtable WHERE FOODNAME LIKE ?;";
+
         System.out.println("DatabaseAccess: searchForFood() " + food);
         PreparedStatement searchForFood = null;
         ResultSet resultSet = null;
@@ -889,8 +985,10 @@ public class DatabaseAccess
         return JSONObject;
     }
 
-    public static boolean setupSelectedAttributes(Integer id_user)
+    public static boolean setupSelectedAttributes(String id_user)
     {
+        String setupFoodAttributesSQL = "INSERT INTO selectedattributestable (id_user) VALUES (?)";
+
         boolean output = false;
         int returnValue = 0;
 
@@ -898,11 +996,12 @@ public class DatabaseAccess
         PreparedStatement setupFoodAttributesStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+        Long id_user_long = Long.parseLong(id_user);
 
         try
         {
             setupFoodAttributesStatement = databaseConnection.prepareStatement(setupFoodAttributesSQL);
-            setupFoodAttributesStatement.setInt(1, id_user);
+            setupFoodAttributesStatement.setLong(1, id_user_long);
             returnValue = setupFoodAttributesStatement.executeUpdate();
 
         } catch (SQLException ex)
@@ -922,7 +1021,7 @@ public class DatabaseAccess
         return output;
     }
 
-    public static boolean modifySelectedAttributes(JsonObject jsonObject, Integer id_user)
+    public static boolean modifySelectedAttributes(JsonObject jsonObject, String id_user)
     {
         System.out.println("DatabaseAccess: modifySelectedAttributes() for user " + id_user);
         Gson gson = new Gson();
@@ -1060,18 +1159,21 @@ public class DatabaseAccess
         return output;
     }
 
-    public static String getSelectedAttributeList(Integer aUserID)
+    public static String getSelectedAttributeList(String id_user)
     {
-        System.out.println("DatabaseAccess: getSelectedAttributeList() for user " + aUserID);
+        String getSelectedAttributesSQL = "SELECT * FROM selectedattributestable WHERE id_user = ?";
+
+        System.out.println("DatabaseAccess: getSelectedAttributeList() for user " + id_user);
         PreparedStatement getSelectedAttributesListStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
         String JSONObject = null;
+        Long id_user_long = Long.parseLong(id_user);
 
         try
         {
             getSelectedAttributesListStatement = databaseConnection.prepareStatement(getSelectedAttributesSQL);
-            getSelectedAttributesListStatement.setInt(1, aUserID);
+            getSelectedAttributesListStatement.setLong(1, id_user_long);
             resultSet = getSelectedAttributesListStatement.executeQuery();
             JSONObject = convertResultSetToJSONArray(resultSet);
 
@@ -1085,8 +1187,10 @@ public class DatabaseAccess
         return JSONObject;
     }
 
-    public static boolean setupUserStats(Integer id_user)
+    public static boolean setupUserStats(String id_user)
     {
+        String setupUserStatsSQL = "INSERT INTO userstatstable (id_user) VALUES (?)";
+
         boolean output = false;
         int returnValue = 0;
 
@@ -1094,11 +1198,12 @@ public class DatabaseAccess
         PreparedStatement setupUserStatsStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+        Long id_user_long = Long.parseLong(id_user);
 
         try
         {
             setupUserStatsStatement = databaseConnection.prepareStatement(setupUserStatsSQL);
-            setupUserStatsStatement.setInt(1, id_user);
+            setupUserStatsStatement.setLong(1, id_user_long);
             returnValue = setupUserStatsStatement.executeUpdate();
 
         } catch (SQLException ex)
@@ -1118,7 +1223,7 @@ public class DatabaseAccess
         return output;
     }
 
-    public static boolean modifyUserStats(JsonObject jsonObject, Integer id_user)
+    public static boolean modifyUserStats(JsonObject jsonObject, String id_user)
     {
         System.out.println("DatabaseAccess: modifyUserStats() for user " + id_user);
         Gson gson = new Gson();
@@ -1141,7 +1246,7 @@ public class DatabaseAccess
                 modifyUserStatsSQL.append(",");
 
             }
-            
+
             //if at end of list remove the trailing ","
             if (count == supportedUserStatsList.size() - 1)
             {
@@ -1178,18 +1283,21 @@ public class DatabaseAccess
         return output;
     }
 
-    public static String getUserStats(Integer aUserID)
+    public static String getUserStats(String id_user)
     {
-        System.out.println("DatabaseAccess: getting user stats for user " + aUserID);
+        String getuserstatsSQL = "SELECT * FROM userstatstable WHERE id_user = ?";
+
+        System.out.println("DatabaseAccess: getting user stats for user " + id_user);
         PreparedStatement getUserStatsStatement = null;
         ResultSet resultSet = null;
         Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
         String JSONObject = null;
+        Long id_user_long = Long.parseLong(id_user);
 
         try
         {
             getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);
-            getUserStatsStatement.setInt(1, aUserID);
+            getUserStatsStatement.setLong(1, id_user_long);
             resultSet = getUserStatsStatement.executeQuery();
             JSONObject = convertResultSetToJSONArray(resultSet);
 
@@ -1201,6 +1309,224 @@ public class DatabaseAccess
             DatabaseUtils.closeConnections(databaseConnection, resultSet, getUserStatsStatement);
         }
         return JSONObject;
+    }
+
+    public static UUID createForgotPasswordRecord(String id_user, String email)
+    {
+        String forgotPasswordRecordSQL = "INSERT INTO forgotpasswordtable (id_user,identifiertoken,expirydate,email) VALUES (?,?,?,?)";
+
+        int output = 0;
+        System.out.println("DatabaseAccess: creating forgot password record for user " + id_user);
+        PreparedStatement forgotPasswordStatement = null;
+        ResultSet resultSet = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+        UUID identifierToken = UUID.randomUUID();
+        Long id_user_long = Long.parseLong(id_user);
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expiryTime = currentTime.plusMinutes(10);
+        Timestamp expiryTimestamp = Timestamp.valueOf(expiryTime);
+
+        //    private static final String forgotPasswordRecordSQL = "INSERT INTO forgotpasswordtable (id_user,forgotpasswordcode,expirydate, email) VALUES (?,?,?);";
+        try
+        {
+            forgotPasswordStatement = databaseConnection.prepareStatement(forgotPasswordRecordSQL);
+            forgotPasswordStatement.setLong(1, id_user_long);
+            forgotPasswordStatement.setString(2, identifierToken.toString());
+            forgotPasswordStatement.setTimestamp(3, expiryTimestamp);
+            forgotPasswordStatement.setString(4, email);
+            output = forgotPasswordStatement.executeUpdate();
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, forgotPasswordStatement);
+        }
+
+        return identifierToken;
+    }
+
+    public static boolean validateForgotPasswordRequest(String identifierToken)
+    {
+        String validateForgotPasswordTokenSQL = "SELECT * FROM forgotpasswordtable WHERE identifiertoken = ?";
+
+        //check if identifierToken exists in database
+        boolean output = false;
+        System.out.println("DatabaseAccess: validating forgotten password identifierToken: " + identifierToken);
+        PreparedStatement getForgotPasswordToken = null;
+        ResultSet resultSet = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+
+        try
+        {
+            getForgotPasswordToken = databaseConnection.prepareStatement(validateForgotPasswordTokenSQL);
+            getForgotPasswordToken.setString(1, identifierToken);
+            resultSet = getForgotPasswordToken.executeQuery();
+
+            boolean tokenFound = resultSet.next();
+
+            //if token exists check if it is expired
+            if (tokenFound)
+            {
+                Timestamp expiryTimestamp = resultSet.getTimestamp("expirydate");
+                LocalDateTime expiry = expiryTimestamp.toLocalDateTime();
+
+                //if token has not expired
+                if (LocalDateTime.now().isBefore(expiry))
+                {
+                    System.out.println("DatabaseAccess: token is valid " + identifierToken);
+                    output = true; //token is valid
+                } else
+                {
+                    System.out.println("DatabaseAccess: token has expired " + identifierToken);
+                }
+
+            } else
+            {
+                System.out.println("DatabaseAccess: token does not exist " + identifierToken);
+            }
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, getForgotPasswordToken);
+        }
+        return output;
+    }
+
+    public static void removeExpiredTokens()
+    {
+        String removeExpiredTokensSQL = "DELETE FROM forgotpasswordtable WHERE expirydate < ?";
+
+        System.out.println("DatabaseAccess: removing expired forgot password tokens");
+        PreparedStatement removeTokensStatement = null;
+        ResultSet resultSet = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+//    private static final String removeExpiredTokensSQL = "DELETE FROM forgotpasswordtable WHERE expirydate < ?";
+//where expirydate < now - 10 minutes
+        LocalDateTime currentTime = LocalDateTime.now();
+        LocalDateTime expiryTime = currentTime.minusMinutes(10);
+        Timestamp expiryTimestamp = Timestamp.valueOf(expiryTime);
+
+        //    private static final String forgotPasswordRecordSQL = "INSERT INTO forgotpasswordtable (id_user,forgotpasswordcode,expirydate) VALUES (?,?,?);";
+        try
+        {
+            removeTokensStatement = databaseConnection.prepareStatement(removeExpiredTokensSQL);
+            removeTokensStatement.setTimestamp(1, expiryTimestamp);
+            removeTokensStatement.executeUpdate();
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, removeTokensStatement);
+        }
+    }
+
+    public static String getIdentifierTokenEmail(String identifierToken)
+    {
+        String getIdentifierTokenEmailSQL = "SELECT email FROM forgotpasswordtable WHERE identifiertoken = ?";
+
+        System.out.println("DatabaseAccess: getting email linked to identifier token " + identifierToken);
+        PreparedStatement getEmailStatement = null;
+        ResultSet resultSet = null;
+        String email = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+//SELECT email FROM forgotpasswordtable WHERE identifiertoken = ?
+        //    private static final String forgotPasswordRecordSQL = "INSERT INTO forgotpasswordtable (id_user,forgotpasswordcode,expirydate) VALUES (?,?,?);";
+        try
+        {
+            getEmailStatement = databaseConnection.prepareStatement(getIdentifierTokenEmailSQL);
+            getEmailStatement.setString(1, identifierToken);
+            resultSet = getEmailStatement.executeQuery();
+            if (resultSet.next())
+            {
+                email = resultSet.getString("email");
+                System.out.println("DatabaseAccess: email linked to identifier token was " + email);
+            }
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, getEmailStatement);
+        }
+
+        return email;
+    }
+
+    protected static boolean changePassword(String email, String password)
+    {
+        String changePasswordSQL = "UPDATE usertable SET password =? WHERE email=?";
+
+        System.out.println("DatabaseAccess: changing password for user with email" + email);
+        boolean success = false;
+        int output = 0;
+        PreparedStatement changePasswordStatement = null;
+        ResultSet resultSet = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+
+        try
+        {
+            changePasswordStatement = databaseConnection.prepareStatement(changePasswordSQL);
+            changePasswordStatement.setString(1, password);
+            changePasswordStatement.setString(2, email);
+            output = changePasswordStatement.executeUpdate();
+
+            if (output != 0)
+            {
+                success = true;
+            }
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, changePasswordStatement);
+        }
+
+        return success;
+    }
+
+    protected static boolean changeEmail(String newEmail, String id_user)
+    {
+        String changeEmailSQL = "UPDATE usertable SET email =? WHERE id_user=?";
+
+        System.out.println("DatabaseAccess: changing email for user " + id_user);
+        boolean success = false;
+        int output = 0;
+        PreparedStatement changeEmailStatement = null;
+        ResultSet resultSet = null;
+        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+        Long id_user_long = Long.parseLong(id_user);
+
+        try
+        {
+            changeEmailStatement = databaseConnection.prepareStatement(changeEmailSQL);
+            changeEmailStatement.setString(1, newEmail);
+            changeEmailStatement.setLong(2, id_user_long);
+            output = changeEmailStatement.executeUpdate();
+
+            if (output != 0)
+            {
+                success = true;
+            }
+
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
+        } finally
+        {
+            DatabaseUtils.closeConnections(databaseConnection, resultSet, changeEmailStatement);
+        }
+
+        return success;
     }
 
 }

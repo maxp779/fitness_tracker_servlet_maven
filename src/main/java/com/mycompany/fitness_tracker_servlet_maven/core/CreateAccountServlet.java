@@ -43,14 +43,15 @@ public class CreateAccountServlet extends HttpServlet
         System.out.println("CreateAccountServlet: executing");
         ServletContext sc = this.getServletContext();
 
-        String newAccountEmail = request.getParameter("inputEmail");
-        String newAccountPassword = request.getParameter("inputPassword");
+        String newAccountEmail = request.getParameter("email");
+        String newAccountPassword = request.getParameter("password");
         
         //if somehow the user has managed to submit a request for a new account with a password < 6 characters this stops them
         //and issues a message, javascript on the front end should prevent this from ever happening, if the user disables
         //javascript the form shouldnt submit anyway but better safe than sorry
         if(newAccountPassword.length() < 6)
         {
+            System.out.println("CreateAccountServlet: password is of insufficient length");
             RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getCreateNewAccountPage());
             PrintWriter out= response.getWriter();
             out.println("<div class=\"alert alert-danger\" role=\"alert\">Password must be at least 6 characters long.</div>");
@@ -58,7 +59,7 @@ public class CreateAccountServlet extends HttpServlet
         }
         else //normal execution with javascript working on the front end to ensure only valid emails and passwords are submitted
         {
-//            if(DatabaseAccess.userAlreadyExistsCheck(newAccountEmail))
+//            if(DatabaseAccess.userAlreadyExistsCheckEmail(newAccountEmail))
 //            {
 //                System.out.println("CreateAccountServlet: account already exists, no action taken");
 //                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
@@ -70,8 +71,8 @@ public class CreateAccountServlet extends HttpServlet
 //            }
 //            else
 //            {
-                
-            boolean userAdded = DatabaseAccess.addUser(newAccountEmail, newAccountPassword);
+            String hashedPassword = Security.hashPassword(newAccountPassword);
+            userAdded = DatabaseAccess.addUser(newAccountEmail, hashedPassword);
             if(userAdded)
             {
                 System.out.println("CreateAccountServlet: account created for " + newAccountEmail);

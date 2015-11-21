@@ -38,6 +38,7 @@
 
 //Setup code
 $(document).ready(function () {
+
     globalValues["viewDate"] = new Date();
     //create food datepicker and macro datepicker
     //both datepickers will be synced so they show the same date at all times

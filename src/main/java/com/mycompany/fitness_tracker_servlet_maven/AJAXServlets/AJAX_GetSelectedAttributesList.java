@@ -39,7 +39,7 @@ public class AJAX_GetSelectedAttributesList extends HttpServlet
     {
         System.out.println("AJAX_GetSelectedAttributesList executing: " + request.getRequestURL());
 
-        Integer id_user = (Integer) request.getSession().getAttribute("id_user");
+        String id_user = (String) request.getSession().getAttribute("id_user");
         String JSONObject = DatabaseAccess.getSelectedAttributeList(id_user);
         //System.out.println("AJAX_GetCustomFoods sending JSON object: " + JSONObject);
         response.setContentType("application/json");

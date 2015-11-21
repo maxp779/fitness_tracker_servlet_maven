@@ -43,8 +43,7 @@ public class AJAX_GetEatenFoodList extends HttpServlet
     {
         System.out.println("AJAX_GetEatenFoodList executing: " + request.getRequestURL());
         System.out.println("AJAX_GetEatenFoodList query string: " + request.getQueryString());
-        Integer userID = (Integer) request.getSession().getAttribute("id_user");
-        
+String id_user = (String) request.getSession().getAttribute("id_user");        
         //format query string correctly so it can be a valid JSON
         String queryString = request.getQueryString();
         queryString = queryString.replaceAll("%22", "\"");
@@ -55,9 +54,9 @@ public class AJAX_GetEatenFoodList extends HttpServlet
         JsonElement jsonElement = jsonObject.get("UNIXtime");
         String UNIXtimeString = jsonElement.getAsString();
         Timestamp timestamp = new Timestamp(Long.parseLong(UNIXtimeString));
-        System.out.println("Getting eaten foods for user " + userID + " for date " + timestamp.toString() + " UNIX time:" + UNIXtimeString);
+        System.out.println("Getting eaten foods for user " + id_user + " for date " + timestamp.toString() + " UNIX time:" + UNIXtimeString);
         
-        String JSONObject = DatabaseAccess.getEatenFoodList(userID,timestamp);
+        String JSONObject = DatabaseAccess.getEatenFoodList(id_user,timestamp);
         System.out.println("AJAX_GetEatenFoodList sending JSON object: " + JSONObject);
         response.setContentType("application/json");
         //Get the printwriter object from response to write the required json object to the output stream      

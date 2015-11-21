@@ -5,6 +5,7 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
+import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,21 +18,68 @@ import java.util.Map;
  */
 public class ClientAPI
 {
+//    protected static Map<String, String> clientAPIMap = new HashMap<>();
+//    
+//    protected static void setupAPIMap()
+//    {
+//        clientAPIMap.put("frontController", "FrontControllerServlet");
+//        clientAPIMap.put("login", "AuthenticationServlet");
+//        clientAPIMap.put("loginPage", "LoginPageServlet");
+//        clientAPIMap.put("logout", "LogoutServlet");
+//        clientAPIMap.put("mainPage", "MainPageServlet");
+//        clientAPIMap.put("createAccount", "CreateAccountServlet");
+//        clientAPIMap.put("createAccountPage", "CreateAccountPageServlet");
+//        clientAPIMap.put("workoutLogPage", "WorkoutLogPageServlet");
+//        clientAPIMap.put("customFoodsPage", "CustomFoodsPageServlet");
+//        clientAPIMap.put("myStatsPage", "MyStatsPageServlet");
+//        clientAPIMap.put("forgotPasswordPage", "ForgotPasswordPageServlet");
+//        clientAPIMap.put("forgotPasswordEmail", "ForgotPasswordEmailServlet");
+//        clientAPIMap.put("changePasswordPage", "ChangePasswordPageServlet");
+//        clientAPIMap.put("changePassword", "ChangePasswordServlet");
+//        
+//        //AJAX REQUESTS
+//        clientAPIMap.put("AJAX_GetCustomFoodList", "AJAX_GetCustomFoodList");
+//        clientAPIMap.put("AJAX_RemoveCustomFood", "AJAX_RemoveCustomFood");
+//        clientAPIMap.put("AJAX_AddCustomFood", "AJAX_AddCustomFood");
+//        clientAPIMap.put("AJAX_EditCustomFood", "AJAX_EditCustomFood");
+//        clientAPIMap.put("AJAX_AddEatenFood", "AJAX_AddEatenFood");
+//        clientAPIMap.put("AJAX_RemoveEatenFood", "AJAX_RemoveEatenFood");
+//        clientAPIMap.put("AJAX_SearchForFood", "AJAX_SearchForFood");
+//        clientAPIMap.put("AJAX_ModifySelectedAttributes", "AJAX_ModifySelectedAttributes");
+//        clientAPIMap.put("AJAX_GetSelectedAttributesList", "AJAX_GetSelectedAttributesList");
+//        clientAPIMap.put("AJAX_GetFriendlyNames", "AJAX_GetFriendlyNames");
+//        clientAPIMap.put("AJAX_ModifyUserStats", "AJAX_ModifyUserStats");
+//        clientAPIMap.put("AJAX_GetUserStats", "AJAX_GetUserStats");
+//        clientAPIMap.put("AJAX_GetIdentifierTokenEmail", "AJAX_GetIdentifierTokenEmail");      
+//    }
+//    
+//    protected static Map<String,String> getClientAPI()
+//    {    
+//        return clientAPIMap;
+//    }
+    
+    
     //using what the client will login with, email, username etc, in this case it is email
     private static final String clientRequestIdentifier = "email";
 
     //Client API
-    private static final String frontController = "/FrontControllerServlet";
+    private static final String frontController = "FrontControllerServlet";
     private static final String loginRequest = "login";
     private static final String loginPageRequest = "loginPage";
     private static final String logoutRequest = "logout";
     private static final String mainPageRequest = "mainPage";
-    private static final String sessionPlaceholderPageRequest = "sessionPlaceholderPage";
+    //private static final String sessionPlaceholderPageRequest = "sessionPlaceholderPage";
     private static final String createAccountRequest = "createAccount";
     private static final String createAccountPageRequest = "createAccountPage";
     private static final String workoutLogPageRequest = "workoutLogPage";
     private static final String customFoodsPageRequest = "customFoodsPage";
     private static final String myStatsPageRequest = "myStatsPage";
+    private static final String forgotPasswordPageRequest = "forgotPasswordPage";
+    private static final String forgotPasswordEmailRequest = "forgotPasswordEmail";
+    private static final String changePasswordPageRequest = "changePasswordPage";
+    private static final String changePasswordRequest = "changePassword";
+    private static final String changeEmailRequest = "changeEmail";
+    private static final String settingsPageRequest = "settingsPage";
 
     //AJAX requests
     private static final String AJAX_GetCustomFoodList = "AJAX_GetCustomFoodList";
@@ -47,6 +95,7 @@ public class ClientAPI
     private static final String AJAX_GetFriendlyNames = "AJAX_GetFriendlyNames";
     private static final String AJAX_ModifyUserStats = "AJAX_ModifyUserStats";
     private static final String AJAX_GetUserStats = "AJAX_GetUserStats";
+    private static final String AJAX_GetIdentifierTokenEmail = "AJAX_GetIdentifierTokenEmail";
 
     //Values client will need
     private static final Map<String, String> friendlyValuesMap;
@@ -93,6 +142,44 @@ public class ClientAPI
         friendlyValuesMap.put("iodine", "Iodine");
     }
 
+    public static String getChangeEmailRequest()
+    {
+        return changeEmailRequest;
+    }
+
+    public static String getSettingsPageRequest()
+    {
+        return settingsPageRequest;
+    }
+
+    
+    public static String getAJAX_GetIdentifierTokenEmail()
+    {
+        return AJAX_GetIdentifierTokenEmail;
+    }
+
+    
+    public static String getChangePasswordRequest()
+    {
+        return changePasswordRequest;
+    }
+    
+
+    public static String getForgotPasswordEmailRequest()
+    {
+        return forgotPasswordEmailRequest;
+    }
+    
+    public static String getChangePasswordPageRequest()
+    {
+        return changePasswordPageRequest;
+    }
+
+    public static String getForgotPasswordPageRequest()
+    {
+        return forgotPasswordPageRequest;
+    }
+    
     public static String getAJAX_GetUserStats()
     {
         return AJAX_GetUserStats;
@@ -186,11 +273,6 @@ public class ClientAPI
     public static String getClientRequestIdentifier()
     {
         return clientRequestIdentifier;
-    }
-
-    public static String getSessionPlaceholderPageRequest()
-    {
-        return sessionPlaceholderPageRequest;
     }
 
     public static String getCreateAccountRequest()

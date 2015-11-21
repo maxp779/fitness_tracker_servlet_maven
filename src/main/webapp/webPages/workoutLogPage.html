@@ -16,42 +16,31 @@
         <script type="text/javascript" src="../bootstrap-3.3.4-dist/js/bootstrap.js"></script>
         <link rel="stylesheet" href="../bootstrap-3.3.4-dist/css/bootstrap.css">
 
-        <!--GlobalValues/jsessionid import-->
-        <script type="text/javascript" src="../js/GlobalValues.js"></script>
+        <!--custom scripts for this page-->
+        <script type="text/javascript" src="../js/globalValues.js"></script>
         <script type="text/javascript" src="../js/jsessionidScript.js"></script>
+        <script type="text/javascript" src="../js/setupNavbar.js"></script>
+        <script type="text/javascript" src="../js/workoutLogPage/workoutLogPage.js"></script>
 
         <!--icon-->
         <link rel="icon" href="../icons/favicon.ico">
 
 
         <!--custom styles for this page-->
+                        <link href="../css/global.css" rel="stylesheet">
+
         <link href="../css/mainpage.css" rel="stylesheet">
         <link href="../css/sticky-footer-navbar.css" rel="stylesheet">
         <link href="../css/workoutlog.css" rel="stylesheet">
+        
 
 
-        <title>Settings</title>
+        <title>Workout log</title>
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
           <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
-        <script type="text/javascript">
-            $(document).ready(function () {
-
-                //set navbar links from ServerAPI.js
-                document.getElementById("myStats").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["myStatsPageRequest"];
-                document.getElementById("workoutLog").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["workoutLogPageRequest"];
-                document.getElementById("logout").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["logoutRequest"];
-                document.getElementById("mainPage").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["mainPageRequest"];
-                document.getElementById("customFoods").href = serverAPI["requests"]["frontController"] + serverAPI["requests"]["customFoodsPageRequest"];
-
-                //call script to add jsessionid for people who disable cookies
-                //must be done after links above are set
-                jsessionidSetup();
-            });
-
-        </script>
 
     </head>
 
@@ -77,6 +66,9 @@
                         <li><a id="customFoods" class="jsessionid">Custom Foods</a></li>
                         <li class="active"><a id="workoutLog" class="jsessionid">Workout Log</a></li>
                         <li><a id="myStats" class="jsessionid">My Stats</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a id="settings" class="jsessionid">Settings</a></li>
                         <li><a href="cookiesPolicyPage.html">Cookies Policy</a></li>
                         <li><a href="aboutPage.html">About</a></li>
                         <li><a id="logout" class="jsessionid">Logout</a></li>
@@ -84,18 +76,15 @@
                 </div><!--/.nav-collapse -->
             </div>
         </nav>
-            <div class="row-spacer">
-                <!-- spacer-->
-            </div>
 
             <div class="row">
                 <div class="col-sm-4">
-                    <div  class="panel panel-default">
+                    <div  class="panel panel-default spacer">
                         <div class="panel-heading"><h4 class="panel-title">
                                 Workout Log
                             </h4></div>
                         <div class="panel-body">
-
+                            <p>Under construction</p>
                         </div>
                     </div>
                 </div>

@@ -127,7 +127,7 @@ public class AuthorizationFilter implements Filter
         HttpServletRequest aRequest = (HttpServletRequest) request;
         HttpServletResponse aResponse = (HttpServletResponse) response;
         String currentURL = aRequest.getRequestURL().toString();
-        System.out.println("AuthorizationFilter: currentURL " + currentURL);
+        //System.out.println("AuthorizationFilter: currentURL " + currentURL);
         ServletContext sc = getFilterConfig().getServletContext();
         boolean sessionValid;
        
@@ -208,16 +208,16 @@ public class AuthorizationFilter implements Filter
         {
             if(url.equals(GlobalValues.getWebAddress()))
             {
-                System.out.println("AuthorizationFilter: skipping authentication as currentURI is initial request");
+                //System.out.println("AuthorizationFilter: skipping authentication as currentURI is initial request");
                 return false;
             }
             else if (url.contains(nonAuthRequest)) 
             {
-                System.out.println("AuthorizationFilter: skipping authentication as currentURI contains: " + nonAuthRequest);
+                //System.out.println("AuthorizationFilter: skipping authentication as currentURI contains: " + nonAuthRequest);
                 return false;
             }
         }
-        System.out.println("AuthorizationFilter: authentication required!");
+        System.out.println("AuthorizationFilter: authentication required for " + url);
         return true;
     }
 

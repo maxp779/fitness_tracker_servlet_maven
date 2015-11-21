@@ -10,7 +10,6 @@ and open the template in the editor.
 
 html
 {
-
     background: url(../img/mystatspic.jpg) no-repeat center center fixed; 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -18,16 +17,8 @@ html
     background-size: cover;   
 }
 
-body {
-    padding-top: 50px;
-    background-color: transparent;
 
-}
 
-.row-spacer
-{
-    margin-top: 20px;
-}
 
 .infoTitle
 {

@@ -42,8 +42,8 @@ public class AJAX_AddEatenFood extends HttpServlet
     {
         System.out.println("AJAX_AddEatenFood executing: " + request.getRequestURL());
         boolean output = false;
-        Integer id_user = (Integer) request.getSession().getAttribute("id_user");
-
+        String id_user = (String) request.getSession().getAttribute("id_user");
+        
         //get request data, should be a string with json formatting
         //JsonReader jsonReader = new JsonReader(request.getReader());
         BufferedReader reader = request.getReader();

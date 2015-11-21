@@ -46,15 +46,15 @@ public class AuthenticationServlet extends HttpServlet {
         Map<String,String> userCredentials;
                 
         //obtain user details from database
-        userCredentials = (HashMap) DatabaseAccess.getUserCredentials(loginAttemptEmail);
-        
+        userCredentials = (HashMap) DatabaseAccess.getUserCredentialsFromEmail(loginAttemptEmail);
+        System.out.println("USER CREDENTIALS: "+userCredentials);
             //if account exists
             if(userCredentials != null)
             {
                 System.out.println("AuthenticationServlet: account exists");
 
                     //if password is correct                   
-                    String storedHashedPassword = userCredentials.get(loginAttemptEmail);
+                    String storedHashedPassword = userCredentials.get("hashedPassword");
                     if(Security.passwordMatch(loginAttemptPassword, storedHashedPassword))
                     {
                         System.out.println("AuthenticationServlet: password correct");
@@ -62,7 +62,7 @@ public class AuthenticationServlet extends HttpServlet {
                         //create new session and add email/user_id values to it
                         HttpSession session = request.getSession(true);
                         session.setAttribute(ClientAPI.getClientRequestIdentifier(), loginAttemptEmail);
-                        session.setAttribute("id_user", DatabaseAccess.getid_user(loginAttemptEmail));
+                        session.setAttribute("id_user", userCredentials.get("id_user"));
                         session.setMaxInactiveInterval(GlobalValues.getMaxInactiveInterval());
                         //String encodedURL = response.encodeRedirectURL(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
                         //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginSuccessReferrer());

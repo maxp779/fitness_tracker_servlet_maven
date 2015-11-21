@@ -42,7 +42,7 @@ public class AJAX_ModifyUserStats extends HttpServlet
     {
         System.out.println("AJAX_ModifyUserStats executing: " + request.getRequestURL());
         boolean output = false;
-        Integer id_user = (Integer) request.getSession().getAttribute("id_user");
+        String id_user = (String) request.getSession().getAttribute("id_user");
 
         //get request data, should be a string with json formatting
         BufferedReader reader = request.getReader();

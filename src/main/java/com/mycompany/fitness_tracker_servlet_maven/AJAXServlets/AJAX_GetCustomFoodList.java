@@ -39,7 +39,7 @@ public class AJAX_GetCustomFoodList extends HttpServlet
     {
         System.out.println("AJAX_GetCustomFoodList executing: " + request.getRequestURL());
 
-        Integer id_user = (Integer) request.getSession().getAttribute("id_user");
+        String id_user = (String) request.getSession().getAttribute("id_user");
         String JSONObject = DatabaseAccess.getCustomFoodList(id_user);
         //System.out.println("AJAX_GetCustomFoods sending JSON object: " + JSONObject);
         response.setContentType("application/json");

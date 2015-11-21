@@ -15,25 +15,36 @@
 function searchForFood(searchInput)
 {
     var searchInputJSON = {};
-    searchInputJSON["searchInput"] = searchInput;
-    console.log("AJAX request: searching for food: " + JSON.stringify(searchInputJSON));
-    $.ajax({
-        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_SearchForFood"],
-        type: "GET",
-        data: JSON.stringify(searchInputJSON),
-        contentType: "application/json",
-        dataType: "json",
-        success: function (data)
-        {
-            globalValues["searchResultFoodJSONArray"] = data;
-            updateMainPage();
-        },
-        error: function (xhr, status, error)
-        {
-            // check status && error
-            console.log("ajax failed");
-        }
-    });
+
+    //check for empty strings/null values
+    if (globalFunctions["isUndefinedOrNull"](searchInput) || searchInput === "")
+    {
+        console.log("invalid search parameter, aborting search");
+        var innerHTML = "<li class='list-group-item searchresult'> Invalid search parameter please retry.</li>";  
+        document.getElementById("searchResultList").innerHTML = innerHTML;
+    }
+    else
+    {
+        searchInputJSON["searchInput"] = searchInput.toLowerCase(); //database is lower case so user input must be converted to lower case
+        console.log("AJAX request: searching for food: " + JSON.stringify(searchInputJSON));
+        $.ajax({
+            url: "/"+serverAPI["requests"]["frontController"] +"/"+ serverAPI["requests"]["AJAX_SearchForFood"],
+            type: "GET",
+            data: JSON.stringify(searchInputJSON),
+            contentType: "application/json",
+            dataType: "json",
+            success: function (data)
+            {
+                globalValues["searchResultFoodJSONArray"] = data;
+                updateMainPage();
+            },
+            error: function (xhr, status, error)
+            {
+                // check status && error
+                console.log("ajax failed");
+            }
+        });
+    }
 }
 
 /**
@@ -225,7 +236,7 @@ function addEatenFood(foodJSON)
     //date to add the food, user may wish to update the previous days log etc
     foodJSON["UNIXtime"] = getSelectedUNIXdate();
     $.ajax({
-        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_AddEatenFood"],
+        url: "/"+serverAPI["requests"]["frontController"] +"/"+ serverAPI["requests"]["AJAX_AddEatenFood"],
         type: "POST",
         data: JSON.stringify(foodJSON),
         contentType: "application/json",
@@ -268,7 +279,7 @@ function removeEatenFood(id_eatenfood)
         var eatenfoodJSON = {};
         eatenfoodJSON["id_eatenfood"] = id_eatenfood;
         $.ajax({
-            url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_RemoveEatenFood"],
+            url: "/"+serverAPI["requests"]["frontController"] +"/"+ serverAPI["requests"]["AJAX_RemoveEatenFood"],
             type: "POST",
             data: JSON.stringify(eatenfoodJSON),
             contentType: "application/json",
