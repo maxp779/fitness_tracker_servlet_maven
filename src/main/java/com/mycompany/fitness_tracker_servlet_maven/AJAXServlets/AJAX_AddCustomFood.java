@@ -6,14 +6,19 @@
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
+import com.google.gson.reflect.TypeToken;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -44,35 +49,25 @@ public class AJAX_AddCustomFood extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("AJAX_AddCustomFood executing: " + request.getRequestURL());
-        boolean output = false;
+        
+        String customFoodJSONString = ServletUtilities.getRequestData(request);
+        Map<String,String> customFoodMap = ServletUtilities.convertJsonStringToMap(customFoodJSONString);
         String id_user = (String) request.getSession().getAttribute("id_user");
-
-        //get request data, should be a string with json formatting
-        //JsonReader jsonReader = new JsonReader(request.getReader());
-        BufferedReader reader = request.getReader();
-        StringBuilder buffer = new StringBuilder();
-        String currentLine = "";
-
-        //reader.readLine() is within the while head to avoid "null" being
-        //appended on at the end, this happens if it is in the body
-        while ((currentLine = reader.readLine()) != null)
+        customFoodMap.put("id_user", id_user);
+        
+        boolean output = false;
+        try
         {
-            buffer.append(currentLine);
+            output = DatabaseAccess.addCustomFood(customFoodMap, id_user);
+        } catch (SQLException ex)
+        {
+            Logger.getLogger(AJAX_AddCustomFood.class.getName()).log(Level.SEVERE, null, ex);
         }
-        String jsonString = buffer.toString();
-        System.out.println("AJAX_AddCustomFood string of food: " + jsonString);
-        //parse string into json object and add the id_user
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-        //jsonObject.addProperty("id_user", userID);
-
-        System.out.println("AJAX_AddCustomFood adding food: " + jsonObject);
-
-        //execute database command and send response to client
-        output = DatabaseAccess.addCustomFood(jsonObject, id_user);
-        PrintWriter writer = response.getWriter();
-        writer.print(output);
-        writer.close();
+        
+        try (PrintWriter writer = response.getWriter())
+        {
+            writer.print(output);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
