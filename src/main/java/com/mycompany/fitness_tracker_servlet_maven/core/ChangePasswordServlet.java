@@ -43,7 +43,8 @@ public class ChangePasswordServlet extends HttpServlet
     {
         ServletContext sc = this.getServletContext();
         HttpSession session = request.getSession(false);
-
+        String id_user = (String) request.getAttribute("id_user");
+        
         //user cannot login, has likely forgotten password
         if (session == null)
         {
@@ -77,7 +78,7 @@ public class ChangePasswordServlet extends HttpServlet
             String oldPassword = request.getParameter("oldPassword");
             String newPassword = request.getParameter("password");
             
-            if(Authorization.isCurrentUserAuthorized(oldPassword, request))
+            if(Authorization.isCurrentUserAuthorized(oldPassword, id_user))
             {
                 String email = (String) session.getAttribute("email");
                 String newHashedPassword = Security.hashPassword(newPassword);

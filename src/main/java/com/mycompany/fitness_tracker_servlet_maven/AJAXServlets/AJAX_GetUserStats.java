@@ -42,14 +42,14 @@ public class AJAX_GetUserStats extends HttpServlet
         System.out.println("AJAX_GetUserStats executing: " + request.getRequestURL());
 
         String id_user = (String) request.getSession().getAttribute("id_user");
-        String JSONObject = DatabaseAccess.getUserStats(id_user);
+        String JSONString = DatabaseAccess.getUserStats(id_user);
         response.setContentType("application/json");
-        //Get the printwriter object from response to write the required json object to the output stream      
-        PrintWriter out = response.getWriter();
-        System.out.println("AJAX_GetUserStats sending JSON object: " + JSONObject);
-        //Assuming your json object is **jsonObject**, perform the following, it will return your json object  
-        out.print(JSONObject);
-        out.close();
+        System.out.println("AJAX_GetUserStats sending JSON object: " + JSONString);
+
+        try (PrintWriter out = response.getWriter())
+        {
+            out.print(JSONString);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

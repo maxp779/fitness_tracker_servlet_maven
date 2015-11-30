@@ -12,6 +12,7 @@ import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -48,21 +49,15 @@ public class AJAX_SearchForFood extends HttpServlet
         queryString = queryString.replaceAll("%22", "\"");
         System.out.println("AJAX_SearchForFood: request data: " + queryString);
         
-        //parse string into json object and get relevant property from it
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = jsonParser.parse(queryString).getAsJsonObject();
-        JsonElement jsonElement = jsonObject.get("searchInput");
-        String food = jsonElement.getAsString();
+        Map<String,String> JSONMap = ServletUtilities.convertJsonStringToMap(queryString);
+        String searchInput = JSONMap.get("searchInput");  
         
-        
-        String JSONObject = DatabaseAccess.searchForFood(food);
-        //System.out.println("AJAX_GetCustomFoods sending JSON object: " + JSONObject);
+        String JSONFood = DatabaseAccess.searchForFood(searchInput);
         response.setContentType("application/json");
-        // Get the printwriter object from response to write the required json object to the output stream      
-        PrintWriter out = response.getWriter();
-        // Assuming your json object is **jsonObject**, perform the following, it will return your json object  
-        out.print(JSONObject);
-        out.close();
+        try (PrintWriter out = response.getWriter())
+        {
+            out.print(JSONFood);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

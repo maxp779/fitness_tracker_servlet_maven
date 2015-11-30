@@ -5,13 +5,6 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
-import java.io.PrintWriter;
-import java.util.Map;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**

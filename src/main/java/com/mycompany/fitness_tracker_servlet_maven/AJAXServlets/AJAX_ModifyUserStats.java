@@ -11,6 +11,7 @@ import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -41,34 +42,18 @@ public class AJAX_ModifyUserStats extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("AJAX_ModifyUserStats executing: " + request.getRequestURL());
-        boolean output = false;
+
+        String jsonString = ServletUtilities.getRequestData(request);
+        Map<String, String> userStatsMap = ServletUtilities.convertJsonStringToMap(jsonString);
         String id_user = (String) request.getSession().getAttribute("id_user");
-
-        //get request data, should be a string with json formatting
-        BufferedReader reader = request.getReader();
-        StringBuilder buffer = new StringBuilder();
-        String currentLine = "";
-
-        //reader.readLine() is within the while head to avoid "null" being
-        //appended on at the end, this happens if it is in the body
-        while ((currentLine = reader.readLine()) != null)
-        {
-            buffer.append(currentLine);
-        }
-        String jsonString = buffer.toString();
-        System.out.println("AJAX_ModifyUserStats stat string: " + jsonString);
-        //parse string into json object and add the id_user
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-        //jsonObject.addProperty("id_user", id_user);  
-
-        System.out.println("AJAX_ModifyUserStats setting stats: " + jsonObject);
+        userStatsMap.put("id_user", id_user);
 
         //execute database command and send response to client
-        output = DatabaseAccess.modifyUserStats(jsonObject, id_user);
-        PrintWriter writer = response.getWriter();
-        writer.print(output);
-        writer.close();
+        boolean output = DatabaseAccess.modifyUserStats(userStatsMap, id_user);
+        try (PrintWriter writer = response.getWriter())
+        {
+            writer.print(output);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

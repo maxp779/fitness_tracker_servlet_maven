@@ -38,15 +38,15 @@ public class AJAX_GetFriendlyNames extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        Gson gson = new Gson(); 
+        Gson gson = new Gson();
         String friendlyNamesJSON = gson.toJson(ClientAPI.getFriendlyValuesMap());
         response.setContentType("application/json");
-        //Get the printwriter object from response to write the required json object to the output stream      
-        PrintWriter out = response.getWriter();
         System.out.println("AJAX_GetFriendlyNames sending JSON object: " + friendlyNamesJSON);
-        //Assuming your json object is **jsonObject**, perform the following, it will return your json object  
-        out.print(friendlyNamesJSON);
-        out.close();
+
+        try (PrintWriter out = response.getWriter())
+        {
+            out.print(friendlyNamesJSON);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

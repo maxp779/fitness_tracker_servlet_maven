@@ -20,85 +20,83 @@ import javax.servlet.http.HttpSession;
 
 /**
  * This Servlet handles user authentication, it is called when the user has
- * filled in and submitted their details on either the desktop or mobile login pages.
- * This servlet then checks their account credentials and redirects them accordingly.
+ * filled in and submitted their details on either the desktop or mobile login
+ * pages. This servlet then checks their account credentials and redirects them
+ * accordingly.
+ *
  * @author max
  */
-@WebServlet(name = "AuthenticationServlet", urlPatterns = {"/AuthenticationServlet/*"})
-public class AuthenticationServlet extends HttpServlet {
+@WebServlet(name = "AuthenticationServlet", urlPatterns =
+{
+    "/AuthenticationServlet/*"
+})
+public class AuthenticationServlet extends HttpServlet
+{
+
+    private static final String accountDosentExist = "<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>";
+    private static final String wrongPassword = "<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>";
+    private static final String forwardRequestTo = "/MainPageServlet";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
-     * 
+     *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException 
+            throws ServletException, IOException
     {
-        ServletContext sc = this.getServletContext();
         System.out.println("AuthenticationServlet: executing");
         String loginAttemptEmail = request.getParameter("email");
-        String loginAttemptPassword = request.getParameter("password");
-        Map<String,String> userCredentials;
-                
-        //obtain user details from database
-        userCredentials = (HashMap) DatabaseAccess.getUserCredentialsFromEmail(loginAttemptEmail);
-        System.out.println("USER CREDENTIALS: "+userCredentials);
-            //if account exists
-            if(userCredentials != null)
-            {
-                System.out.println("AuthenticationServlet: account exists");
+        Map<String, String> userCredentials = (HashMap) DatabaseAccess.getUserCredentialsFromEmail(loginAttemptEmail);
 
-                    //if password is correct                   
-                    String storedHashedPassword = userCredentials.get("hashedPassword");
-                    if(Security.passwordMatch(loginAttemptPassword, storedHashedPassword))
-                    {
-                        System.out.println("AuthenticationServlet: password correct");
-                        
-                        //create new session and add email/user_id values to it
-                        HttpSession session = request.getSession(true);
-                        session.setAttribute(ClientAPI.getClientRequestIdentifier(), loginAttemptEmail);
-                        session.setAttribute("id_user", userCredentials.get("id_user"));
-                        session.setMaxInactiveInterval(GlobalValues.getMaxInactiveInterval());
-                        //String encodedURL = response.encodeRedirectURL(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
-                        //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginSuccessReferrer());
-
-                        RequestDispatcher rd;
-                        rd = request.getRequestDispatcher("/MainPageServlet");
-                        rd.forward(request, response);
-                    }
-                    else
-                    {
-                        System.out.println("AuthenticationServlet: wrong password");
-                        //if wrong password, back to login page
-                        //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
-
-                        RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getLoginPage());
-                        PrintWriter out= response.getWriter();
-                        out.println("<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>");
-                        rd.include(request, response);
-                    }
-                
-
-            }
-            else
-            {
-                System.out.println("AuthenticationServlet: account dosent exist");
-                //if account dosent exist, back to login page
-                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
-                
-                RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getLoginPage());
-                PrintWriter out= response.getWriter();
-                out.println("<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>");
-                rd.include(request, response);
-            }
-
+        if (userCredentials == null)
+        {
+            System.out.println("AuthenticationServlet: account dosent exist");
+            writeOutput(request, response, accountDosentExist);
+            return;
         }
-        
+
+        String storedHashedPassword = userCredentials.get("hashedPassword");
+        String loginAttemptPassword = request.getParameter("password");
+        if (!Security.passwordMatch(loginAttemptPassword, storedHashedPassword))
+        {
+            System.out.println("AuthenticationServlet: password incorrect");
+            writeOutput(request, response, wrongPassword);
+
+        } else
+        {
+            System.out.println("AuthenticationServlet: password correct");
+            createNewSession(request, userCredentials);
+            forwardRequest(request, response);
+        }
+    }
+
+    private void writeOutput(HttpServletRequest request, HttpServletResponse response, String output) throws IOException, ServletException
+    {
+        ServletContext servletContext = this.getServletContext();
+        RequestDispatcher rd = servletContext.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getLoginPage());
+        PrintWriter out = response.getWriter();
+        out.println(output);
+        rd.include(request, response);
+    }
+
+    private void createNewSession(HttpServletRequest request, Map userCredentials) throws ServletException, IOException
+    {
+        HttpSession session = request.getSession(true);
+        session.setAttribute(ClientAPI.getClientRequestIdentifier(), userCredentials.get("email"));
+        session.setAttribute("id_user", userCredentials.get("id_user"));
+        session.setMaxInactiveInterval(GlobalValues.getMaxInactiveInterval());
+    }
+
+    private void forwardRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        RequestDispatcher requestDispatcher = request.getRequestDispatcher(forwardRequestTo);
+        requestDispatcher.forward(request, response);
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -111,7 +109,8 @@ public class AuthenticationServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException
+    {
         processRequest(request, response);
     }
 
@@ -125,7 +124,8 @@ public class AuthenticationServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException
+    {
         processRequest(request, response);
     }
 
@@ -135,7 +135,8 @@ public class AuthenticationServlet extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
-    public String getServletInfo() {
+    public String getServletInfo()
+    {
         return "Short description";
     }// </editor-fold>
 

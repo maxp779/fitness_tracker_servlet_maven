@@ -40,15 +40,13 @@ public class AJAX_GetCustomFoodList extends HttpServlet
         System.out.println("AJAX_GetCustomFoodList executing: " + request.getRequestURL());
 
         String id_user = (String) request.getSession().getAttribute("id_user");
-        String JSONObject = DatabaseAccess.getCustomFoodList(id_user);
-        //System.out.println("AJAX_GetCustomFoods sending JSON object: " + JSONObject);
+        String JSONString = DatabaseAccess.getCustomFoodList(id_user);
         response.setContentType("application/json");
-        // Get the printwriter object from response to write the required json object to the output stream      
-        PrintWriter out = response.getWriter();
-        System.out.println("AJAX_GetCustomFoodList sending JSON object: " + JSONObject);
-        // Assuming your json object is **jsonObject**, perform the following, it will return your json object  
-        out.print(JSONObject);
-        out.close();
+        System.out.println("AJAX_GetCustomFoodList sending JSON object: " + JSONString);
+        try (PrintWriter out = response.getWriter())
+        {
+            out.print(JSONString);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

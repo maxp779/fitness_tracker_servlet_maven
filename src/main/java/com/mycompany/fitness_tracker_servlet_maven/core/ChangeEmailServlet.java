@@ -27,6 +27,11 @@ import javax.servlet.http.HttpSession;
 public class ChangeEmailServlet extends HttpServlet
 {
 
+    private static final String emailChanged = "<div class=\"alert alert-success\" role=\"alert\">Email changed successfully.</div>";
+    private static final String emailChangeFailed = "<div class=\"alert alert-danger\" role=\"alert\">Email change request failed.</div>";
+    private static final String emailAlreadyExists = "<div class=\"alert alert-danger\" role=\"alert\">Email already exists!</div>";
+    private static final String incorrectPassword = "<div class=\"alert alert-danger\" role=\"alert\">Incorrect password.</div>";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,52 +44,41 @@ public class ChangeEmailServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        ServletContext sc = this.getServletContext();
         HttpSession session = request.getSession();
         String id_user = (String) session.getAttribute("id_user");
         String password = request.getParameter("password");
-        String newEmail = request.getParameter("newEmail");
-        boolean success = false;
 
-        //if user has entered the correct password
-        if (Authorization.isCurrentUserAuthorized(password, request))
+        if (!Authorization.isCurrentUserAuthorized(password, id_user))
         {
-
-            //if the users email does not already exist in the datbase
-            if (!DatabaseAccess.userAlreadyExistsCheckEmail(newEmail))
-            {
-                success = DatabaseAccess.changeEmail(newEmail, id_user);
-                
-                //if email changed successfully
-                if (success)
-                {
-                    session.setAttribute("email", newEmail);
-                    RequestDispatcher rd = sc.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getSettingsPage());
-                    PrintWriter out = response.getWriter();
-                    out.println("<div class=\"alert alert-success\" role=\"alert\">Email changed successfully.</div>");
-                    rd.include(request, response);
-                } else //if email change failed for some reason
-                {
-                    RequestDispatcher rd = sc.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getSettingsPage());
-                    PrintWriter out = response.getWriter();
-                    out.println("<div class=\"alert alert-danger\" role=\"alert\">Email change request failed.</div>");
-                    rd.include(request, response);
-                }
-            } else //if the users new email is already in the database
-            {
-                RequestDispatcher rd = sc.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getSettingsPage());
-                PrintWriter out = response.getWriter();
-                out.println("<div class=\"alert alert-danger\" role=\"alert\">Email already exists!</div>");
-                rd.include(request, response);
-            }
-
-        } else //user entered incorrect password
-        {
-            RequestDispatcher rd = sc.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getSettingsPage());
-            PrintWriter out = response.getWriter();
-            out.println("<div class=\"alert alert-danger\" role=\"alert\">Incorrect password.</div>");
-            rd.include(request, response);
+            writeOutput(request, response, incorrectPassword);
+            return;
         }
+
+        String newEmail = request.getParameter("newEmail");
+        if (DatabaseAccess.userAlreadyExistsCheckEmail(newEmail))
+        {
+            writeOutput(request, response, emailAlreadyExists);
+            return;
+        }
+
+        if (DatabaseAccess.changeEmail(newEmail, id_user))
+        {
+            writeOutput(request, response, emailChanged);
+
+        }
+        else
+        {
+            writeOutput(request, response, emailChangeFailed);
+        }
+    }
+
+    private void writeOutput(HttpServletRequest request, HttpServletResponse response, String output) throws ServletException, IOException
+    {
+        ServletContext servletContext = this.getServletContext();
+        RequestDispatcher rd = servletContext.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getSettingsPage());
+        PrintWriter out = response.getWriter();
+        out.println(output);
+        rd.include(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

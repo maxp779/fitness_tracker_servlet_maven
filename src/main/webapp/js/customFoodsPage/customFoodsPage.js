@@ -118,7 +118,7 @@ function removeCustomFood()
     {
         console.log("attempting to remove " + selectedFood);
         $.ajax({
-            url: "/"+serverAPI["requests"][frontController] +"/"+ serverAPI["requests"][AJAX_RemoveCustomFood],
+            url: "/"+serverAPI["requests"]["frontController"] +"/"+ serverAPI["requests"]["AJAX_RemoveCustomFood"],
             type: "POST",
             data: JSON.stringify({id_customfood: selectedFood}),
             contentType: "application/json",

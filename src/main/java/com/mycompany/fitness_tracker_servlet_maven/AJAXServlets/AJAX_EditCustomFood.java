@@ -5,12 +5,17 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -41,36 +46,34 @@ public class AJAX_EditCustomFood extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("AJAX_EditCustomFood executing: " + request.getRequestURL());
-        boolean output = false;
         String id_user = (String) request.getSession().getAttribute("id_user");
-        
-        //get request data, should be a string with json formatting
-        //JsonReader jsonReader = new JsonReader(request.getReader());
-        BufferedReader reader = request.getReader();
-        StringBuilder buffer = new StringBuilder();
-        String currentLine = "";
+//        
+//        //get request data, should be a string with json formatting
+//        //JsonReader jsonReader = new JsonReader(request.getReader());
+//        BufferedReader reader = request.getReader();
+//        StringBuilder buffer = new StringBuilder();
+//        String currentLine = "";
+//
+//        //reader.readLine() is within the while head to avoid "null" being
+//        //appended on at the end, this happens if it is in the body
+//        while ((currentLine = reader.readLine()) != null)
+//        {
+//            buffer.append(currentLine);
+//        }
+//        String jsonString = buffer.toString();
 
-        //reader.readLine() is within the while head to avoid "null" being
-        //appended on at the end, this happens if it is in the body
-        while ((currentLine = reader.readLine()) != null)
+        String customFoodJSONString = ServletUtilities.getRequestData(request);
+        Map<String, String> customFoodMap = ServletUtilities.convertJsonStringToMap(customFoodJSONString);
+
+        customFoodMap.put("id_user", id_user);
+        boolean output = DatabaseAccess.editCustomFood(customFoodMap, id_user);
+
+        try (PrintWriter writer = response.getWriter())
         {
-            buffer.append(currentLine);
+            writer.print(output);
         }
-        String jsonString = buffer.toString();
-
-        //parse string into json object and add the id_user
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-        //jsonObject.addProperty("id_user", userID);
-
-        System.out.println("AJAX_EditCustomFood editing food: " + jsonObject);
-
-        //execute database command and send response to client
-        output = DatabaseAccess.editCustomFood(jsonObject, id_user);
-        PrintWriter writer = response.getWriter();
-        writer.print(output);
-        writer.close();
     }
+
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

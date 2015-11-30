@@ -13,6 +13,7 @@ import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,26 +46,28 @@ public class AJAX_RemoveCustomFood extends HttpServlet
         System.out.println("AJAX_RemoveCustomFood executing: " + request.getRequestURL());
 
         //get request data, should be a string with json formatting
-        BufferedReader reader = request.getReader();
-        StringBuilder buffer = new StringBuilder();
-        String currentLine = "";
-        while ((currentLine = reader.readLine()) != null)
-        {
-            buffer.append(currentLine);
-        }
-        String jsonString = buffer.toString();
+//        BufferedReader reader = request.getReader();
+//        StringBuilder buffer = new StringBuilder();
+//        String currentLine = "";
+//        while ((currentLine = reader.readLine()) != null)
+//        {
+//            buffer.append(currentLine);
+//        }
+        String JSONString = ServletUtilities.getRequestData(request);
+        Map<String,String> JSONMap = ServletUtilities.convertJsonStringToMap(JSONString);
 
         //parse string into json object and get relevant property from it
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-        JsonElement jsonElement = jsonObject.get("id_customfood");
-        int id_customfood = jsonElement.getAsInt();
+//        JsonParser jsonParser = new JsonParser();
+//        JsonObject jsonObject = (JsonObject) jsonParser.parse(JSONString);
+//        JsonElement jsonElement = jsonObject.get("id_customfood");
+        String id_customfood = JSONMap.get("id_customfood");
         
         //execute database command and send response to client
         boolean removeCustomFood = DatabaseAccess.removeCustomFood(id_customfood);     
-        PrintWriter writer = response.getWriter();
-        writer.print(removeCustomFood);
-        writer.close();
+        try (PrintWriter writer = response.getWriter())
+        {
+            writer.print(removeCustomFood);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

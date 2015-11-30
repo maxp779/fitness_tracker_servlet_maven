@@ -95,7 +95,7 @@ public class TestDatabaseServlet extends HttpServlet
             
             aConnection = null;
             
-            DatabaseUtils.closeConnections(aConnection, resultSet, statement);
+            //DatabaseUtils.closeConnections(aConnection, resultSet, statement);
         }
         
         

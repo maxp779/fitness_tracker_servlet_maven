@@ -6,10 +6,6 @@
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,9 +44,8 @@ public class DatabaseAccess
 //            + "totnit=?,protein=?,fat=?,carbohydrate=?,calorie=?,kj=?,star=?,oligo=?,totsug=?,gluc=?,galact=?,fruct=?,sucr=?,malt=?,lact=?,alco=?,engfib=?,aoacfib=?,satfac=?,"
 //            + "satfod=?,totn6pfac=?,totn6pfod=?,totn3pfac=?,totn3pfod=?,monofacc=?,monofodc=?,monofac=?,monofod=?,polyfacc=?,polyfodc=?,polyfac=?,polyfod=?,satfacx6=?,satfodx6=?,"
 //            + "totbrfac=?,totbrfod=?,factrans=?,fodtrans=?,chol=?,weight=?,sodium=? WHERE id_user=?";
-    
     //Supported food attributes, this omits items that are added automatically
-    private static final List<String> supportedAttributeList = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote", "water",
+    private static final List<String> supportedFoodAttributeList = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote", "water",
             "totnit", "protein", "fat", "carbohydrate", "calorie", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", "engfib", "aoacfib", "satfac",
             "satfod", "totn6pfac", "totn6pfod", "totn3pfac", "totn3pfod", "monofacc", "monofodc", "monofac", "monofod", "polyfacc", "polyfodc", "polyfac", "polyfod", "satfacx6", "satfodx6",
             "totbrfac", "totbrfod", "factrans", "fodtrans", "chol", "weight", "sodium"));
@@ -73,37 +68,35 @@ public class DatabaseAccess
         String getusercredentialsfromemailSQL = "SELECT email,password,id_user FROM usertable WHERE email = ?";
 
         System.out.println("DatabaseAccess: getUserCredentialsFromEmail() for email " + loginAttemptEmail);
-        Map output = new HashMap<>();
-        ResultSet resultSet = null;
         String retrievedEmail = null;
         String retrievedPassword = null;
         String retrieved_id_user = null;
-        PreparedStatement getEmailStatement = null;
-        Connection databaseConnection = null;
+        //Connection databaseConnection = null;
 
         //if user exists
         if (DatabaseAccess.userAlreadyExistsCheckEmail(loginAttemptEmail))
         {
-            databaseConnection = DatabaseUtils.getDatabaseConnection();
-            try
+            try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                    PreparedStatement getEmailStatement = databaseConnection.prepareStatement(getusercredentialsfromemailSQL);)
             {
-                getEmailStatement = databaseConnection.prepareStatement(getusercredentialsfromemailSQL);
                 getEmailStatement.setString(1, loginAttemptEmail);
 
-                resultSet = getEmailStatement.executeQuery();
-                resultSet.next();
-                retrievedEmail = resultSet.getString("email");
-                retrievedPassword = resultSet.getString("password");
-                retrieved_id_user = resultSet.getString("id_user");
+                try (ResultSet resultSet = getEmailStatement.executeQuery())
+                {
+                    if (resultSet.next())
+                    {
+                        retrievedEmail = resultSet.getString("email");
+                        retrievedPassword = resultSet.getString("password");
+                        retrieved_id_user = resultSet.getString("id_user");
+                    }
+                }
 
             } catch (SQLException ex)
             {
                 Logger.getLogger(AuthenticationServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } finally
-            {
-                DatabaseUtils.closeConnections(databaseConnection, resultSet, getEmailStatement);
             }
 
+            Map output = new HashMap<>();
             output.put("email", retrievedEmail);
             output.put("hashedPassword", retrievedPassword);
             output.put("id_user", retrieved_id_user);
@@ -117,38 +110,32 @@ public class DatabaseAccess
     public static Map<String, String> getUserCredentialsFromid_user(String id_user)
     {
         String getusercredentialsfromid_userSQL = "SELECT email,password,id_user FROM usertable WHERE id_user = ?";
-
         System.out.println("DatabaseAccess: getUserCredentialsFromid_user() for user " + id_user);
+        
         Map output = new HashMap<>();
-        ResultSet resultSet = null;
         String retrievedEmail = null;
         String retrievedPassword = null;
         String retrieved_id_user = null;
-        PreparedStatement getEmailStatement = null;
-        Connection databaseConnection = null;
-        Long id_userlong = Long.parseLong(id_user);
-
+        
         //if user exists
         if (DatabaseAccess.userAlreadyExistsCheckid_user(id_user))
         {
-            databaseConnection = DatabaseUtils.getDatabaseConnection();
-            try
+            try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                    PreparedStatement getEmailStatement = databaseConnection.prepareStatement(getusercredentialsfromid_userSQL);)
             {
-                getEmailStatement = databaseConnection.prepareStatement(getusercredentialsfromid_userSQL);
-                getEmailStatement.setLong(1, id_userlong);
+                getEmailStatement.setLong(1, Long.parseLong(id_user));
 
-                resultSet = getEmailStatement.executeQuery();
-                resultSet.next();
-                retrievedEmail = resultSet.getString("email");
-                retrievedPassword = resultSet.getString("password");
-                retrieved_id_user = resultSet.getString("id_user");
+                try (ResultSet resultSet = getEmailStatement.executeQuery();)
+                {
+                    resultSet.next();
+                    retrievedEmail = resultSet.getString("email");
+                    retrievedPassword = resultSet.getString("password");
+                    retrieved_id_user = resultSet.getString("id_user");
+                }
 
             } catch (SQLException ex)
             {
                 Logger.getLogger(AuthenticationServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } finally
-            {
-                DatabaseUtils.closeConnections(databaseConnection, resultSet, getEmailStatement);
             }
 
             output.put("email", retrievedEmail);
@@ -164,73 +151,64 @@ public class DatabaseAccess
     public static boolean addUser(String anEmail, String aPassword)
     {
         String adduserSQL = "INSERT INTO usertable (email,password) VALUES (?,?)";
-
         System.out.println("DatabaseAccess: addUser() email " + anEmail);
-        boolean userAdded = false;
+
+        int userAdded = 0;
         //if user already exists
         if (DatabaseAccess.userAlreadyExistsCheckEmail(anEmail))
         {
             System.out.println("DatabaseAccess: user already exists, no action taken");
         } else //if user does not exist
         {
-            System.out.println("DatabaseAccess: adding user");
-            PreparedStatement addUserStatement = null;
-            Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-            try
+            try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                    PreparedStatement addUserStatement = databaseConnection.prepareStatement(adduserSQL);)
             {
-                addUserStatement = databaseConnection.prepareStatement(adduserSQL);
                 addUserStatement.setString(1, anEmail);
                 addUserStatement.setString(2, aPassword);
-                addUserStatement.executeUpdate();
-                userAdded = true;
+                userAdded = addUserStatement.executeUpdate();
 
                 //setup defaults for the new user
-                String id_user = getid_user(anEmail);
-                setupSelectedAttributes(id_user);
-                setupUserStats(id_user);
+                if (userAdded != 0)
+                {
+                    String id_user = getid_user(anEmail);
+                    setupSelectedAttributes(id_user);
+                    setupUserStats(id_user);
+                }
             } catch (SQLException ex)
             {
                 Logger.getLogger(AuthenticationServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } finally
-            {
-                DatabaseUtils.closeConnections(databaseConnection, null, addUserStatement);
             }
         }
-        return userAdded;
+        return userAdded != 0;
     }
 
     public static boolean userAlreadyExistsCheckEmail(String anEmail)
     {
         String checkforuseremailSQL = "SELECT email FROM usertable WHERE email = ?";
+        System.out.println("DatabaseAccess: userAlreadyExistsCheckEmail() for email " + anEmail);
 
-        System.out.println("DatabaseAccess: userAlreadyExistsCheckEmail() for email" + anEmail);
         boolean userAlreadyExists = true;
-        PreparedStatement checkUserStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement checkUserStatement = databaseConnection.prepareStatement(checkforuseremailSQL);)
         {
-            checkUserStatement = databaseConnection.prepareStatement(checkforuseremailSQL);
             checkUserStatement.setString(1, anEmail);
-            resultSet = checkUserStatement.executeQuery();
+            try (ResultSet resultSet = checkUserStatement.executeQuery();)
+            {
 
-            if (resultSet.next())
-            {
-                System.out.println("DatabaseAccess: user already in the database");
-                userAlreadyExists = true;
-            } else
-            {
-                System.out.println("DatabaseAccess: user is not in the database");
-                userAlreadyExists = false;
+                if (resultSet.next())
+                {
+                    System.out.println("DatabaseAccess: user already in the database");
+                    userAlreadyExists = true;
+                } else
+                {
+                    System.out.println("DatabaseAccess: user is not in the database");
+                    userAlreadyExists = false;
+                }
             }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, checkUserStatement);
         }
 
         return userAlreadyExists;
@@ -239,36 +217,30 @@ public class DatabaseAccess
     public static boolean userAlreadyExistsCheckid_user(String id_user)
     {
         String checkforuserid_userSQL = "SELECT id_user FROM usertable WHERE id_user = ?";
-
         System.out.println("DatabaseAccess: userAlreadyExistsCheckid_user() for user" + id_user);
+
         boolean userAlreadyExists = true;
-        PreparedStatement checkUserStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        Long id_userlong = Long.parseLong(id_user);
-
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement checkUserStatement = databaseConnection.prepareStatement(checkforuserid_userSQL);)
         {
-            checkUserStatement = databaseConnection.prepareStatement(checkforuserid_userSQL);
-            checkUserStatement.setLong(1, id_userlong);
-            resultSet = checkUserStatement.executeQuery();
+            checkUserStatement.setLong(1, Long.parseLong(id_user));
 
-            if (resultSet.next())
+            try (ResultSet resultSet = checkUserStatement.executeQuery();)
             {
-                System.out.println("DatabaseAccess: user already in the database");
-                userAlreadyExists = true;
-            } else
-            {
-                System.out.println("DatabaseAccess: user is not in the database");
-                userAlreadyExists = false;
+                if (resultSet.next())
+                {
+                    System.out.println("DatabaseAccess: user already in the database");
+                    userAlreadyExists = true;
+                } else
+                {
+                    System.out.println("DatabaseAccess: user is not in the database");
+                    userAlreadyExists = false;
+                }
             }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, checkUserStatement);
         }
 
         return userAlreadyExists;
@@ -277,32 +249,27 @@ public class DatabaseAccess
     public static String getid_user(String anEmail)
     {
         String getid_userSQL = "SELECT id_user FROM usertable WHERE email = ?";
-
         System.out.println("DatabaseAccess: getid_user() for email" + anEmail);
+
         Long id_user_long = null;
         String id_user_string = null;
-        PreparedStatement getuserIDStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement getuserIDStatement = databaseConnection.prepareStatement(getid_userSQL);)
         {
-            getuserIDStatement = databaseConnection.prepareStatement(getid_userSQL);
             getuserIDStatement.setString(1, anEmail);
-            resultSet = getuserIDStatement.executeQuery();
 
-            if (resultSet.next())
+            try (ResultSet resultSet = getuserIDStatement.executeQuery();)
             {
-                id_user_long = resultSet.getLong(1);
-                id_user_string = id_user_long.toString();
+                if (resultSet.next())
+                {
+                    id_user_long = resultSet.getLong(1);
+                    id_user_string = id_user_long.toString();
+                }
             }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, getuserIDStatement);
         }
         return id_user_string;
     }
@@ -310,63 +277,46 @@ public class DatabaseAccess
     public static String getCustomFoodList(String id_user)
     {
         String getcustomfoodlistSQL = "SELECT * FROM customfoodtable WHERE id_user = ?";
-
         System.out.println("DatabaseAccess: getCustomFoodList() " + id_user);
-        PreparedStatement getCustomFoodListStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        String JSONObject = null;
-        Long id_user_long = Long.parseLong(id_user);
 
-        try
+        String JSONString = null;
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement getCustomFoodListStatement = databaseConnection.prepareStatement(getcustomfoodlistSQL);)
         {
-            getCustomFoodListStatement = databaseConnection.prepareStatement(getcustomfoodlistSQL);
-            getCustomFoodListStatement.setLong(1, id_user_long);
-            resultSet = getCustomFoodListStatement.executeQuery();
-            JSONObject = convertResultSetToJSONArray(resultSet);
+            getCustomFoodListStatement.setLong(1, Long.parseLong(id_user));
+
+            try (ResultSet resultSet = getCustomFoodListStatement.executeQuery();)
+            {
+                JSONString = convertResultSetToJSONArray(resultSet);
+
+            }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, getCustomFoodListStatement);
         }
-        return JSONObject;
+        return JSONString;
     }
 
-    public static boolean removeCustomFood(Integer id_food)
+    public static boolean removeCustomFood(String id_customfood)
     {
         String removecustomfoodSQL = "DELETE FROM customfoodtable WHERE id_customfood= ?";
+        System.out.println("DatabaseAccess: removeCustomFood() " + id_customfood);
 
-        boolean output = false;
         int returnValue = 0;
-        System.out.println("DatabaseAccess: removeCustomFood() " + id_food);
-        PreparedStatement removeCustomFoodStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement removeCustomFoodStatement = databaseConnection.prepareStatement(removecustomfoodSQL);)
         {
-            removeCustomFoodStatement = databaseConnection.prepareStatement(removecustomfoodSQL);
-            removeCustomFoodStatement.setInt(1, id_food);
+            removeCustomFoodStatement.setLong(1, Long.parseLong(id_customfood));
             returnValue = removeCustomFoodStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, removeCustomFoodStatement);
         }
 
         //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
-        if (returnValue != 0)
-        {
-            output = true;
-        }
-
-        return output;
+        return returnValue != 0;
     }
 
     private static String convertResultSetToJSONArray(ResultSet aResultSet) throws SQLException
@@ -428,51 +378,63 @@ public class DatabaseAccess
 //
 //        //use below if you want nulls to appear e.g protein:50, carbohydrate:null
 //        //Gson gson = new GsonBuilder().serializeNulls().create();
-//        String JSONObject = gson.toJson(currentRecord);
+//        String outputJSONString = gson.toJson(currentRecord);
 //
-//        return JSONObject;
+//        return outputJSONString;
 //    }
-    public static boolean addCustomFood(JsonObject jsonObject, String id_user)
+    /**
+     * addCustomFood() creates an SQL query dynamically with a StringBuilder
+     * object the reason for this is to allow for support for more custom food
+     * attributes in the future without too much hassle.
+     *
+     * example query: INSERT INTO customfoodtable
+     * (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES
+     * (100,"oats",15,30,12,400)
+     *
+     * The query is built in 3 parts The first part is always "INSERT INTO
+     * customfoodtable " The second part is "(colunm1,column2)" based on the
+     * attribute names provided by the client The third part is
+     * "(value1,column2)" based on the attribute values provided by the client
+     * At the end they are concatanated together to form a full SQL query
+     *
+     * @param customFoodMap a map object representing a new custom food
+     * @param id_user the identifier for the current user
+     * @return a boolean indicating whether the custom food was added
+     * successfully or not
+     * @throws java.sql.SQLException
+     */
+    public static boolean addCustomFood(Map<String, String> customFoodMap, String id_user) throws SQLException
     {
-        System.out.println("DatabaseAccess: addCustomFood() " + jsonObject);
-        Gson gson = new Gson();
-        Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
-        {
-        }.getType();
-        Map<String, String> foodMap = gson.fromJson(jsonObject, stringStringMap);
-
-        //create SQL query e.g
-        //INSERT INTO customfoodtable (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES (?,?,?,?,?,?)
+        System.out.println("DatabaseAccess: addCustomFood() " + customFoodMap);
         StringBuilder addCustomFoodSQL = new StringBuilder();
         addCustomFoodSQL.append("INSERT INTO customfoodtable ");
-
         StringBuilder addCustomFoodColumns = new StringBuilder("(");
-
         StringBuilder addCustomFoodValues = new StringBuilder("VALUES (");
 
-        for (int count = 0; count < supportedAttributeList.size(); count++)
+        for (int count = 0; count < supportedFoodAttributeList.size(); count++)
         {
-            String currentAttribute = supportedAttributeList.get(count);
+            String currentAttribute = supportedFoodAttributeList.get(count);
 
             addCustomFoodColumns.append(currentAttribute);
 
-            if (!"id_user".equals(currentAttribute))
+            if (count < supportedFoodAttributeList.size())
             {
+                //if value is a varchar aka string such as the food name it must be surrounded
+                //in quotes e.g 'oats'
                 if (varcharAttributeList.contains(currentAttribute))
                 {
-                    addCustomFoodValues.append("'").append(foodMap.get(currentAttribute)).append("'");
-                } else
+                    addCustomFoodValues.append("'").append(customFoodMap.get(currentAttribute)).append("'");
+                } else //otherwise it is numeric and can be added without quotes
                 {
-                    addCustomFoodValues.append(foodMap.get(currentAttribute));
+                    addCustomFoodValues.append(customFoodMap.get(currentAttribute));
                 }
             }
 
-            //if not at the last attribute put a comma to separate it from the next attribute
-            if (count != supportedAttributeList.size() - 1)
+            if (count != supportedFoodAttributeList.size() - 1)
             {
                 addCustomFoodColumns.append(",");
                 addCustomFoodValues.append(",");
-            } else
+            } else //id_user is not part of supportedFoodAttributeList and cannot be treated the same so it is added manually here
             {
                 addCustomFoodColumns.append(",id_user)");
                 addCustomFoodValues.append(",").append(id_user).append(")");
@@ -483,320 +445,87 @@ public class DatabaseAccess
         addCustomFoodSQL.append(addCustomFoodValues);
         String addCustomFoodSQLString = addCustomFoodSQL.toString(); //finished SQL query
 
-        boolean output = false;
-        int returnValue = 0;
         System.out.println("DatabaseAccess: SQL query is:" + addCustomFoodSQLString);
-        PreparedStatement addCustomFoodStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-
-        try
+        int returnValue = 0;
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement addCustomFoodStatement = databaseConnection.prepareStatement(addCustomFoodSQLString);)
         {
-            addCustomFoodStatement = databaseConnection.prepareStatement(addCustomFoodSQLString);
-
-            /**
-             * it is possible some attributes were not entered by the client,
-             * e.g they may record the foodname and the calories but omit the
-             * protein, carbohydrate and fat values, in this case we set
-             * java.sql.Types.NULL because the SQL query "INSERT INTO
-             * eatenfoodtable
-             * (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES
-             * (?,?,?,?,?,?)" is expecting 6 values
-             */
-//            if (jsonObject.has("id_user"))
-//            {
-//                addEatenFoodStatement.setInt(1, jsonObject.get("id_user").getAsInt());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(1, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("foodname"))
-//            {
-//                addEatenFoodStatement.setString(2, jsonObject.get("foodname").getAsString());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(2, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("protein"))
-//            {
-//                addEatenFoodStatement.setFloat(3, jsonObject.get("protein").getAsFloat());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(3, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("carbohydrate"))
-//            {
-//                addEatenFoodStatement.setFloat(4, jsonObject.get("carbohydrate").getAsFloat());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(4, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("fat"))
-//            {
-//                addEatenFoodStatement.setFloat(5, jsonObject.get("fat").getAsFloat());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(5, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("calorie"))
-//            {
-//                addEatenFoodStatement.setInt(6, jsonObject.get("calorie").getAsInt());
-//            } else
-//            {
-//                addEatenFoodStatement.setNull(6, java.sql.Types.NULL);
-//            }
             returnValue = addCustomFoodStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQL ERROR CODE " + ex.getSQLState());
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, addCustomFoodStatement);
         }
 
-        if (returnValue != 0)
-        {
-            output = true;
-        }
-
-        return output;
-
-        // --------------------------
-//        boolean output = false;
-//        int returnValue = 0;
-//        System.out.println("DatabaseAccess: adding custom food" + jsonObject);
-//        PreparedStatement addCustomFoodStatement = null;
-//        ResultSet resultSet = null;
-//        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-//
-//        try
-//        {
-//            addCustomFoodStatement = databaseConnection.prepareStatement(addcustomfoodSQL);
-//
-//            /**
-//             * it is possible some attributes were not entered by the client,
-//             * e.g they may record the foodname and the calories but omit the
-//             * protein, carbohydrate and fat values, in this case we set
-//             * java.sql.Types.NULL because the SQL query "INSERT INTO
-//             * customfoodstable
-//             * (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES
-//             * (?,?,?,?,?,?)" is expecting 6 values
-//             */
-//            if (jsonObject.has("id_user"))
-//            {
-//                addCustomFoodStatement.setInt(1, jsonObject.get("id_user").getAsInt());
-//            } else
-//            {
-//                addCustomFoodStatement.setNull(1, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("foodname"))
-//            {
-//                addCustomFoodStatement.setString(2, jsonObject.get("foodname").getAsString());
-//            } else
-//            {
-//                addCustomFoodStatement.setNull(2, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("protein"))
-//            {
-//                addCustomFoodStatement.setInt(3, jsonObject.get("protein").getAsInt());
-//            } else
-//            {
-//                addCustomFoodStatement.setNull(3, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("carbohydrate"))
-//            {
-//                addCustomFoodStatement.setInt(4, jsonObject.get("carbohydrate").getAsInt());
-//            } else
-//            {
-//                addCustomFoodStatement.setNull(4, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("fat"))
-//            {
-//                addCustomFoodStatement.setInt(5, jsonObject.get("fat").getAsInt());
-//            } else
-//            {
-//                addCustomFoodStatement.setNull(5, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("calorie"))
-//            {
-//                addCustomFoodStatement.setInt(6, jsonObject.get("calorie").getAsInt());
-//            } else
-//            {
-//                addCustomFoodStatement.setNull(6, java.sql.Types.NULL);
-//            }
-//
-//            returnValue = addCustomFoodStatement.executeUpdate();
-//
-//        } catch (SQLException ex)
-//        {
-//            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-//            System.out.println("SQL ERROR CODE " + ex.getSQLState());
-//        } finally
-//        {
-//            DatabaseUtils.closeConnections(databaseConnection, resultSet, addCustomFoodStatement);
-//        }
-//        
-//        //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
-//        if (returnValue != 0)
-//        {
-//            output = true;
-//        }
-//
-//        return output;
+        return returnValue != 0; //a value of 0 would mean nothing was modified so the query failed and false is returned
     }
 
-    public static boolean editCustomFood(JsonObject jsonObject, String id_user)
+    /**
+     * editCustomFood() creates an SQL query dynamically, its purpose is to
+     * update the attributes of a particular custom food in the database. Here
+     * is an example query: "UPDATE customfoodtable SET
+     * foodname=?,protein=?,carbohydrate=?,fat=?,calorie=? WHERE
+     * id_customfood=?"
+     *
+     *
+     * @param customFoodMap a Map containing attribute values for a particular
+     * custom food that is to be updated
+     * @param id_user the identifier for the current user
+     * @return a boolean indicating whether the custom food was added
+     * successfully or not
+     */
+    public static boolean editCustomFood(Map<String, String> customFoodMap, String id_user)
     {
 
-        System.out.println("DatabaseAccess: editCustomFood() " + jsonObject);
-        Gson gson = new Gson();
-        Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
-        {
-        }.getType();
-        Map<String, String> foodMap = gson.fromJson(jsonObject, stringStringMap);
-
-        //create SQL query e.g
-        //UPDATE customfoodtable SET foodname=?,protein=?,carbohydrate=?,fat=?,calorie=? WHERE id_customfood=?
+        System.out.println("DatabaseAccess: editCustomFood() " + customFoodMap);
         StringBuilder editCustomFoodSQL = new StringBuilder();
         editCustomFoodSQL.append("UPDATE customfoodtable SET ");
 
-        for (int count = 0; count < supportedAttributeList.size(); count++)
+        for (int count = 0; count < supportedFoodAttributeList.size(); count++)
         {
-            String currentAttribute = supportedAttributeList.get(count);
+            String currentAttribute = supportedFoodAttributeList.get(count);
 
-            //editCustomFoodSQL.append(currentAttribute).append("=").append(foodMap.get(currentAttribute));
             if (!"id_user".equals(currentAttribute))
             {
                 if (varcharAttributeList.contains(currentAttribute))
                 {
-                    //editCustomFoodSQL.append("'").append(foodMap.get(currentAttribute)).append("'");
-                    editCustomFoodSQL.append(currentAttribute).append("=").append("'").append(foodMap.get(currentAttribute)).append("'");
+                    //if value is a varchar aka string such as the food name it must be surrounded
+                    //in quotes e.g 'oats'
+                    editCustomFoodSQL.append(currentAttribute).append("=").append("'").append(customFoodMap.get(currentAttribute)).append("'");
                 } else
                 {
-                    editCustomFoodSQL.append(currentAttribute).append("=").append(foodMap.get(currentAttribute));
+                    editCustomFoodSQL.append(currentAttribute).append("=").append(customFoodMap.get(currentAttribute));
                 }
             }
 
             //if not at the last attribute put a comma to separate it from the next attribute
-            if (count != supportedAttributeList.size() - 1)
+            if (count != supportedFoodAttributeList.size() - 1)
             {
                 editCustomFoodSQL.append(",");
             } else
             {
                 editCustomFoodSQL.append(",id_user=").append(id_user);
-                editCustomFoodSQL.append(" WHERE id_customfood=").append(foodMap.get("id_customfood"));
+                editCustomFoodSQL.append(" WHERE id_customfood=").append(customFoodMap.get("id_customfood"));
             }
         }
 
         String editCustomFoodSQLString = editCustomFoodSQL.toString(); //finished SQL query
-
-        boolean output = false;
         int returnValue = 0;
-        System.out.println("DatabaseAccess: SQL query is:" + editCustomFoodSQLString);
-        PreparedStatement editCustomFoodStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+        System.out.println("DatabaseAccess: editCustomFood() SQL query is:" + editCustomFoodSQLString);
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement editCustomFoodStatement = databaseConnection.prepareStatement(editCustomFoodSQLString);)
         {
-            editCustomFoodStatement = databaseConnection.prepareStatement(editCustomFoodSQLString);
             returnValue = editCustomFoodStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQL ERROR CODE " + ex.getSQLState());
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, editCustomFoodStatement);
         }
 
-        if (returnValue != 0)
-        {
-            output = true;
-        }
-
-        return output;
-
-//        boolean output = false;
-//        int returnValue = 0;
-//        System.out.println("DatabaseAccess: editing custom food" + jsonObject);
-//        PreparedStatement editCustomFoodStatement = null;
-//        ResultSet resultSet = null;
-//        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-//
-//        try
-//        {
-//            editCustomFoodStatement = databaseConnection.prepareStatement(editcustomfoodSQL);
-//
-//            /**
-//             * it is possible some attributes were not entered by the client,
-//             * e.g they may record the foodname and the calories but omit the
-//             * protein, carbohydrate and fat values, in this case we set
-//             * java.sql.Types.NULL because the SQL query "INSERT INTO
-//             * customfoodstable
-//             * (id_user,foodname,protein,carbohydrate,fat,calorie) VALUES
-//             * (?,?,?,?,?,?)" is expecting 6 values
-//             */
-//            if (jsonObject.has("foodname"))
-//            {
-//                editCustomFoodStatement.setString(1, jsonObject.get("foodname").getAsString());
-//            } else
-//            {
-//                editCustomFoodStatement.setNull(1, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("protein"))
-//            {
-//                editCustomFoodStatement.setFloat(2, jsonObject.get("protein").getAsFloat());
-//            } else
-//            {
-//                editCustomFoodStatement.setNull(2, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("carbohydrate"))
-//            {
-//                editCustomFoodStatement.setFloat(3, jsonObject.get("carbohydrate").getAsFloat());
-//            } else
-//            {
-//                editCustomFoodStatement.setNull(3, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("fat"))
-//            {
-//                editCustomFoodStatement.setFloat(4, jsonObject.get("fat").getAsFloat());
-//            } else
-//            {
-//                editCustomFoodStatement.setNull(4, java.sql.Types.NULL);
-//            }
-//            if (jsonObject.has("calorie"))
-//            {
-//                editCustomFoodStatement.setInt(5, jsonObject.get("calorie").getAsInt());
-//            } else
-//            {
-//                editCustomFoodStatement.setNull(5, java.sql.Types.NULL);
-//            }
-//
-//            editCustomFoodStatement.setInt(6, jsonObject.get("id_customfood").getAsInt());
-//
-//            System.out.println(editCustomFoodStatement.toString());
-//            returnValue = editCustomFoodStatement.executeUpdate();
-//
-//        } catch (SQLException ex)
-//        {
-//            Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-//            System.out.println("SQL ERROR CODE " + ex.getSQLState());
-//        } finally
-//        {
-//            DatabaseUtils.closeConnections(databaseConnection, resultSet, editCustomFoodStatement);
-//        }
-//
-//        //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
-//        if (returnValue != 0)
-//        {
-//            output = true;
-//        }
-//
-//        return output;
+        return returnValue != 0; //a value of 0 would mean nothing was modified so the query failed and false is returned
     }
 
     public static String getEatenFoodList(String id_user, Timestamp timestamp)
@@ -804,11 +533,6 @@ public class DatabaseAccess
         String getfoodeatenlistSQL = "SELECT * FROM eatenfoodtable WHERE id_user = ? AND timestamp >= ? AND timestamp < ?";
 
         System.out.println("DatabaseAccess: getEatenFoodList() for user " + id_user);
-        PreparedStatement getFoodEatenStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        String JSONObject = null;
-        Long id_user_long = Long.parseLong(id_user);
 
         //get start of current day and start of next day both in UNIX time
         //this is to retrieve all foods within a single day, so between those two times
@@ -824,34 +548,30 @@ public class DatabaseAccess
 
         Timestamp currentDayStartTimestamp = new Timestamp(currentDayStart);
         Timestamp nextDayStartTimestamp = new Timestamp(nextDayStart);
+        String outputJSONString = null;
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement getFoodEatenStatement = databaseConnection.prepareStatement(getfoodeatenlistSQL);)
         {
-            getFoodEatenStatement = databaseConnection.prepareStatement(getfoodeatenlistSQL);
-            getFoodEatenStatement.setLong(1, id_user_long);
+            getFoodEatenStatement.setLong(1, Long.parseLong(id_user));
             getFoodEatenStatement.setTimestamp(2, currentDayStartTimestamp);
             getFoodEatenStatement.setTimestamp(3, nextDayStartTimestamp);
-            resultSet = getFoodEatenStatement.executeQuery();
-            JSONObject = convertResultSetToJSONArray(resultSet);
+            try (ResultSet resultSet = getFoodEatenStatement.executeQuery();)
+            {
+                outputJSONString = convertResultSetToJSONArray(resultSet);
+            }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, getFoodEatenStatement);
         }
-        return JSONObject;
+
+        return outputJSONString;
     }
 
-    public static boolean addEatenFood(JsonObject jsonObject, String id_user)
+    public static boolean addEatenFood(Map<String, String> eatenFoodMap, String id_user)
     {
-        System.out.println("DatabaseAccess: addEatenFood() " + jsonObject);
-        Gson gson = new Gson();
-        Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
-        {
-        }.getType();
-        Map<String, String> foodMap = gson.fromJson(jsonObject, stringStringMap);
+        System.out.println("DatabaseAccess: addEatenFood() " + eatenFoodMap);
 
         //create SQL query e.g
         //INSERT INTO eatenfoodtable (id_user,foodname,protein,carbohydrate,fat,calorie,timestamp) VALUES (?,?,?,?,?,?,?)
@@ -862,29 +582,29 @@ public class DatabaseAccess
 
         StringBuilder addEatenFoodValues = new StringBuilder("VALUES (");
 
-        for (int count = 0; count < supportedAttributeList.size(); count++)
+        for (int count = 0; count < supportedFoodAttributeList.size(); count++)
         {
-            String currentAttribute = supportedAttributeList.get(count);
+            String currentAttribute = supportedFoodAttributeList.get(count);
             addEatenFoodColumns.append(currentAttribute);
 
             if (varcharAttributeList.contains(currentAttribute))
             {
-                addEatenFoodValues.append("'").append(foodMap.get(currentAttribute)).append("'");
+                addEatenFoodValues.append("'").append(eatenFoodMap.get(currentAttribute)).append("'");
             } else
             {
-                addEatenFoodValues.append(foodMap.get(currentAttribute));
+                addEatenFoodValues.append(eatenFoodMap.get(currentAttribute));
             }
 
             //if not at the last attribute put a comma to separate it from the next attribute
-            if (count != supportedAttributeList.size() - 1)
+            if (count != supportedFoodAttributeList.size() - 1)
             {
                 addEatenFoodColumns.append(",");
                 addEatenFoodValues.append(",");
             } else //last attribute added, stick a timestamp and id_user on the end
             {
                 addEatenFoodColumns.append(",timestamp,id_user)");
-                JsonElement UNIXtimeElement = jsonObject.get("UNIXtime");
-                Timestamp timestamp = new Timestamp(UNIXtimeElement.getAsLong());
+                String UNIXtimeString = eatenFoodMap.get("UNIXtime");
+                Timestamp timestamp = new Timestamp(Long.parseLong(UNIXtimeString));
                 Long timestampLong = timestamp.getTime(); //get unix time in milliseconds
                 timestampLong = timestampLong / 1000; //convert to seconds
                 addEatenFoodValues.append(",").append("to_timestamp(").append(timestampLong).append("),").append(id_user).append(")");
@@ -895,67 +615,43 @@ public class DatabaseAccess
         addEatenFoodSQL.append(addEatenFoodValues);
         String addEatenFoodSQLString = addEatenFoodSQL.toString(); //finished SQL query
 
-        boolean output = false;
         int returnValue = 0;
         System.out.println("DatabaseAccess: SQL query is:" + addEatenFoodSQLString);
-        PreparedStatement addEatenFoodStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement addEatenFoodStatement = databaseConnection.prepareStatement(addEatenFoodSQLString);)
         {
-            addEatenFoodStatement = databaseConnection.prepareStatement(addEatenFoodSQLString);
             returnValue = addEatenFoodStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("SQL ERROR CODE " + ex.getSQLState());
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, addEatenFoodStatement);
         }
 
-        if (returnValue != 0)
-        {
-            output = true;
-        }
-
-        return output;
+        return returnValue != 0;
     }
 
-    public static boolean removeEatenFood(int id_eatenfood)
+    public static boolean removeEatenFood(long id_eatenfood)
     {
         String removeeatenfoodSQL = "DELETE FROM eatenfoodtable WHERE id_eatenfood= ?";
 
         boolean output = false;
         int returnValue = 0;
         System.out.println("DatabaseAccess: removeEatenFood() " + id_eatenfood);
-        PreparedStatement removeEatenFoodStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement removeEatenFoodStatement = databaseConnection.prepareStatement(removeeatenfoodSQL);)
         {
-            removeEatenFoodStatement = databaseConnection.prepareStatement(removeeatenfoodSQL);
-            removeEatenFoodStatement.setInt(1, id_eatenfood);
+            removeEatenFoodStatement.setLong(1, id_eatenfood);
             returnValue = removeEatenFoodStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, removeEatenFoodStatement);
         }
 
-        //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
-        if (returnValue != 0)
-        {
-            output = true;
-        }
-
-        return output;
+        return returnValue != 0;
     }
 
     public static String searchForFood(String food)
@@ -963,26 +659,23 @@ public class DatabaseAccess
         String searchForFoodSQL = "SELECT * FROM searchablefoodtable WHERE FOODNAME LIKE ?;";
 
         System.out.println("DatabaseAccess: searchForFood() " + food);
-        PreparedStatement searchForFood = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        String JSONObject = null;
+        String JSONString = null;
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement searchForFood = databaseConnection.prepareStatement(searchForFoodSQL);)
         {
-            searchForFood = databaseConnection.prepareStatement(searchForFoodSQL);
             searchForFood.setString(1, food + "%"); //% indicates a wildcard
-            resultSet = searchForFood.executeQuery();
-            JSONObject = convertResultSetToJSONArray(resultSet);
+            try (ResultSet resultSet = searchForFood.executeQuery();)
+            {
+                JSONString = convertResultSetToJSONArray(resultSet);
+            }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, searchForFood);
         }
-        return JSONObject;
+
+        return JSONString;
     }
 
     public static boolean setupSelectedAttributes(String id_user)
@@ -993,46 +686,28 @@ public class DatabaseAccess
         int returnValue = 0;
 
         System.out.println("DatabaseAccess: setupSelectedAttributes() for user " + id_user);
-        PreparedStatement setupFoodAttributesStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        Long id_user_long = Long.parseLong(id_user);
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement setupFoodAttributesStatement = databaseConnection.prepareStatement(setupFoodAttributesSQL);)
         {
-            setupFoodAttributesStatement = databaseConnection.prepareStatement(setupFoodAttributesSQL);
-            setupFoodAttributesStatement.setLong(1, id_user_long);
+            setupFoodAttributesStatement.setLong(1, Long.parseLong(id_user));
             returnValue = setupFoodAttributesStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, setupFoodAttributesStatement);
         }
 
-        //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
-        if (returnValue != 0)
-        {
-            output = true;
-        }
-
-        return output;
+        return returnValue != 0;
     }
 
-    public static boolean modifySelectedAttributes(JsonObject jsonObject, String id_user)
+    public static boolean modifySelectedAttributes(Map<String, String> selectedAttributesMap, String id_user)
     {
         System.out.println("DatabaseAccess: modifySelectedAttributes() for user " + id_user);
-        Gson gson = new Gson();
-        Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
-        {
-        }.getType();
-        Map<String, String> attributeMap = gson.fromJson(jsonObject, stringStringMap);
 
         //change string attributes into boolean, "t" = Boolean.TRUE, "f" = BOOLEAN.FALSE
         Map<String, Boolean> attributeMapBoolean = new LinkedHashMap();
-        Iterator it = attributeMap.entrySet().iterator();
+        Iterator it = selectedAttributesMap.entrySet().iterator();
         while (it.hasNext())
         {
             Map.Entry pair = (Map.Entry) it.next();
@@ -1057,20 +732,20 @@ public class DatabaseAccess
         //UPDATE selectedattributestable SET foodcode=?,foodname=?,foodnameoriginal=?,description=?,foodgroup=? WHERE id_user=?
         StringBuilder modifyFoodAttributesSQL = new StringBuilder();
         modifyFoodAttributesSQL.append("UPDATE selectedattributestable SET ");
-        for (int count = 0; count < supportedAttributeList.size(); count++)
+        for (int count = 0; count < supportedFoodAttributeList.size(); count++)
         {
-            String currentAttribute = supportedAttributeList.get(count);
+            String currentAttribute = supportedFoodAttributeList.get(count);
 
-            if (currentAttribute != "id_user")
-            {
-                modifyFoodAttributesSQL.append(currentAttribute).append("=").append(attributeMapBoolean.get(currentAttribute));
-            } else
+            if (currentAttribute.equals("id_user"))
             {
                 modifyFoodAttributesSQL.append(currentAttribute).append("=").append(id_user);
+            } else
+            {
+                modifyFoodAttributesSQL.append(currentAttribute).append("=").append(attributeMapBoolean.get(currentAttribute));
             }
 
             //if not at the last attribute put a comma to separate it from the next attribute
-            if (count != supportedAttributeList.size() - 1)
+            if (count != supportedFoodAttributeList.size() - 1)
             {
                 modifyFoodAttributesSQL.append(",");
             }
@@ -1079,84 +754,20 @@ public class DatabaseAccess
         String modifyFoodAttributesSQLString = modifyFoodAttributesSQL.toString();
         System.out.println("DatabaseAccess: SQL query is:" + modifyFoodAttributesSQLString);
 
-        PreparedStatement modifySelectedAttributesStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        boolean output = false;
         int returnValue = 0;
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement modifySelectedAttributesStatement = databaseConnection.prepareStatement(modifyFoodAttributesSQLString);)
         {
-            //ALSO CHANGE DATABASE CL
-            //TRY TO REJIG TO USE LINKEDHASHMAP AND A LOOP!! LINKEDHASHMAP PRESERVES INSERTION ORDER
-            modifySelectedAttributesStatement = databaseConnection.prepareStatement(modifyFoodAttributesSQLString);
-//            modifyUserStatsStatement.setBoolean(1, attributeMapBoolean.get("foodcode"));
-//            modifyUserStatsStatement.setBoolean(2, attributeMapBoolean.get("foodname"));
-//            modifyUserStatsStatement.setBoolean(3, attributeMapBoolean.get("foodnameoriginal"));
-//            modifyUserStatsStatement.setBoolean(4, attributeMapBoolean.get("description"));
-//            modifyUserStatsStatement.setBoolean(5, attributeMapBoolean.get("foodgroup"));
-//            modifyUserStatsStatement.setBoolean(6, attributeMapBoolean.get("previous"));
-//            modifyUserStatsStatement.setBoolean(7, attributeMapBoolean.get("foodreferences"));
-//            modifyUserStatsStatement.setBoolean(8, attributeMapBoolean.get("footnote"));
-//            modifyUserStatsStatement.setBoolean(9, attributeMapBoolean.get("water"));
-//            modifyUserStatsStatement.setBoolean(10, attributeMapBoolean.get("totnit"));
-//            modifyUserStatsStatement.setBoolean(11, attributeMapBoolean.get("protein"));
-//            modifyUserStatsStatement.setBoolean(12, attributeMapBoolean.get("fat"));
-//            modifyUserStatsStatement.setBoolean(13, attributeMapBoolean.get("carbohydrate"));
-//            modifyUserStatsStatement.setBoolean(14, attributeMapBoolean.get("calorie"));
-//            modifyUserStatsStatement.setBoolean(15, attributeMapBoolean.get("kj"));
-//            modifyUserStatsStatement.setBoolean(16, attributeMapBoolean.get("star"));
-//            modifyUserStatsStatement.setBoolean(17, attributeMapBoolean.get("oligo"));
-//            modifyUserStatsStatement.setBoolean(18, attributeMapBoolean.get("totsug"));
-//            modifyUserStatsStatement.setBoolean(19, attributeMapBoolean.get("gluc"));
-//            modifyUserStatsStatement.setBoolean(20, attributeMapBoolean.get("galact"));
-//            modifyUserStatsStatement.setBoolean(21, attributeMapBoolean.get("fruct"));
-//            modifyUserStatsStatement.setBoolean(22, attributeMapBoolean.get("sucr"));
-//            modifyUserStatsStatement.setBoolean(23, attributeMapBoolean.get("malt"));
-//            modifyUserStatsStatement.setBoolean(24, attributeMapBoolean.get("lact"));
-//            modifyUserStatsStatement.setBoolean(25, attributeMapBoolean.get("alco"));
-//            modifyUserStatsStatement.setBoolean(26, attributeMapBoolean.get("engfib"));
-//            modifyUserStatsStatement.setBoolean(27, attributeMapBoolean.get("aoacfib"));
-//            modifyUserStatsStatement.setBoolean(28, attributeMapBoolean.get("satfac"));
-//            modifyUserStatsStatement.setBoolean(29, attributeMapBoolean.get("satfod"));
-//            modifyUserStatsStatement.setBoolean(30, attributeMapBoolean.get("totn6pfac"));
-//            modifyUserStatsStatement.setBoolean(31, attributeMapBoolean.get("totn6pfod"));
-//            modifyUserStatsStatement.setBoolean(32, attributeMapBoolean.get("totn3pfac"));
-//            modifyUserStatsStatement.setBoolean(33, attributeMapBoolean.get("totn3pfod"));
-//            modifyUserStatsStatement.setBoolean(34, attributeMapBoolean.get("monofacc"));
-//            modifyUserStatsStatement.setBoolean(35, attributeMapBoolean.get("monofodc"));
-//            modifyUserStatsStatement.setBoolean(36, attributeMapBoolean.get("monofac"));
-//            modifyUserStatsStatement.setBoolean(37, attributeMapBoolean.get("monofod"));
-//            modifyUserStatsStatement.setBoolean(38, attributeMapBoolean.get("polyfacc"));
-//            modifyUserStatsStatement.setBoolean(39, attributeMapBoolean.get("polyfodc"));
-//            modifyUserStatsStatement.setBoolean(40, attributeMapBoolean.get("polyfac"));
-//            modifyUserStatsStatement.setBoolean(41, attributeMapBoolean.get("polyfod"));
-//            modifyUserStatsStatement.setBoolean(42, attributeMapBoolean.get("satfacx6"));
-//            modifyUserStatsStatement.setBoolean(43, attributeMapBoolean.get("satfodx6"));
-//            modifyUserStatsStatement.setBoolean(44, attributeMapBoolean.get("totbrfac"));
-//            modifyUserStatsStatement.setBoolean(45, attributeMapBoolean.get("totbrfod"));
-//            modifyUserStatsStatement.setBoolean(46, attributeMapBoolean.get("factrans"));
-//            modifyUserStatsStatement.setBoolean(47, attributeMapBoolean.get("fodtrans"));
-//            modifyUserStatsStatement.setBoolean(48, attributeMapBoolean.get("chol"));
-//            modifyUserStatsStatement.setBoolean(49, attributeMapBoolean.get("weight"));
-//            modifyUserStatsStatement.setBoolean(50, attributeMapBoolean.get("sodium"));           
 
-            //modifySelectedAttributesStatement.setInt(51, id_user);
             returnValue = modifySelectedAttributesStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, modifySelectedAttributesStatement);
         }
 
         //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
-        if (returnValue != 0)
-        {
-            output = true;
-        }
-        return output;
+        return returnValue != 0;
     }
 
     public static String getSelectedAttributeList(String id_user)
@@ -1164,73 +775,49 @@ public class DatabaseAccess
         String getSelectedAttributesSQL = "SELECT * FROM selectedattributestable WHERE id_user = ?";
 
         System.out.println("DatabaseAccess: getSelectedAttributeList() for user " + id_user);
-        PreparedStatement getSelectedAttributesListStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        String JSONObject = null;
-        Long id_user_long = Long.parseLong(id_user);
+        String JSONString = null;
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement getSelectedAttributesListStatement = databaseConnection.prepareStatement(getSelectedAttributesSQL);)
         {
-            getSelectedAttributesListStatement = databaseConnection.prepareStatement(getSelectedAttributesSQL);
-            getSelectedAttributesListStatement.setLong(1, id_user_long);
-            resultSet = getSelectedAttributesListStatement.executeQuery();
-            JSONObject = convertResultSetToJSONArray(resultSet);
+            getSelectedAttributesListStatement.setLong(1, Long.parseLong(id_user));
+            try (ResultSet resultSet = getSelectedAttributesListStatement.executeQuery();)
+            {
+                JSONString = convertResultSetToJSONArray(resultSet);
+            }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, getSelectedAttributesListStatement);
         }
-        return JSONObject;
+        return JSONString;
     }
 
     public static boolean setupUserStats(String id_user)
     {
         String setupUserStatsSQL = "INSERT INTO userstatstable (id_user) VALUES (?)";
 
-        boolean output = false;
-        int returnValue = 0;
-
+        long returnValue = 0;
         System.out.println("DatabaseAccess: setupUserStats() for user " + id_user);
-        PreparedStatement setupUserStatsStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        Long id_user_long = Long.parseLong(id_user);
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement setupUserStatsStatement = databaseConnection.prepareStatement(setupUserStatsSQL);)
         {
-            setupUserStatsStatement = databaseConnection.prepareStatement(setupUserStatsSQL);
-            setupUserStatsStatement.setLong(1, id_user_long);
+            setupUserStatsStatement.setLong(1, Long.parseLong(id_user));
             returnValue = setupUserStatsStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, setupUserStatsStatement);
         }
 
         //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
-        if (returnValue != 0)
-        {
-            output = true;
-        }
-
-        return output;
+        return returnValue != 0;
     }
 
-    public static boolean modifyUserStats(JsonObject jsonObject, String id_user)
+    public static boolean modifyUserStats(Map<String, String> userStatsMap, String id_user)
     {
         System.out.println("DatabaseAccess: modifyUserStats() for user " + id_user);
-        Gson gson = new Gson();
-        Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
-        {
-        }.getType();
-        Map<String, String> statsMap = gson.fromJson(jsonObject, stringStringMap);
 
         //create SQL query e.g
         //UPDATE userstatstable SET weight=?,height=?,proteingoal=?,carbohydrategoal=?,fatgoal=? WHERE id_user=?
@@ -1240,9 +827,9 @@ public class DatabaseAccess
         {
             String currentStat = supportedUserStatsList.get(count);
 
-            if (statsMap.get(currentStat) != null)
+            if (userStatsMap.get(currentStat) != null)
             {
-                modifyUserStatsSQL.append(currentStat).append("=").append(statsMap.get(currentStat));
+                modifyUserStatsSQL.append(currentStat).append("=").append(userStatsMap.get(currentStat));
                 modifyUserStatsSQL.append(",");
 
             }
@@ -1254,33 +841,22 @@ public class DatabaseAccess
             }
         }
         modifyUserStatsSQL.append(" WHERE id_user=").append(id_user);
-        String modifyUserStatsSQLString = modifyUserStatsSQL.toString();
+        String modifyUserStatsSQLString = modifyUserStatsSQL.toString(); //completed SQL query
         System.out.println("DatabaseAccess: SQL query is:" + modifyUserStatsSQLString);
 
-        PreparedStatement modifyUserStatsStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        boolean output = false;
         int returnValue = 0;
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement modifyUserStatsStatement = databaseConnection.prepareStatement(modifyUserStatsSQLString);)
         {
-            modifyUserStatsStatement = databaseConnection.prepareStatement(modifyUserStatsSQLString);
             returnValue = modifyUserStatsStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, modifyUserStatsStatement);
         }
 
         //0 if nothing was modified in the database, otherwise the rowcount is returned if something was modified
-        if (returnValue != 0)
-        {
-            output = true;
-        }
-        return output;
+        return returnValue != 0;
     }
 
     public static String getUserStats(String id_user)
@@ -1288,63 +864,51 @@ public class DatabaseAccess
         String getuserstatsSQL = "SELECT * FROM userstatstable WHERE id_user = ?";
 
         System.out.println("DatabaseAccess: getting user stats for user " + id_user);
-        PreparedStatement getUserStatsStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        String JSONObject = null;
-        Long id_user_long = Long.parseLong(id_user);
+        String JSONString = null;
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);)
         {
-            getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);
-            getUserStatsStatement.setLong(1, id_user_long);
-            resultSet = getUserStatsStatement.executeQuery();
-            JSONObject = convertResultSetToJSONArray(resultSet);
+            getUserStatsStatement.setLong(1, Long.parseLong(id_user));
+            try (ResultSet resultSet = getUserStatsStatement.executeQuery();)
+            {
+                JSONString = convertResultSetToJSONArray(resultSet);
+            }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, getUserStatsStatement);
         }
-        return JSONObject;
+
+        return JSONString;
     }
 
     public static UUID createForgotPasswordRecord(String id_user, String email)
     {
         String forgotPasswordRecordSQL = "INSERT INTO forgotpasswordtable (id_user,identifiertoken,expirydate,email) VALUES (?,?,?,?)";
 
-        int output = 0;
         System.out.println("DatabaseAccess: creating forgot password record for user " + id_user);
-        PreparedStatement forgotPasswordStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+
+        //this is used to identify each password request
         UUID identifierToken = UUID.randomUUID();
-        Long id_user_long = Long.parseLong(id_user);
 
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime expiryTime = currentTime.plusMinutes(10);
         Timestamp expiryTimestamp = Timestamp.valueOf(expiryTime);
 
-        //    private static final String forgotPasswordRecordSQL = "INSERT INTO forgotpasswordtable (id_user,forgotpasswordcode,expirydate, email) VALUES (?,?,?);";
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement forgotPasswordStatement = databaseConnection.prepareStatement(forgotPasswordRecordSQL);)
         {
-            forgotPasswordStatement = databaseConnection.prepareStatement(forgotPasswordRecordSQL);
-            forgotPasswordStatement.setLong(1, id_user_long);
+            forgotPasswordStatement.setLong(1, Long.parseLong(id_user));
             forgotPasswordStatement.setString(2, identifierToken.toString());
             forgotPasswordStatement.setTimestamp(3, expiryTimestamp);
             forgotPasswordStatement.setString(4, email);
-            output = forgotPasswordStatement.executeUpdate();
+            forgotPasswordStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, forgotPasswordStatement);
         }
-
         return identifierToken;
     }
 
@@ -1355,45 +919,39 @@ public class DatabaseAccess
         //check if identifierToken exists in database
         boolean output = false;
         System.out.println("DatabaseAccess: validating forgotten password identifierToken: " + identifierToken);
-        PreparedStatement getForgotPasswordToken = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement getForgotPasswordToken = databaseConnection.prepareStatement(validateForgotPasswordTokenSQL);)
         {
-            getForgotPasswordToken = databaseConnection.prepareStatement(validateForgotPasswordTokenSQL);
             getForgotPasswordToken.setString(1, identifierToken);
-            resultSet = getForgotPasswordToken.executeQuery();
 
-            boolean tokenFound = resultSet.next();
-
-            //if token exists check if it is expired
-            if (tokenFound)
+            try (ResultSet resultSet = getForgotPasswordToken.executeQuery();)
             {
+                //if token exists check if it is expired
+                if (!resultSet.next())
+                {
+                    System.out.println("DatabaseAccess: token does not exist " + identifierToken);
+                    return output;
+                }
+
                 Timestamp expiryTimestamp = resultSet.getTimestamp("expirydate");
                 LocalDateTime expiry = expiryTimestamp.toLocalDateTime();
 
-                //if token has not expired
                 if (LocalDateTime.now().isBefore(expiry))
+                {
+                    System.out.println("DatabaseAccess: token has expired " + identifierToken);
+                    return output;
+                } else
                 {
                     System.out.println("DatabaseAccess: token is valid " + identifierToken);
                     output = true; //token is valid
-                } else
-                {
-                    System.out.println("DatabaseAccess: token has expired " + identifierToken);
+                    return output;
                 }
-
-            } else
-            {
-                System.out.println("DatabaseAccess: token does not exist " + identifierToken);
             }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, getForgotPasswordToken);
         }
         return output;
     }
@@ -1403,28 +961,20 @@ public class DatabaseAccess
         String removeExpiredTokensSQL = "DELETE FROM forgotpasswordtable WHERE expirydate < ?";
 
         System.out.println("DatabaseAccess: removing expired forgot password tokens");
-        PreparedStatement removeTokensStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-//    private static final String removeExpiredTokensSQL = "DELETE FROM forgotpasswordtable WHERE expirydate < ?";
-//where expirydate < now - 10 minutes
+
         LocalDateTime currentTime = LocalDateTime.now();
-        LocalDateTime expiryTime = currentTime.minusMinutes(10);
+        LocalDateTime expiryTime = currentTime.minusMinutes(10); //tokens last 10 minutes
         Timestamp expiryTimestamp = Timestamp.valueOf(expiryTime);
 
-        //    private static final String forgotPasswordRecordSQL = "INSERT INTO forgotpasswordtable (id_user,forgotpasswordcode,expirydate) VALUES (?,?,?);";
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement removeTokensStatement = databaseConnection.prepareStatement(removeExpiredTokensSQL);)
         {
-            removeTokensStatement = databaseConnection.prepareStatement(removeExpiredTokensSQL);
             removeTokensStatement.setTimestamp(1, expiryTimestamp);
             removeTokensStatement.executeUpdate();
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, removeTokensStatement);
         }
     }
 
@@ -1433,28 +983,23 @@ public class DatabaseAccess
         String getIdentifierTokenEmailSQL = "SELECT email FROM forgotpasswordtable WHERE identifiertoken = ?";
 
         System.out.println("DatabaseAccess: getting email linked to identifier token " + identifierToken);
-        PreparedStatement getEmailStatement = null;
-        ResultSet resultSet = null;
         String email = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-//SELECT email FROM forgotpasswordtable WHERE identifiertoken = ?
-        //    private static final String forgotPasswordRecordSQL = "INSERT INTO forgotpasswordtable (id_user,forgotpasswordcode,expirydate) VALUES (?,?,?);";
-        try
+
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement getEmailStatement = databaseConnection.prepareStatement(getIdentifierTokenEmailSQL);)
         {
-            getEmailStatement = databaseConnection.prepareStatement(getIdentifierTokenEmailSQL);
             getEmailStatement.setString(1, identifierToken);
-            resultSet = getEmailStatement.executeQuery();
-            if (resultSet.next())
+            try (ResultSet resultSet = getEmailStatement.executeQuery();)
             {
-                email = resultSet.getString("email");
-                System.out.println("DatabaseAccess: email linked to identifier token was " + email);
+                if (resultSet.next())
+                {
+                    email = resultSet.getString("email");
+                    System.out.println("DatabaseAccess: email linked to identifier token was " + email);
+                }
             }
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, getEmailStatement);
         }
 
         return email;
@@ -1465,33 +1010,20 @@ public class DatabaseAccess
         String changePasswordSQL = "UPDATE usertable SET password =? WHERE email=?";
 
         System.out.println("DatabaseAccess: changing password for user with email" + email);
-        boolean success = false;
         int output = 0;
-        PreparedStatement changePasswordStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement changePasswordStatement = databaseConnection.prepareStatement(changePasswordSQL);)
         {
-            changePasswordStatement = databaseConnection.prepareStatement(changePasswordSQL);
             changePasswordStatement.setString(1, password);
             changePasswordStatement.setString(2, email);
             output = changePasswordStatement.executeUpdate();
 
-            if (output != 0)
-            {
-                success = true;
-            }
-
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, changePasswordStatement);
         }
-
-        return success;
+        return output != 0;
     }
 
     protected static boolean changeEmail(String newEmail, String id_user)
@@ -1499,34 +1031,20 @@ public class DatabaseAccess
         String changeEmailSQL = "UPDATE usertable SET email =? WHERE id_user=?";
 
         System.out.println("DatabaseAccess: changing email for user " + id_user);
-        boolean success = false;
         int output = 0;
-        PreparedStatement changeEmailStatement = null;
-        ResultSet resultSet = null;
-        Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
-        Long id_user_long = Long.parseLong(id_user);
 
-        try
+        try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
+                PreparedStatement changeEmailStatement = databaseConnection.prepareStatement(changeEmailSQL);)
         {
-            changeEmailStatement = databaseConnection.prepareStatement(changeEmailSQL);
             changeEmailStatement.setString(1, newEmail);
-            changeEmailStatement.setLong(2, id_user_long);
+            changeEmailStatement.setLong(2, Long.parseLong(id_user));
             output = changeEmailStatement.executeUpdate();
-
-            if (output != 0)
-            {
-                success = true;
-            }
 
         } catch (SQLException ex)
         {
             Logger.getLogger(DatabaseAccess.class.getName()).log(Level.SEVERE, null, ex);
-        } finally
-        {
-            DatabaseUtils.closeConnections(databaseConnection, resultSet, changeEmailStatement);
         }
-
-        return success;
+        return output != 0;
     }
 
 }

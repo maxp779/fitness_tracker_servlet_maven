@@ -42,27 +42,15 @@ public class AJAX_GetIdentifierTokenEmail extends HttpServlet
             throws ServletException, IOException
     {
         //get request data, should be a string with json formatting
-        BufferedReader reader = request.getReader();
-        StringBuilder buffer = new StringBuilder();
-        String currentLine = "";
-        while ((currentLine = reader.readLine()) != null)
-        {
-            buffer.append(currentLine);
-        }
-        String identifierToken = buffer.toString();
-
-        //parse string into json object and get relevant property from it
-//        JsonParser jsonParser = new JsonParser();
-//        JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
-//        JsonElement jsonElement = jsonObject.get("identifierToken");
-//        String identifierToken =  jsonElement.getAsString(); 
+        String identifierToken = ServletUtilities.getRequestData(request);
         
         System.out.println("AJAX_GetIdentifierTokenEmail executing: getting email for identifier token" + identifierToken);
         String email = DatabaseAccess.getIdentifierTokenEmail(identifierToken);
         
-        PrintWriter out = response.getWriter();
-        out.print(email);
-        out.close();
+        try (PrintWriter out = response.getWriter())
+        {
+            out.print(email);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

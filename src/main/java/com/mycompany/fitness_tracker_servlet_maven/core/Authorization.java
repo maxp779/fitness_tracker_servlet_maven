@@ -15,18 +15,18 @@ import javax.servlet.http.HttpSession;
  */
 public class Authorization
 {
-    protected static boolean isCurrentUserAuthorized(String password, HttpServletRequest request)
+
+    protected static boolean isCurrentUserAuthorized(String password, String id_user)
     {
         boolean output = false;
-        HttpSession session = request.getSession();
-        String id_user = (String) session.getAttribute("id_user");
+
         Map<String, String> userCredentials = DatabaseAccess.getUserCredentialsFromid_user(id_user);
         String storedHashedPassword = userCredentials.get("hashedPassword");
-        if(Security.passwordMatch(password, storedHashedPassword))
+        if (Security.passwordMatch(password, storedHashedPassword))
         {
             output = true;
         }
-        
+
         return output;
     }
 }

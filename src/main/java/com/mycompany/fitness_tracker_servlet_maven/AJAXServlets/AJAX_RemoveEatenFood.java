@@ -57,7 +57,7 @@ public class AJAX_RemoveEatenFood extends HttpServlet
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(jsonString);
         JsonElement jsonElement = jsonObject.get("id_eatenfood");
-        int id_eatenfood = jsonElement.getAsInt();
+        long id_eatenfood = jsonElement.getAsLong();
 
         //execute database command and send response to client
         boolean removeEatenFood = DatabaseAccess.removeEatenFood(id_eatenfood);
