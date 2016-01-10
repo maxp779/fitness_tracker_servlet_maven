@@ -51,7 +51,7 @@ public class TestDatabaseServlet extends HttpServlet
         ServletContext sc = request.getServletContext();
             this.testDatabase();
             
-            String encodedURL = response.encodeRedirectURL(sc.getContextPath()+"/"+ GlobalValues.getWebPagesDirectory() +"/"+ "testPage.html");
+            String encodedURL = response.encodeRedirectURL(sc.getContextPath()+"/"+ GlobalValues.getWEB_PAGES_DIRECTORY() +"/"+ "testPage.html");
             response.sendRedirect(encodedURL);
 
     }

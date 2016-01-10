@@ -5,12 +5,8 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -45,24 +41,9 @@ public class AJAX_RemoveCustomFood extends HttpServlet
     {
         System.out.println("AJAX_RemoveCustomFood executing: " + request.getRequestURL());
 
-        //get request data, should be a string with json formatting
-//        BufferedReader reader = request.getReader();
-//        StringBuilder buffer = new StringBuilder();
-//        String currentLine = "";
-//        while ((currentLine = reader.readLine()) != null)
-//        {
-//            buffer.append(currentLine);
-//        }
         String JSONString = ServletUtilities.getRequestData(request);
         Map<String,String> JSONMap = ServletUtilities.convertJsonStringToMap(JSONString);
-
-        //parse string into json object and get relevant property from it
-//        JsonParser jsonParser = new JsonParser();
-//        JsonObject jsonObject = (JsonObject) jsonParser.parse(JSONString);
-//        JsonElement jsonElement = jsonObject.get("id_customfood");
         String id_customfood = JSONMap.get("id_customfood");
-        
-        //execute database command and send response to client
         boolean removeCustomFood = DatabaseAccess.removeCustomFood(id_customfood);     
         try (PrintWriter writer = response.getWriter())
         {

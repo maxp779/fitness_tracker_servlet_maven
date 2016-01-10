@@ -7,7 +7,6 @@ package com.mycompany.fitness_tracker_servlet_maven.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -27,7 +26,11 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class CreateAccountServlet extends HttpServlet
 {
-    private boolean userAdded = false;
+
+    private static final String accountCreated = "<div class=\"alert alert-success\" role=\"alert\">Account created for #EMAIL </div>";
+    private static final String accountAlreadyExists = "<div class=\"alert alert-danger\" role=\"alert\">An account for #EMAIL already exists. Please try a different email.</div>";
+    private static final String passwordTooShort = "<div class=\"alert alert-danger\" role=\"alert\">Password must be at least 6 characters long.</div>";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -41,63 +44,85 @@ public class CreateAccountServlet extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("CreateAccountServlet: executing");
-        ServletContext sc = this.getServletContext();
 
-        String newAccountEmail = request.getParameter("email");
-        String newAccountPassword = request.getParameter("password");
-        
+        String accountDetails = ServletUtilities.getRequestData(request);
+        Map<String, String> accountDetailsMap = ServletUtilities.convertJSONFormDataToMap(accountDetails);
+
+        String newAccountPassword = accountDetailsMap.get("password");
+        //if somehow the user has managed to submit a request for a new account with a password < 6 characters this stops them
+        //and issues a message, javascript on the front end should prevent this from ever happening, if the user disables
+        //javascript the form shouldnt even submit but better safe than sorry
+        if (newAccountPassword.length() < 6)
+        {
+            System.out.println("CreateAccountServlet: password is of insufficient length");
+
+            writeOutput(response,ErrorCodes.getPASSWORD_TOO_SHORT());
+            return;
+        }
+
+        String newAccountEmail = accountDetailsMap.get("email");
+        String hashedPassword = Security.hashPassword(newAccountPassword);
+        boolean userAdded = DatabaseAccess.addUser(newAccountEmail, hashedPassword);
+        if (userAdded)
+        {
+            System.out.println("CreateAccountServlet: account created for " + newAccountEmail);
+            writeOutput(response,"true");
+
+        } else
+        {
+            System.out.println("CreateAccountServlet: account already exists, no action taken");
+            writeOutput(response,ErrorCodes.getACCOUNT_ALREADY_EXISTS());
+        }
+
+        //String newAccountPassword = request.getParameter("password");
         //if somehow the user has managed to submit a request for a new account with a password < 6 characters this stops them
         //and issues a message, javascript on the front end should prevent this from ever happening, if the user disables
         //javascript the form shouldnt submit anyway but better safe than sorry
-        if(newAccountPassword.length() < 6)
-        {
-            System.out.println("CreateAccountServlet: password is of insufficient length");
-            RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getCreateNewAccountPage());
-            PrintWriter out= response.getWriter();
-            out.println("<div class=\"alert alert-danger\" role=\"alert\">Password must be at least 6 characters long.</div>");
-            rd.forward(request, response);
-        }
-        else //normal execution with javascript working on the front end to ensure only valid emails and passwords are submitted
-        {
-//            if(DatabaseAccess.userAlreadyExistsCheckEmail(newAccountEmail))
-//            {
-//                System.out.println("CreateAccountServlet: account already exists, no action taken");
-//                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
-//                
-//                RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getCreateNewAccountPage());
-//                PrintWriter out= response.getWriter();
-//                out.println("<div class=\"alert alert-danger\" role=\"alert\">An account for "+newAccountEmail+" already exists. Please try a different email.</div>");
-//                rd.include(request, response);
-//            }
-//            else
-//            {
-            String hashedPassword = Security.hashPassword(newAccountPassword);
-            userAdded = DatabaseAccess.addUser(newAccountEmail, hashedPassword);
-            if(userAdded)
-            {
-                System.out.println("CreateAccountServlet: account created for " + newAccountEmail);
-                RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getLoginPage());
-                PrintWriter out= response.getWriter();
-                //out.println("<font color=green>Account created for " +newAccountEmail+ " </font>");
-                out.println("<div class=\"alert alert-success\" role=\"alert\">Account created for " +newAccountEmail+ "</div>");
+//        if (newAccountPassword.length() < 6)
+//        {
+//            System.out.println("CreateAccountServlet: password is of insufficient length");
+//
+//            writeOutput(request, response, passwordTooShort, false);
+//            return;
+//        }
+//        String newAccountEmail = request.getParameter("email");
+//        String hashedPassword = Security.hashPassword(newAccountPassword);
+//        boolean userAdded = DatabaseAccess.addUser(newAccountEmail, hashedPassword);
+//        if (userAdded)
+//        {
+//            System.out.println("CreateAccountServlet: account created for " + newAccountEmail);
+//            writeOutput(request, response, accountCreated.replaceAll("#EMAIL", newAccountEmail), true);
+//
+//        } else
+//        {
+//            System.out.println("CreateAccountServlet: account already exists, no action taken");
+//            writeOutput(request, response, accountAlreadyExists.replaceAll("#EMAIL", newAccountEmail), false);
+//        }
+    }
 
-                rd.include(request, response);
-            }
-            else
-            {
-                System.out.println("CreateAccountServlet: account already exists, no action taken");
-                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());
-
-                RequestDispatcher rd = sc.getRequestDispatcher("/"+GlobalValues.getWebPagesDirectory()+ "/" + GlobalValues.getCreateNewAccountPage());
-                PrintWriter out= response.getWriter();
-                out.println("<div class=\"alert alert-danger\" role=\"alert\">An account for "+newAccountEmail+" already exists. Please try a different email.</div>");
-                rd.include(request, response);
-            }         
-                //response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getFirstLoginServlet());   
+    private void writeOutput(HttpServletResponse response, String output) throws IOException
+    {
+        try (PrintWriter writer = response.getWriter())
+        {
+            writer.write(output);
         }
     }
-    
 
+//    private void writeOutput(HttpServletRequest request, HttpServletResponse response, String output, boolean accountCreationSuccess) throws ServletException, IOException
+//    {
+//        ServletContext servletContext = this.getServletContext();
+//        RequestDispatcher requestDispatcher;
+//        if (accountCreationSuccess)
+//        {
+//            requestDispatcher = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getLOGIN_PAGE());
+//        } else
+//        {
+//            requestDispatcher = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getCREATE_ACCOUNT_PAGE());
+//        }
+//        PrintWriter out = response.getWriter();
+//        out.println(output);
+//        requestDispatcher.include(request, response);
+//    }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

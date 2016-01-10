@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class WorkoutLogPageServlet extends HttpServlet
 {
-
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,9 +38,15 @@ public class WorkoutLogPageServlet extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("WorkoutLogPageServlet executing: " + request.getRequestURL());
-        ServletContext sc = this.getServletContext();
-
-        String encodedURL = response.encodeRedirectURL(sc.getContextPath() + "/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getWorkoutLogPage());
+        ServletContext servletContext = this.getServletContext();
+        String webPageURL = servletContext.getContextPath()
+                + "/"
+                + GlobalValues.getWEB_PAGES_DIRECTORY()
+                + "/"
+                + GlobalValues.getWORKOUT_LOG_PAGE_FOLDER()
+                + "/"
+                + GlobalValues.getWORKOUT_LOG_PAGE();
+        String encodedURL = response.encodeRedirectURL(webPageURL);
         response.sendRedirect(encodedURL);
     }
 

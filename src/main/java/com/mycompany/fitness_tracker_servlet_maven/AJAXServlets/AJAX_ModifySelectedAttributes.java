@@ -5,12 +5,12 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
-import java.io.BufferedReader;
+import com.mycompany.fitness_tracker_servlet_maven.core.ErrorCodes;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -49,10 +49,28 @@ public class AJAX_ModifySelectedAttributes extends HttpServlet
         selectedAttributesMap.put("id_user", id_user);
 
         //execute database command and send response to client
-        boolean output = DatabaseAccess.modifySelectedAttributes(selectedAttributesMap, id_user);
+        boolean success = DatabaseAccess.modifySelectedAttributes(selectedAttributesMap, id_user);
+        
+        Map<String,String> outputMap = new HashMap<>();
+        if(success)
+        {
+            outputMap.put("success", "true");
+            writeOutput(response, outputMap);
+        }
+        else
+        {
+            outputMap.put("success", "false");
+            outputMap.put("errorCode", ErrorCodes.getUPDATE_ATTRIBUTES_FAILED());
+            writeOutput(response, outputMap);
+        }
+    }
+    
+    private void writeOutput(HttpServletResponse response, Map<String,String> outputMap) throws IOException
+    {
+        String JSONString = ServletUtilities.convertMapToJSONString(outputMap);
         try (PrintWriter writer = response.getWriter())
         {
-            writer.print(output);
+            writer.write(JSONString);
         }
     }
 

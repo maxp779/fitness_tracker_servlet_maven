@@ -7,8 +7,8 @@ package com.mycompany.fitness_tracker_servlet_maven.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,10 +27,10 @@ import javax.servlet.http.HttpSession;
 public class ChangeEmailServlet extends HttpServlet
 {
 
-    private static final String emailChanged = "<div class=\"alert alert-success\" role=\"alert\">Email changed successfully.</div>";
-    private static final String emailChangeFailed = "<div class=\"alert alert-danger\" role=\"alert\">Email change request failed.</div>";
-    private static final String emailAlreadyExists = "<div class=\"alert alert-danger\" role=\"alert\">Email already exists!</div>";
-    private static final String incorrectPassword = "<div class=\"alert alert-danger\" role=\"alert\">Incorrect password.</div>";
+//    private static final String emailChanged = "<div class=\"alert alert-success\" role=\"alert\">Email changed successfully.</div>";
+//    private static final String emailChangeFailed = "<div class=\"alert alert-danger\" role=\"alert\">Email change request failed.</div>";
+//    private static final String emailAlreadyExists = "<div class=\"alert alert-danger\" role=\"alert\">Email already exists!</div>";
+//    private static final String incorrectPassword = "<div class=\"alert alert-danger\" role=\"alert\">Incorrect password.</div>";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -45,41 +45,63 @@ public class ChangeEmailServlet extends HttpServlet
             throws ServletException, IOException
     {
         HttpSession session = request.getSession();
+        Map<String, String> outputMap = new HashMap<>();
         String id_user = (String) session.getAttribute("id_user");
-        String password = request.getParameter("password");
+//        String password = request.getParameter("currentPassword");
+        String requestDetails = ServletUtilities.getRequestData(request);
+        Map<String, String> requestDetailsMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
+        String password = requestDetailsMap.get("changeEmailPassword");
 
         if (!Authorization.isCurrentUserAuthorized(password, id_user))
         {
-            writeOutput(request, response, incorrectPassword);
+            outputMap.put("success", "false");
+            outputMap.put("errorCode", ErrorCodes.getUSER_NOT_AUTHORIZED());
+            writeOutput(response, outputMap);
             return;
         }
 
-        String newEmail = request.getParameter("newEmail");
+        String newEmail = requestDetailsMap.get("newEmail");
         if (DatabaseAccess.userAlreadyExistsCheckEmail(newEmail))
         {
-            writeOutput(request, response, emailAlreadyExists);
+            outputMap.put("success", "false");
+            outputMap.put("errorCode", ErrorCodes.getACCOUNT_ALREADY_EXISTS());
+            writeOutput(response, outputMap);
             return;
         }
-
+        
         if (DatabaseAccess.changeEmail(newEmail, id_user))
         {
-            writeOutput(request, response, emailChanged);
+            outputMap.put("success", "true");
+            outputMap.put("newEmail", newEmail);
+            outputMap.put("oldEmail", (String) session.getAttribute("email"));
+            session.setAttribute("email", newEmail);
+            writeOutput(response, outputMap);
 
-        }
-        else
+        } else
         {
-            writeOutput(request, response, emailChangeFailed);
+            outputMap.put("success", "false");
+            outputMap.put("errorCode", ErrorCodes.getCHANGE_EMAIL_FAILED());
+            writeOutput(response, outputMap);
+        }
+    }
+    private void writeOutput(HttpServletResponse response, Map<String,String> outputMap) throws IOException
+    {
+        String JSONString = ServletUtilities.convertMapToJSONString(outputMap);
+        
+        try (PrintWriter writer = response.getWriter())
+        {
+            writer.write(JSONString);
         }
     }
 
-    private void writeOutput(HttpServletRequest request, HttpServletResponse response, String output) throws ServletException, IOException
-    {
-        ServletContext servletContext = this.getServletContext();
-        RequestDispatcher rd = servletContext.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getSettingsPage());
-        PrintWriter out = response.getWriter();
-        out.println(output);
-        rd.include(request, response);
-    }
+//    private void writeOutput(HttpServletRequest request, HttpServletResponse response, String output) throws ServletException, IOException
+//    {
+//        ServletContext servletContext = this.getServletContext();
+//        RequestDispatcher rd = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getSETTINGS_PAGE());
+//        PrintWriter out = response.getWriter();
+//        out.println(output);
+//        rd.include(request, response);
+//    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

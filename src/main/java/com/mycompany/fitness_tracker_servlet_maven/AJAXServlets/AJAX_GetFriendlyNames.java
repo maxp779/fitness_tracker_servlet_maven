@@ -39,7 +39,7 @@ public class AJAX_GetFriendlyNames extends HttpServlet
             throws ServletException, IOException
     {
         Gson gson = new Gson();
-        String friendlyNamesJSON = gson.toJson(ClientAPI.getFriendlyValuesMap());
+        String friendlyNamesJSON = gson.toJson(ClientAPI.getFRIENDLY_VALUES_MAP());
         response.setContentType("application/json");
         System.out.println("AJAX_GetFriendlyNames sending JSON object: " + friendlyNamesJSON);
 

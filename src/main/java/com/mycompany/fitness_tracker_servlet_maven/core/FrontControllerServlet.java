@@ -63,150 +63,155 @@ public class FrontControllerServlet extends HttpServlet
 //            rd.forward(request, response);
 //        }
         //Request routing
-        if (currentRequest.equals(ClientAPI.getLoginPageRequest()))
+        if (currentRequest.equals(ClientAPI.getLOGIN_PAGE_REQUEST()))
         {
             System.out.println("FrontController: login page request");
             rd = request.getRequestDispatcher("/LoginPageServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getLogoutRequest()))
+        } else if (currentRequest.equals(ClientAPI.getLOGOUT_REQUEST()))
         {
             System.out.println("FrontController: logout request");
             rd = request.getRequestDispatcher("/LogoutServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getLoginRequest()))
+        } else if (currentRequest.equals(ClientAPI.getLOGIN_REQUEST()))
         {
             System.out.println("FrontController: authentication request");
             rd = request.getRequestDispatcher("/AuthenticationServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getMainPageRequest()))
+        } else if (currentRequest.equals(ClientAPI.getMAIN_PAGE_REQUEST()))
         {
             System.out.println("FrontController: main page request");
             rd = request.getRequestDispatcher("/MainPageServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getCreateAccountRequest()))
+        } else if (currentRequest.equals(ClientAPI.getCREATE_ACCOUNT_REQUEST()))
         {
             System.out.println("FrontController: create account request");
             rd = request.getRequestDispatcher("/CreateAccountServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getCreateAccountPageRequest()))
+        } else if (currentRequest.equals(ClientAPI.getCREATE_ACCOUNT_PAGE_REQUEST()))
         {
             System.out.println("FrontController: create account page request");
             rd = request.getRequestDispatcher("/CreateAccountPageServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getWorkoutLogPageRequest()))
+        } else if (currentRequest.equals(ClientAPI.getWORKOUTLOG_PAGE_REQUEST()))
         {
             System.out.println("FrontController: workout log page request");
             rd = request.getRequestDispatcher("/WorkoutLogPageServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getCustomFoodsPageRequest()))
+        } else if (currentRequest.equals(ClientAPI.getCUSTOM_FOODS_PAGE_REQUEST()))
         {
             System.out.println("FrontController: custom foods page request");
             rd = request.getRequestDispatcher("/CustomFoodsPageServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getMyStatsPageRequest()))
+        } else if (currentRequest.equals(ClientAPI.getMY_STATS_PAGE_REQUEST()))
         {
             System.out.println("FrontController: my stats page request");
             rd = request.getRequestDispatcher("/MyStatsPageServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GetCustomFoodList()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_CUSTOM_FOOD_LIST()))
         {
             System.out.println("FrontController: get custom food list AJAX request");
             rd = request.getRequestDispatcher("/AJAX_GetCustomFoodList");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_RemoveCustomFood()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_REMOVE_CUSTOM_FOOD()))
         {
             System.out.println("FrontController: remove a custom food AJAX request");
             rd = request.getRequestDispatcher("/AJAX_RemoveCustomFood");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_AddCustomFood()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_ADD_CUSTOM_FOOD()))
         {
             System.out.println("FrontController: add a custom food AJAX request");
             rd = request.getRequestDispatcher("/AJAX_AddCustomFood");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_EditCustomFood()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_EDIT_CUSTOM_FOOD()))
         {
             System.out.println("FrontController: edit a custom food AJAX request");
             rd = request.getRequestDispatcher("/AJAX_EditCustomFood");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_AddEatenFood()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_ADD_EATEN_FOOD()))
         {
             System.out.println("FrontController: add a food that was eaten AJAX request");
             rd = request.getRequestDispatcher("/AJAX_AddEatenFood");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GetEatenFoodList()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_EATEN_FOOD_LIST()))
         {
             System.out.println("FrontController: get eaten food list AJAX request");
             rd = request.getRequestDispatcher("/AJAX_GetEatenFoodList");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_RemoveEatenFood()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_REMOVE_EATEN_FOOD()))
         {
             System.out.println("FrontController: remove eaten food AJAX request");
             rd = request.getRequestDispatcher("/AJAX_RemoveEatenFood");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_SearchForFood()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_SEARCH_FOR_FOOD()))
         {
             System.out.println("FrontController: food search AJAX request");
             rd = request.getRequestDispatcher("/AJAX_SearchForFood");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_ModifySelectedAttributes()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_MODIFY_SELECTED_ATTRIBUTES()))
         {
             System.out.println("FrontController: modify selected food attributes AJAX request");
             rd = request.getRequestDispatcher("/AJAX_ModifySelectedAttributes");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GetSelectedAttributesList()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_VIEWABLE_ATTRIBUTES()))
         {
             System.out.println("FrontController: get selected food attributes list AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_GetSelectedAttributesList");
+            rd = request.getRequestDispatcher("/AJAX_GetViewableAttributesList");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GetFriendlyNames()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_FRIENDLY_NAMES()))
         {
             System.out.println("FrontController: get selected friendly names for food attributes AJAX request");
             rd = request.getRequestDispatcher("/AJAX_GetFriendlyNames");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_ModifyUserStats()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_MODIFY_USER_STATS()))
         {
             System.out.println("FrontController: modify user stats AJAX request");
             rd = request.getRequestDispatcher("/AJAX_ModifyUserStats");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GetUserStats()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_USER_STATS()))
         {
             System.out.println("FrontController: get user stats AJAX request");
             rd = request.getRequestDispatcher("/AJAX_GetUserStats");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getForgotPasswordPageRequest()))
+        } else if (currentRequest.equals(ClientAPI.getFORGOT_PASSWORD_PAGE_REQUEST()))
         {
             System.out.println("FrontController: forgotten password request");
             rd = request.getRequestDispatcher("/ForgotPasswordPageServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getForgotPasswordEmailRequest()))
+        } else if (currentRequest.equals(ClientAPI.getFORGOT_PASSWORD_EMAIL_REQUEST()))
         {
             System.out.println("FrontController: forgotten password email request");
             rd = request.getRequestDispatcher("/ForgotPasswordEmailServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getChangePasswordPageRequest()))
+        } else if (currentRequest.equals(ClientAPI.getCHANGE_PASSWORD_PAGE_REQUEST()))
         {
             System.out.println("FrontController: change password page request");
             rd = request.getRequestDispatcher("/ChangePasswordPageServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getChangePasswordRequest()))
+        } else if (currentRequest.equals(ClientAPI.getCHANGE_PASSWORD_REQUEST()))
         {
             System.out.println("FrontController: change password request");
             rd = request.getRequestDispatcher("/ChangePasswordServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GetIdentifierTokenEmail()))
+        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_IDENTIFIER_TOKEN_EMAIL()))
         {
             System.out.println("FrontController: identifier token email request");
             rd = request.getRequestDispatcher("/AJAX_GetIdentifierTokenEmail");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getSettingsPageRequest()))
+        } else if (currentRequest.equals(ClientAPI.getSETTINGS_PAGE_REQUEST()))
         {
             System.out.println("FrontController: setting page request");
             rd = request.getRequestDispatcher("/SettingsPageServlet");
             rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getChangeEmailRequest()))
+        } else if (currentRequest.equals(ClientAPI.getCHANGE_EMAIL_REQUEST()))
         {
             System.out.println("FrontController: change email request");
             rd = request.getRequestDispatcher("/ChangeEmailServlet");
+            rd.forward(request, response);
+        } else if (currentRequest.equals(ClientAPI.getDELETE_ACCOUNT_REQUEST()))
+        {
+            System.out.println("FrontController: delete account request");
+            rd = request.getRequestDispatcher("/DeleteAccountServlet");
             rd.forward(request, response);
         }else
         {

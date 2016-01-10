@@ -5,17 +5,13 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
+import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
-import java.io.BufferedReader;
+import com.mycompany.fitness_tracker_servlet_maven.core.ErrorCodes;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Type;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,12 +45,16 @@ public class AJAX_AddCustomFood extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("AJAX_AddCustomFood executing: " + request.getRequestURL());
-        
-        String customFoodJSONString = ServletUtilities.getRequestData(request);
-        Map<String,String> customFoodMap = ServletUtilities.convertJsonStringToMap(customFoodJSONString);
+
+        String requestDetails = ServletUtilities.getRequestData(request);
+        Map<String, String> customFoodMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
+        Map<String, String> outputMap = new HashMap<>();
+//        String customFoodJSONString = ServletUtilities.getRequestData(request);
+//        Map<String,String> customFoodMap = ServletUtilities.convertJsonStringToMap(customFoodJSONString);
+
         String id_user = (String) request.getSession().getAttribute("id_user");
         customFoodMap.put("id_user", id_user);
-        
+
         boolean output = false;
         try
         {
@@ -63,10 +63,28 @@ public class AJAX_AddCustomFood extends HttpServlet
         {
             Logger.getLogger(AJAX_AddCustomFood.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
+        if (output)
+        {
+            outputMap.put("success", "true");
+            outputMap.put("foodname", customFoodMap.get("foodname"));
+            writeOutput(response, outputMap);
+        } else
+        {
+            outputMap.put("success", "false");
+            outputMap.put("errorCode", ErrorCodes.getADD_CUSTOM_FOOD_FAILED());
+            writeOutput(response, outputMap);
+        }
+
+    }
+
+    private void writeOutput(HttpServletResponse response, Map<String, String> outputMap) throws IOException
+    {
+        String JSONString = ServletUtilities.convertMapToJSONString(outputMap);
+
         try (PrintWriter writer = response.getWriter())
         {
-            writer.print(output);
+            writer.write(JSONString);
         }
     }
 

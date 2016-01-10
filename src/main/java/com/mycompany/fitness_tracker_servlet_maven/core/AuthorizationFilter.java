@@ -19,7 +19,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -167,7 +166,7 @@ public class AuthorizationFilter implements Filter
 //                }
 //                else //if invalid session and contains no login requests, kick back to login page
 //                {
-                    aResponse.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFirstLoginServlet());
+                    aResponse.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFIRST_LOGIN_SERVLET());
                 //}
             }
         }
@@ -202,11 +201,11 @@ public class AuthorizationFilter implements Filter
      */
     private boolean needsAuthentication(String url) 
     {   
-        String[] nonAuthResources = GlobalValues.getNonAuthResources();
+        String[] nonAuthResources = GlobalValues.getNON_AUTH_RESOURCES();
         
         for(String nonAuthRequest : nonAuthResources) 
         {
-            if(url.equals(GlobalValues.getWebAddress()))
+            if(url.equals(GlobalValues.getWEB_ADDRESS()))
             {
                 //System.out.println("AuthorizationFilter: skipping authentication as currentURI is initial request");
                 return false;

@@ -5,10 +5,8 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;

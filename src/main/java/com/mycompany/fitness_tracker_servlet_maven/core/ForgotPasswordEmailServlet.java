@@ -7,6 +7,7 @@ package com.mycompany.fitness_tracker_servlet_maven.core;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import javax.mail.Message;
@@ -16,7 +17,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -48,85 +48,96 @@ public class ForgotPasswordEmailServlet extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("ForgotPasswordEmailServlet: Executing");
-        ServletContext sc = this.getServletContext();
-        String subject = "simplfitness.co.uk password change request";
-        String content = "Hello, please click the following link to change your password, it is valid for 10 minutes: ";
-        // Recipient's email ID needs to be mentioned.
-        String to = request.getParameter("email");
+        String loginDetails = ServletUtilities.getRequestData(request);
+        Map<String, String> loginDetailsMap = ServletUtilities.convertJSONFormDataToMap(loginDetails);
+        String email = loginDetailsMap.get("email");
 
-        //test if user exists in the database
-        boolean userExists = DatabaseAccess.userAlreadyExistsCheckEmail(to);
+        boolean userExists = DatabaseAccess.userAlreadyExistsCheckEmail(email);
 
         if (userExists)
         {
-            String id_user = DatabaseAccess.getid_user(to);
-            UUID identifierToken = DatabaseAccess.createForgotPasswordRecord(id_user,to);
-            content = content + "http://localhost:8080/FrontControllerServlet/changePasswordPage?identifierToken=" + identifierToken.toString();
+            String id_user = DatabaseAccess.getid_user(email);
+            UUID identifierToken = DatabaseAccess.createForgotPasswordRecord(id_user, email);
+            
+            String subject = "simplfitness.co.uk password change request";
+            String content = "Hello, please click the following link to change your password, it is valid for 60 minutes: "
+                    + "http://localhost:8080/FrontControllerServlet/changePasswordPage?identifierToken="
+                    + identifierToken.toString();
 
-            // Sender's email ID needs to be mentioned
-            String from = "simplfitness779@gmail.com";//change accordingly
-            final String username = "simplfitness779@gmail.com";//change accordingly
-            final String password = "sunny779";//change accordingly
+            boolean sendEmailSuccess = Email.sendEmail(email, subject, content);
 
-            // Assuming you are sending email through relay.jangosmtp.net
-            String host = "smtp.gmail.com";
+//            // Sender's email ID needs to be mentioned
+//            String from = "simplfitness779@gmail.com";//change accordingly
+//            final String username = "simplfitness779@gmail.com";//change accordingly
+//            final String password = "sunny779";//change accordingly
+//
+//            // Assuming you are sending email through relay.jangosmtp.net
+//            String host = "smtp.gmail.com";
+//
+//            Properties props = new Properties();
+//            props.put("mail.smtp.auth", "true");
+//            props.put("mail.smtp.starttls.enable", "true");
+//            props.put("mail.smtp.host", host);
+//            props.put("mail.smtp.port", "587");
+//
+//            // Get the Session object.
+//            Session session = Session.getInstance(props,
+//                    new javax.mail.Authenticator()
+//            {
+//                @Override
+//                protected PasswordAuthentication getPasswordAuthentication()
+//                {
+//                    return new PasswordAuthentication(username, password);
+//                }
+//            });
+//
+//            try
+//            {
+//                // Create a default MimeMessage object.
+//                Message message = new MimeMessage(session);
+//
+//                // Set From: header field of the header.
+//                message.setFrom(new InternetAddress(from));
+//
+//                // Set To: header field of the header.
+//                message.setRecipients(Message.RecipientType.TO,
+//                        InternetAddress.parse(to));
+//
+//                // Set Subject: header field
+//                message.setSubject(subject);
+//
+//                // Now set the actual message
+//                message.setText(content);
+//
+//                // Send message
+//                Transport.send(message);
+//
+//                System.out.println("ForgottonPasswordServlet: Sent password reset email to " + to);
+//
+//            } catch (MessagingException e)
+//            {
+//                throw new RuntimeException(e);
+//            }
 
-            Properties props = new Properties();
-            props.put("mail.smtp.auth", "true");
-            props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.host", host);
-            props.put("mail.smtp.port", "587");
-
-            // Get the Session object.
-            Session session = Session.getInstance(props,
-                    new javax.mail.Authenticator()
-                    {
-                        @Override
-                        protected PasswordAuthentication getPasswordAuthentication()
-                        {
-                            return new PasswordAuthentication(username, password);
-                        }
-                    });
-
-            try
+//            RequestDispatcher rd = sc.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getFORGOT_PASSWORD_PAGE());
+//            PrintWriter out = response.getWriter();
+//            out.println("<div class=\"alert alert-success\" role=\"alert\">An email was sent to "+to+" please check it for details on how to change your password.</div>");
+//            rd.include(request, response);
+            try (PrintWriter out = response.getWriter())
             {
-                // Create a default MimeMessage object.
-                Message message = new MimeMessage(session);
-
-                // Set From: header field of the header.
-                message.setFrom(new InternetAddress(from));
-
-                // Set To: header field of the header.
-                message.setRecipients(Message.RecipientType.TO,
-                        InternetAddress.parse(to));
-
-                // Set Subject: header field
-                message.setSubject(subject);
-
-                // Now set the actual message
-                message.setText(content);
-
-                // Send message
-                Transport.send(message);
-
-                System.out.println("ForgottonPasswordServlet: Sent password reset email to " + to);
-
-            } catch (MessagingException e)
-            {
-                throw new RuntimeException(e);
+                out.write("true");
             }
-
-            RequestDispatcher rd = sc.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getForgotPasswordPage());
-            PrintWriter out = response.getWriter();
-            out.println("<div class=\"alert alert-success\" role=\"alert\">An email was sent to "+to+" please check it for details on how to change your password.</div>");
-            rd.include(request, response);
 
         } else
         {
-            RequestDispatcher rd = sc.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getForgotPasswordPage());
-            PrintWriter out = response.getWriter();
-            out.println("<div class=\"alert alert-danger\" role=\"alert\">Sorry we couldnt find an account for " + to + "</div>");
-            rd.include(request, response);
+//            RequestDispatcher rd = sc.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getFORGOT_PASSWORD_PAGE());
+//            PrintWriter out = response.getWriter();
+//            out.println("<div class=\"alert alert-danger\" role=\"alert\">Sorry we couldnt find an account for " + to + "</div>");
+//            rd.include(request, response);
+            try (PrintWriter out = response.getWriter())
+            {
+                out.write(ErrorCodes.getACCOUNT_DOSENT_EXIST());
+            }
         }
     }
 

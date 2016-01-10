@@ -5,11 +5,8 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.AJAXServlets;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.DatabaseAccess;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -47,6 +44,7 @@ public class AJAX_SearchForFood extends HttpServlet
         //format query string correctly so it can be a valid JSON
         String queryString = request.getQueryString();
         queryString = queryString.replaceAll("%22", "\"");
+        queryString = queryString.replaceAll("%20", " ");
         System.out.println("AJAX_SearchForFood: request data: " + queryString);
         
         Map<String,String> JSONMap = ServletUtilities.convertJsonStringToMap(queryString);

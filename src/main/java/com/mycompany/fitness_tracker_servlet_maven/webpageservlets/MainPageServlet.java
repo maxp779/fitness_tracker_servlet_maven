@@ -6,14 +6,10 @@
 package com.mycompany.fitness_tracker_servlet_maven.webpageservlets;
 
 import com.mycompany.fitness_tracker_servlet_maven.core.GlobalValues;
-import com.mycompany.fitness_tracker_servlet_maven.core.SessionManager;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.HttpConstraint;
-import javax.servlet.annotation.HttpMethodConstraint;
-import javax.servlet.annotation.ServletSecurity;
-import javax.servlet.annotation.ServletSecurity.TransportGuarantee;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +42,6 @@ public class MainPageServlet extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("MainPageServlet executing: " + request.getRequestURL());
-        ServletContext sc = this.getServletContext();
 
 //            boolean sessionValid = SessionManager.sessionValidate(request);
 //            //if session invalid, redirect back to login page
@@ -56,36 +51,42 @@ public class MainPageServlet extends HttpServlet
 //            }
 //            else //if session valid execute normalls
 //            {
-
-    //        if(jsessionid == null)
-    //        {
-    //            RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage());
-    //            view.forward(request, response);
-    //        }
-    //        else
-    //        {
-    //            RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
-    //            view.forward(request, response);
-    //        }
-    //        boolean sessionValid = SessionManager.sessionValidate(request);
-    //        if(!sessionValid) //path for invalid session
-    //        {
-    //            response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFirstLoginServlet());
-    //        }
-    //        else //path for valid session
-    //        {
-    //            response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
-    //        }
-    //        RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
-    //        view.forward(request, response);
+        //        if(jsessionid == null)
+        //        {
+        //            RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage());
+        //            view.forward(request, response);
+        //        }
+        //        else
+        //        {
+        //            RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
+        //            view.forward(request, response);
+        //        }
+//        //        boolean sessionValid = SessionManager.sessionValidate(request);
+        //        if(!sessionValid) //path for invalid session
+        //        {
+        //            response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFirstLoginServlet());
+        //        }
+        //        else //path for valid session
+        //        {
+        //            response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
+        //        }
+        //        RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
+        //        view.forward(request, response);
+        ServletContext servletContext = this.getServletContext();
+        String webPageURL = servletContext.getContextPath()
+                + "/"
+                + GlobalValues.getWEB_PAGES_DIRECTORY()
+                + "/"
+                + GlobalValues.getMAIN_PAGE_FOLDER()
+                + "/"
+                + GlobalValues.getMAIN_PAGE();
+        String encodedURL = response.encodeRedirectURL(webPageURL);
+        response.sendRedirect(encodedURL);
         
-            System.out.println("CURRENT USER ID IS:" + request.getSession().getAttribute("id_user"));
-            String encodedURL = response.encodeRedirectURL(sc.getContextPath()+"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getMainPage());
-            response.sendRedirect(encodedURL);
-
-        
-        
-
+//        try (PrintWriter out = response.getWriter())
+//        {
+//            out.write(encodedURL);
+//        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

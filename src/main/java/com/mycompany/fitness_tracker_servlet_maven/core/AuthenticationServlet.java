@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,10 +32,9 @@ import javax.servlet.http.HttpSession;
 public class AuthenticationServlet extends HttpServlet
 {
 
-    private static final String accountDosentExist = "<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>";
-    private static final String wrongPassword = "<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>";
-    private static final String forwardRequestTo = "/MainPageServlet";
-
+//    private static final String accountDosentExist = "<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>";
+//    private static final String wrongPassword = "<div class=\"alert alert-danger\" role=\"alert\">Invalid email or password</div>";
+//    private static final String forwardRequestTo = "/MainPageServlet";
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -50,54 +48,99 @@ public class AuthenticationServlet extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("AuthenticationServlet: executing");
-        String loginAttemptEmail = request.getParameter("email");
-        Map<String, String> userCredentials = (HashMap) DatabaseAccess.getUserCredentialsFromEmail(loginAttemptEmail);
 
+        String loginDetails = ServletUtilities.getRequestData(request);
+        Map<String, String> loginDetailsMap = ServletUtilities.convertJSONFormDataToMap(loginDetails);
+        Map<String, String> outputMap = new HashMap<>();
+
+        String loginAttemptEmail = loginDetailsMap.get("email");
+        Map<String, String> userCredentials = (HashMap) DatabaseAccess.getUserCredentialsFromEmail(loginAttemptEmail);
         if (userCredentials == null)
         {
             System.out.println("AuthenticationServlet: account dosent exist");
-            writeOutput(request, response, accountDosentExist);
+            outputMap.put("success", "false");
+            outputMap.put("errorCode", ErrorCodes.getACCOUNT_OR_PASSWORD_INCORRECT());
+            writeOutput(response,outputMap);
             return;
         }
 
         String storedHashedPassword = userCredentials.get("hashedPassword");
-        String loginAttemptPassword = request.getParameter("password");
+        String loginAttemptPassword = loginDetailsMap.get("password");
         if (!Security.passwordMatch(loginAttemptPassword, storedHashedPassword))
         {
             System.out.println("AuthenticationServlet: password incorrect");
-            writeOutput(request, response, wrongPassword);
+            outputMap.put("success", "false");
+            outputMap.put("errorCode", ErrorCodes.getACCOUNT_OR_PASSWORD_INCORRECT());
+            writeOutput(response,outputMap);
 
         } else
         {
             System.out.println("AuthenticationServlet: password correct");
             createNewSession(request, userCredentials);
-            forwardRequest(request, response);
+            outputMap.put("success", "true");
+            writeOutput(response,outputMap);
         }
+
+//        String loginAttemptEmail = request.getParameter("email");
+//        Map<String, String> userCredentials = (HashMap) DatabaseAccess.getUserCredentialsFromEmail(loginAttemptEmail);
+//        if (userCredentials == null)
+//        {
+//            System.out.println("AuthenticationServlet: account dosent exist");
+//            writeOutput(request, response, accountDosentExist);
+//            return;
+//        }
+//
+//        String storedHashedPassword = userCredentials.get("hashedPassword");
+//        String loginAttemptPassword = request.getParameter("password");
+//        if (!Security.passwordMatch(loginAttemptPassword, storedHashedPassword))
+//        {
+//            System.out.println("AuthenticationServlet: password incorrect");
+//            writeOutput(request, response, wrongPassword);
+//
+//        } else
+//        {
+//            System.out.println("AuthenticationServlet: password correct");
+//            createNewSession(request, userCredentials);
+//            forwardRequest(request, response);
+//        }
     }
 
-    private void writeOutput(HttpServletRequest request, HttpServletResponse response, String output) throws IOException, ServletException
+    private void writeOutput(HttpServletResponse response, Map<String, String> outputMap) throws IOException
     {
-        ServletContext servletContext = this.getServletContext();
-        RequestDispatcher rd = servletContext.getRequestDispatcher("/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getLoginPage());
-        PrintWriter out = response.getWriter();
-        out.println(output);
-        rd.include(request, response);
+        String JSONString = ServletUtilities.convertMapToJSONString(outputMap);
+        try (PrintWriter out = response.getWriter())
+        {
+            out.write(JSONString);
+        }
+
     }
 
+//    private void writeOutput(HttpServletRequest request, HttpServletResponse response, String output) throws IOException, ServletException
+//    {
+//        ServletContext servletContext = this.getServletContext();
+//        RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher("/"
+//                + GlobalValues.getWEB_PAGES_DIRECTORY()
+//                + "/"
+//                + GlobalValues.getLOGIN_PAGE_FOLDER()
+//                + "/"
+//                + GlobalValues.getLOGIN_PAGE());
+//        PrintWriter out = response.getWriter();
+//        out.println(output);
+//        requestDispatcher.include(request, response);
+//    }
     private void createNewSession(HttpServletRequest request, Map userCredentials) throws ServletException, IOException
     {
         HttpSession session = request.getSession(true);
-        session.setAttribute(ClientAPI.getClientRequestIdentifier(), userCredentials.get("email"));
+        session.setAttribute(ClientAPI.getLOGIN_IDENTIFIER(), userCredentials.get("email"));
         session.setAttribute("id_user", userCredentials.get("id_user"));
-        session.setMaxInactiveInterval(GlobalValues.getMaxInactiveInterval());
+        session.setMaxInactiveInterval(GlobalValues.getSESSION_TIMEOUT_VALUE());
     }
 
-    private void forwardRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
-    {
-        RequestDispatcher requestDispatcher = request.getRequestDispatcher(forwardRequestTo);
-        requestDispatcher.forward(request, response);
-    }
-
+//    private void forwardRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+//    {
+//        RequestDispatcher requestDispatcher = request.getRequestDispatcher(forwardRequestTo);
+//        requestDispatcher.forward(request, response);
+//    }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

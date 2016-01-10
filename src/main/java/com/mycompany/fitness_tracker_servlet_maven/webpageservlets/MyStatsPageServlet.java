@@ -38,9 +38,15 @@ public class MyStatsPageServlet extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("MyStatsPageServlet executing: " + request.getRequestURL());
-        ServletContext sc = this.getServletContext();
-
-        String encodedURL = response.encodeRedirectURL(sc.getContextPath() + "/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getMyStatsPage());
+        ServletContext servletContext = this.getServletContext();
+        String webPageURL = servletContext.getContextPath()
+                + "/"
+                + GlobalValues.getWEB_PAGES_DIRECTORY()
+                + "/"
+                + GlobalValues.getMY_STATS_PAGE_FOLDER()
+                + "/"
+                + GlobalValues.getMY_STATS_PAGE();
+        String encodedURL = response.encodeRedirectURL(webPageURL);
         response.sendRedirect(encodedURL);
     }
 

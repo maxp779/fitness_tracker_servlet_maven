@@ -5,7 +5,6 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
-import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,249 +59,387 @@ public class ClientAPI
     
     
     //using what the client will login with, email, username etc, in this case it is email
-    private static final String clientRequestIdentifier = "email";
+    private static final String LOGIN_IDENTIFIER = "email";
 
     //Client API
-    private static final String frontController = "FrontControllerServlet";
-    private static final String loginRequest = "login";
-    private static final String loginPageRequest = "loginPage";
-    private static final String logoutRequest = "logout";
-    private static final String mainPageRequest = "mainPage";
-    //private static final String sessionPlaceholderPageRequest = "sessionPlaceholderPage";
-    private static final String createAccountRequest = "createAccount";
-    private static final String createAccountPageRequest = "createAccountPage";
-    private static final String workoutLogPageRequest = "workoutLogPage";
-    private static final String customFoodsPageRequest = "customFoodsPage";
-    private static final String myStatsPageRequest = "myStatsPage";
-    private static final String forgotPasswordPageRequest = "forgotPasswordPage";
-    private static final String forgotPasswordEmailRequest = "forgotPasswordEmail";
-    private static final String changePasswordPageRequest = "changePasswordPage";
-    private static final String changePasswordRequest = "changePassword";
-    private static final String changeEmailRequest = "changeEmail";
-    private static final String settingsPageRequest = "settingsPage";
+    private static final String FRONTCONTROLLER = "FrontControllerServlet";
+    private static final String LOGIN_REQUEST = "login";
+    private static final String LOGIN_PAGE_REQUEST = "loginPage";
+    private static final String LOGOUT_REQUEST = "logout";
+    private static final String MAIN_PAGE_REQUEST = "mainPage";
+    private static final String CREATE_ACCOUNT_REQUEST = "createAccount";
+    private static final String CREATE_ACCOUNT_PAGE_REQUEST = "createAccountPage";
+    private static final String WORKOUTLOG_PAGE_REQUEST = "workoutLogPage";
+    private static final String CUSTOM_FOODS_PAGE_REQUEST = "customFoodsPage";
+    private static final String MY_STATS_PAGE_REQUEST = "myStatsPage";
+    private static final String FORGOT_PASSWORD_PAGE_REQUEST = "forgotPasswordPage";
+    private static final String FORGOT_PASSWORD_EMAIL_REQUEST = "forgotPasswordEmail";
+    private static final String CHANGE_PASSWORD_PAGE_REQUEST = "changePasswordPage";
+    private static final String CHANGE_PASSWORD_REQUEST = "changePassword";
+    private static final String CHANGE_EMAIL_REQUEST = "changeEmail";
+    private static final String SETTINGS_PAGE_REQUEST = "settingsPage";
+    private static final String DELETE_ACCOUNT_REQUEST = "deleteAccount";
 
     //AJAX requests
-    private static final String AJAX_GetCustomFoodList = "AJAX_GetCustomFoodList";
-    private static final String AJAX_RemoveCustomFood = "AJAX_RemoveCustomFood";
-    private static final String AJAX_AddCustomFood = "AJAX_AddCustomFood";
-    private static final String AJAX_EditCustomFood = "AJAX_EditCustomFood";
-    private static final String AJAX_AddEatenFood = "AJAX_AddEatenFood";
-    private static final String AJAX_GetEatenFoodList = "AJAX_GetEatenFoodList";
-    private static final String AJAX_RemoveEatenFood = "AJAX_RemoveEatenFood";
-    private static final String AJAX_SearchForFood = "AJAX_SearchForFood";
-    private static final String AJAX_ModifySelectedAttributes = "AJAX_ModifySelectedAttributes";
-    private static final String AJAX_GetSelectedAttributesList = "AJAX_GetSelectedAttributesList";
-    private static final String AJAX_GetFriendlyNames = "AJAX_GetFriendlyNames";
-    private static final String AJAX_ModifyUserStats = "AJAX_ModifyUserStats";
-    private static final String AJAX_GetUserStats = "AJAX_GetUserStats";
-    private static final String AJAX_GetIdentifierTokenEmail = "AJAX_GetIdentifierTokenEmail";
+    private static final String AJAX_GET_CUSTOM_FOOD_LIST = "AJAX_GetCustomFoodList";
+    private static final String AJAX_REMOVE_CUSTOM_FOOD = "AJAX_RemoveCustomFood";
+    private static final String AJAX_ADD_CUSTOM_FOOD = "AJAX_AddCustomFood";
+    private static final String AJAX_EDIT_CUSTOM_FOOD = "AJAX_EditCustomFood";
+    private static final String AJAX_ADD_EATEN_FOOD = "AJAX_AddEatenFood";
+    private static final String AJAX_GET_EATEN_FOOD_LIST = "AJAX_GetEatenFoodList";
+    private static final String AJAX_REMOVE_EATEN_FOOD = "AJAX_RemoveEatenFood";
+    private static final String AJAX_SEARCH_FOR_FOOD = "AJAX_SearchForFood";
+    private static final String AJAX_MODIFY_SELECTED_ATTRIBUTES = "AJAX_ModifySelectedAttributes";
+    private static final String AJAX_GET_VIEWABLE_ATTRIBUTES = "AJAX_GetViewableAttributesList";
+    private static final String AJAX_GET_FRIENDLY_NAMES = "AJAX_GetFriendlyNames";
+    private static final String AJAX_MODIFY_USER_STATS = "AJAX_ModifyUserStats";
+    private static final String AJAX_GET_USER_STATS = "AJAX_GetUserStats";
+    private static final String AJAX_GET_IDENTIFIER_TOKEN_EMAIL = "AJAX_GetIdentifierTokenEmail";
 
     //Values client will need
-    private static final Map<String, String> friendlyValuesMap;
+    private static final Map<String, String> FRIENDLY_VALUES_MAP;
     static
     {
-        friendlyValuesMap = new HashMap<String, String>();
-        friendlyValuesMap.put("gluc", "Glucose");
-        friendlyValuesMap.put("totsug", "Total Sugar");
-        friendlyValuesMap.put("fruct", "Fructose");
-        friendlyValuesMap.put("carbohydrate", "Carbohydrates");
-        friendlyValuesMap.put("protein", "Protein");
-        friendlyValuesMap.put("fat", "Fat");
-        friendlyValuesMap.put("polyfod", "Polyunsaturated fat");
-        friendlyValuesMap.put("weight", "Weight (g)");
-        friendlyValuesMap.put("chol", "Cholesterol(mg)");
-        friendlyValuesMap.put("water", "Water");
-        friendlyValuesMap.put("malt", "Maltose");
-        friendlyValuesMap.put("calorie", "Calories");
-        friendlyValuesMap.put("foodname", "Food Name");
-        friendlyValuesMap.put("description", "Description");
-        friendlyValuesMap.put("monofod", "Monounsaturated fat");
-        friendlyValuesMap.put("kj", "Energy(kj)");
-        friendlyValuesMap.put("satfod", "Saturated fat");
-        friendlyValuesMap.put("totnit", "Total Nitrogen");
-        friendlyValuesMap.put("star", "Starch");
-        friendlyValuesMap.put("sucr", "Sucrose");
-        friendlyValuesMap.put("engfib", "Dietary Fibre");
-        friendlyValuesMap.put("galact", "Galactose");
-        friendlyValuesMap.put("lact", "Lactose");
-        friendlyValuesMap.put("alco", "Alcohol");
-        friendlyValuesMap.put("aoacfib", "AOAC Fibre");
-        friendlyValuesMap.put("fodtrans", "Trans Fats");
-        friendlyValuesMap.put("sodium", "Sodium");
-        friendlyValuesMap.put("potassium", "Potassium");
-        friendlyValuesMap.put("calcium", "Calcium");
-        friendlyValuesMap.put("magnesium", "Magnesium");
-        friendlyValuesMap.put("phosphorus", "Phosphorus");
-        friendlyValuesMap.put("iron", "Iron");
-        friendlyValuesMap.put("copper", "Copper");
-        friendlyValuesMap.put("zinc", "Zinc");
-        friendlyValuesMap.put("chloride", "Chloride");
-        friendlyValuesMap.put("manganese", "Manganese");
-        friendlyValuesMap.put("selenium", "Selenium");
-        friendlyValuesMap.put("iodine", "Iodine");
-    }
-
-    public static String getChangeEmailRequest()
-    {
-        return changeEmailRequest;
-    }
-
-    public static String getSettingsPageRequest()
-    {
-        return settingsPageRequest;
-    }
-
-    
-    public static String getAJAX_GetIdentifierTokenEmail()
-    {
-        return AJAX_GetIdentifierTokenEmail;
-    }
-
-    
-    public static String getChangePasswordRequest()
-    {
-        return changePasswordRequest;
+        FRIENDLY_VALUES_MAP = new HashMap<>();
+        FRIENDLY_VALUES_MAP.put("gluc", "Glucose");
+        FRIENDLY_VALUES_MAP.put("totsug", "Total Sugar");
+        FRIENDLY_VALUES_MAP.put("fruct", "Fructose");
+        FRIENDLY_VALUES_MAP.put("carbohydrate", "Carbohydrates");
+        FRIENDLY_VALUES_MAP.put("protein", "Protein");
+        FRIENDLY_VALUES_MAP.put("fat", "Fat");
+        FRIENDLY_VALUES_MAP.put("polyfod", "Polyunsaturated fat");
+        FRIENDLY_VALUES_MAP.put("weight", "Weight (g)");
+        FRIENDLY_VALUES_MAP.put("chol", "Cholesterol(mg)");
+        FRIENDLY_VALUES_MAP.put("water", "Water");
+        FRIENDLY_VALUES_MAP.put("malt", "Maltose");
+        FRIENDLY_VALUES_MAP.put("calorie", "Calories");
+        FRIENDLY_VALUES_MAP.put("foodname", "Food Name");
+        FRIENDLY_VALUES_MAP.put("description", "Description");
+        FRIENDLY_VALUES_MAP.put("monofod", "Monounsaturated fat");
+        FRIENDLY_VALUES_MAP.put("kj", "Energy(kj)");
+        FRIENDLY_VALUES_MAP.put("satfod", "Saturated fat");
+        FRIENDLY_VALUES_MAP.put("totnit", "Total Nitrogen");
+        FRIENDLY_VALUES_MAP.put("star", "Starch");
+        FRIENDLY_VALUES_MAP.put("sucr", "Sucrose");
+        FRIENDLY_VALUES_MAP.put("engfib", "Dietary Fibre");
+        FRIENDLY_VALUES_MAP.put("galact", "Galactose");
+        FRIENDLY_VALUES_MAP.put("lact", "Lactose");
+        FRIENDLY_VALUES_MAP.put("alco", "Alcohol");
+        FRIENDLY_VALUES_MAP.put("aoacfib", "AOAC Fibre");
+        FRIENDLY_VALUES_MAP.put("fodtrans", "Trans Fats");
+        FRIENDLY_VALUES_MAP.put("sodium", "Sodium");
+        FRIENDLY_VALUES_MAP.put("potassium", "Potassium");
+        FRIENDLY_VALUES_MAP.put("calcium", "Calcium");
+        FRIENDLY_VALUES_MAP.put("magnesium", "Magnesium");
+        FRIENDLY_VALUES_MAP.put("phosphorus", "Phosphorus");
+        FRIENDLY_VALUES_MAP.put("iron", "Iron");
+        FRIENDLY_VALUES_MAP.put("copper", "Copper");
+        FRIENDLY_VALUES_MAP.put("zinc", "Zinc");
+        FRIENDLY_VALUES_MAP.put("chloride", "Chloride");
+        FRIENDLY_VALUES_MAP.put("manganese", "Manganese");
+        FRIENDLY_VALUES_MAP.put("selenium", "Selenium");
+        FRIENDLY_VALUES_MAP.put("iodine", "Iodine");
     }
     
-
-    public static String getForgotPasswordEmailRequest()
-    {
-        return forgotPasswordEmailRequest;
-    }
     
-    public static String getChangePasswordPageRequest()
-    {
-        return changePasswordPageRequest;
-    }
-
-    public static String getForgotPasswordPageRequest()
-    {
-        return forgotPasswordPageRequest;
-    }
     
-    public static String getAJAX_GetUserStats()
-    {
-        return AJAX_GetUserStats;
-    } 
+    
+    
+//    
+//
+//    public static String getChangeEmailRequest()
+//    {
+//        return CHANGE_EMAIL_REQUEST;
+//    }
+//
+//    public static String getSettingsPageRequest()
+//    {
+//        return SETTINGS_PAGE_REQUEST;
+//    }
+//
+//    
+//    public static String getAJAX_GetIdentifierTokenEmail()
+//    {
+//        return AJAX_GET_IDENTIFIER_TOKEN_EMAIL;
+//    }
+//
+//    
+//    public static String getChangePasswordRequest()
+//    {
+//        return CHANGE_PASSWORD_REQUEST;
+//    }
+//    
+//
+//    public static String getForgotPasswordEmailRequest()
+//    {
+//        return FORGOT_PASSWORD_EMAIL_REQUEST;
+//    }
+//    
+//    public static String getChangePasswordPageRequest()
+//    {
+//        return CHANGE_PASSWORD_PAGE_REQUEST;
+//    }
+//
+//    public static String getForgotPasswordPageRequest()
+//    {
+//        return FORGOT_PASSWORD_PAGE_REQUEST;
+//    }
+//    
+//    public static String getAJAX_GetUserStats()
+//    {
+//        return AJAX_GET_USER_STATS;
+//    } 
+//
+//    public static String getAJAX_ModifyUserStats()
+//    {
+//        return AJAX_MODIFY_USER_STATS;
+//    }
+//
+//    public static String getMyStatsPageRequest()
+//    {
+//        return MY_STATS_PAGE_REQUEST;
+//    }
+//   
+//    public static Map<String, String> getFriendlyValuesMap()
+//    {
+//        return FRIENDLY_VALUES_MAP;
+//    }
+//
+//    public static String getAJAX_GetFriendlyNames()
+//    {
+//        return AJAX_GET_FRIENDLY_NAMES;
+//    }
+//
+//    public static String getAJAX_GetSelectedAttributesList()
+//    {
+//        return AJAX_GET_SELECTED_ATTRIBUTES;
+//    }
+//
+//    public static String getAJAX_GetCustomFoodList()
+//    {
+//        return AJAX_GET_CUSTOM_FOOD_LIST;
+//    }
+//
+//    public static String getAJAX_RemoveCustomFood()
+//    {
+//        return AJAX_REMOVE_CUSTOM_FOOD;
+//    }
+//
+//    public static String getAJAX_AddCustomFood()
+//    {
+//        return AJAX_ADD_CUSTOM_FOOD;
+//    }
+//
+//    public static String getAJAX_EditCustomFood()
+//    {
+//        return AJAX_EDIT_CUSTOM_FOOD;
+//    }
+//
+//    public static String getAJAX_AddEatenFood()
+//    {
+//        return AJAX_ADD_EATEN_FOOD;
+//    }
+//
+//    public static String getAJAX_GetEatenFoodList()
+//    {
+//        return AJAX_GET_EATEN_FOOD_LIST;
+//    }
+//
+//    public static String getAJAX_RemoveEatenFood()
+//    {
+//        return AJAX_REMOVE_EATEN_FOOD;
+//    }
+//
+//    public static String getAJAX_SearchForFood()
+//    {
+//        return AJAX_SEARCH_FOR_FOOD;
+//    }
+//
+//    public static String getAJAX_ModifySelectedAttributes()
+//    {
+//        return AJAX_MODIFY_SELECTED_ATTRIBUTES;
+//    }
+//
+//    public static String getWorkoutLogPageRequest()
+//    {
+//        return WORKOUTLOG_PAGE_REQUEST;
+//    }
+//
+//    public static String getCustomFoodsPageRequest()
+//    {
+//        return CUSTOM_FOODS_PAGE_REQUEST;
+//    }
+//
+//    public static String getCreateAccountPageRequest()
+//    {
+//        return CREATE_ACCOUNT_PAGE_REQUEST;
+//    }
+//
+//    public static String getClientRequestIdentifier()
+//    {
+//        return LOGIN_IDENTIFIER;
+//    }
+//
+//    public static String getCreateAccountRequest()
+//    {
+//        return CREATE_ACCOUNT_REQUEST;
+//    }
+//
+//    public static String getFrontController()
+//    {
+//        return FRONTCONTROLLER;
+//    }
+//
+//    public static String getLoginPageRequest()
+//    {
+//        return LOGIN_PAGE_REQUEST;
+//    }
+//
+//    public static String getLoginRequest()
+//    {
+//        return LOGIN_REQUEST;
+//    }
+//
+//    public static String getLogoutRequest()
+//    {
+//        return LOGOUT_REQUEST;
+//    }
+//
+//    public static String getMainPageRequest()
+//    {
+//        return MAIN_PAGE_REQUEST;
+//    }
 
-    public static String getAJAX_ModifyUserStats()
-    {
-        return AJAX_ModifyUserStats;
+    public static String getLOGIN_IDENTIFIER() {
+        return LOGIN_IDENTIFIER;
     }
 
-    public static String getMyStatsPageRequest()
-    {
-        return myStatsPageRequest;
-    }
-   
-    public static Map<String, String> getFriendlyValuesMap()
-    {
-        return friendlyValuesMap;
+    public static String getFRONTCONTROLLER() {
+        return FRONTCONTROLLER;
     }
 
-    public static String getAJAX_GetFriendlyNames()
-    {
-        return AJAX_GetFriendlyNames;
+    public static String getLOGIN_REQUEST() {
+        return LOGIN_REQUEST;
     }
 
-    public static String getAJAX_GetSelectedAttributesList()
-    {
-        return AJAX_GetSelectedAttributesList;
+    public static String getLOGIN_PAGE_REQUEST() {
+        return LOGIN_PAGE_REQUEST;
     }
 
-    public static String getAJAX_GetCustomFoodList()
-    {
-        return AJAX_GetCustomFoodList;
+    public static String getLOGOUT_REQUEST() {
+        return LOGOUT_REQUEST;
     }
 
-    public static String getAJAX_RemoveCustomFood()
-    {
-        return AJAX_RemoveCustomFood;
+    public static String getMAIN_PAGE_REQUEST() {
+        return MAIN_PAGE_REQUEST;
     }
 
-    public static String getAJAX_AddCustomFood()
-    {
-        return AJAX_AddCustomFood;
+    public static String getCREATE_ACCOUNT_REQUEST() {
+        return CREATE_ACCOUNT_REQUEST;
     }
 
-    public static String getAJAX_EditCustomFood()
-    {
-        return AJAX_EditCustomFood;
+    public static String getCREATE_ACCOUNT_PAGE_REQUEST() {
+        return CREATE_ACCOUNT_PAGE_REQUEST;
     }
 
-    public static String getAJAX_AddEatenFood()
-    {
-        return AJAX_AddEatenFood;
+    public static String getWORKOUTLOG_PAGE_REQUEST() {
+        return WORKOUTLOG_PAGE_REQUEST;
     }
 
-    public static String getAJAX_GetEatenFoodList()
-    {
-        return AJAX_GetEatenFoodList;
+    public static String getCUSTOM_FOODS_PAGE_REQUEST() {
+        return CUSTOM_FOODS_PAGE_REQUEST;
     }
 
-    public static String getAJAX_RemoveEatenFood()
-    {
-        return AJAX_RemoveEatenFood;
+    public static String getMY_STATS_PAGE_REQUEST() {
+        return MY_STATS_PAGE_REQUEST;
     }
 
-    public static String getAJAX_SearchForFood()
-    {
-        return AJAX_SearchForFood;
+    public static String getFORGOT_PASSWORD_PAGE_REQUEST() {
+        return FORGOT_PASSWORD_PAGE_REQUEST;
     }
 
-    public static String getAJAX_ModifySelectedAttributes()
-    {
-        return AJAX_ModifySelectedAttributes;
+    public static String getFORGOT_PASSWORD_EMAIL_REQUEST() {
+        return FORGOT_PASSWORD_EMAIL_REQUEST;
     }
 
-    public static String getWorkoutLogPageRequest()
-    {
-        return workoutLogPageRequest;
+    public static String getCHANGE_PASSWORD_PAGE_REQUEST() {
+        return CHANGE_PASSWORD_PAGE_REQUEST;
     }
 
-    public static String getCustomFoodsPageRequest()
-    {
-        return customFoodsPageRequest;
+    public static String getCHANGE_PASSWORD_REQUEST() {
+        return CHANGE_PASSWORD_REQUEST;
     }
 
-    public static String getCreateAccountPageRequest()
-    {
-        return createAccountPageRequest;
+    public static String getCHANGE_EMAIL_REQUEST() {
+        return CHANGE_EMAIL_REQUEST;
     }
 
-    public static String getClientRequestIdentifier()
-    {
-        return clientRequestIdentifier;
+    public static String getSETTINGS_PAGE_REQUEST() {
+        return SETTINGS_PAGE_REQUEST;
     }
 
-    public static String getCreateAccountRequest()
-    {
-        return createAccountRequest;
+    public static String getDELETE_ACCOUNT_REQUEST() {
+        return DELETE_ACCOUNT_REQUEST;
     }
 
-    public static String getFrontController()
-    {
-        return frontController;
+    public static String getAJAX_GET_CUSTOM_FOOD_LIST() {
+        return AJAX_GET_CUSTOM_FOOD_LIST;
     }
 
-    public static String getLoginPageRequest()
-    {
-        return loginPageRequest;
+    public static String getAJAX_REMOVE_CUSTOM_FOOD() {
+        return AJAX_REMOVE_CUSTOM_FOOD;
     }
 
-    public static String getLoginRequest()
-    {
-        return loginRequest;
+    public static String getAJAX_ADD_CUSTOM_FOOD() {
+        return AJAX_ADD_CUSTOM_FOOD;
     }
 
-    public static String getLogoutRequest()
-    {
-        return logoutRequest;
+    public static String getAJAX_EDIT_CUSTOM_FOOD() {
+        return AJAX_EDIT_CUSTOM_FOOD;
     }
 
-    public static String getMainPageRequest()
-    {
-        return mainPageRequest;
+    public static String getAJAX_ADD_EATEN_FOOD() {
+        return AJAX_ADD_EATEN_FOOD;
+    }
+
+    public static String getAJAX_GET_EATEN_FOOD_LIST() {
+        return AJAX_GET_EATEN_FOOD_LIST;
+    }
+
+    public static String getAJAX_REMOVE_EATEN_FOOD() {
+        return AJAX_REMOVE_EATEN_FOOD;
+    }
+
+    public static String getAJAX_SEARCH_FOR_FOOD() {
+        return AJAX_SEARCH_FOR_FOOD;
+    }
+
+    public static String getAJAX_MODIFY_SELECTED_ATTRIBUTES() {
+        return AJAX_MODIFY_SELECTED_ATTRIBUTES;
+    }
+
+    public static String getAJAX_GET_VIEWABLE_ATTRIBUTES() {
+        return AJAX_GET_VIEWABLE_ATTRIBUTES;
+    }
+
+    public static String getAJAX_GET_FRIENDLY_NAMES() {
+        return AJAX_GET_FRIENDLY_NAMES;
+    }
+
+    public static String getAJAX_MODIFY_USER_STATS() {
+        return AJAX_MODIFY_USER_STATS;
+    }
+
+    public static String getAJAX_GET_USER_STATS() {
+        return AJAX_GET_USER_STATS;
+    }
+
+    public static String getAJAX_GET_IDENTIFIER_TOKEN_EMAIL() {
+        return AJAX_GET_IDENTIFIER_TOKEN_EMAIL;
+    }
+
+    public static Map<String, String> getFRIENDLY_VALUES_MAP() {
+        return FRIENDLY_VALUES_MAP;
     }
 
 }

@@ -38,7 +38,7 @@ public class SessionManager
                 System.out.println("SessionManager: session = null");
                 sessionValid = false;
             }
-            else if(session.getAttribute(ClientAPI.getClientRequestIdentifier()) == null) //path for invalid identifier
+            else if(session.getAttribute(ClientAPI.getLOGIN_IDENTIFIER()) == null) //path for invalid identifier
             {
                 System.out.println("SessionManager: client identifier = null");
                 //user may not have logged in properly

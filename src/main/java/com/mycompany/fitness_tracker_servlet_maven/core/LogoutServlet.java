@@ -53,8 +53,13 @@ public class LogoutServlet extends HttpServlet
         ServletContext sc = request.getServletContext();
         
 
-        response.sendRedirect(sc.getContextPath() +"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginPage());
-
+        response.sendRedirect(sc.getContextPath() 
+                +"/"
+                + GlobalValues.getWEB_PAGES_DIRECTORY() 
+                +"/"
+                + GlobalValues.getLOGIN_PAGE_FOLDER()
+                +"/"
+                + GlobalValues.getLOGIN_PAGE());
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

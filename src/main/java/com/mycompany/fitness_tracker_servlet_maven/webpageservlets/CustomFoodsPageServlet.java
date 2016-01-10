@@ -38,11 +38,17 @@ public class CustomFoodsPageServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("MainPageServlet executing: " + request.getRequestURL());
+        System.out.println("CustomFoodsPageServlet executing: " + request.getRequestURL());
         ServletContext sc = this.getServletContext();
 
-        String encodedURL = response.encodeRedirectURL(sc.getContextPath() + "/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getCustomFoodsPage());
-        response.sendRedirect(encodedURL);
+        String webPageURL = response.encodeRedirectURL(sc.getContextPath() 
+                + "/" 
+                + GlobalValues.getWEB_PAGES_DIRECTORY() 
+                + "/"
+                + GlobalValues.getCUSTOM_FOODS_PAGE_FOLDER()
+                + "/"
+                + GlobalValues.getCUSTOM_FOODS_PAGE());
+        response.sendRedirect(webPageURL);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

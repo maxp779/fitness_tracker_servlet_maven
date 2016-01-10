@@ -7,7 +7,6 @@ package com.mycompany.fitness_tracker_servlet_maven.webpageservlets;
 
 import com.mycompany.fitness_tracker_servlet_maven.core.GlobalValues;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -39,9 +38,15 @@ public class SettingsPageServlet extends HttpServlet
             throws ServletException, IOException
     {
         System.out.println("SettingsPageServlet executing: " + request.getRequestURL());
-        ServletContext sc = this.getServletContext();
-
-        String encodedURL = response.encodeRedirectURL(sc.getContextPath() + "/" + GlobalValues.getWebPagesDirectory() + "/" + GlobalValues.getSettingsPage());
+        ServletContext servletContext = this.getServletContext();
+        String webPageURL = servletContext.getContextPath()
+                + "/"
+                + GlobalValues.getWEB_PAGES_DIRECTORY()
+                + "/"
+                + GlobalValues.getSETTINGS_PAGE_FOLDER()
+                + "/"
+                + GlobalValues.getSETTINGS_PAGE();
+        String encodedURL = response.encodeRedirectURL(webPageURL);
         response.sendRedirect(encodedURL);
     }
 
