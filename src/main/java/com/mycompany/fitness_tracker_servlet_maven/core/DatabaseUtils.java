@@ -43,7 +43,7 @@ public class DatabaseUtils
      *
      * @return a Connection object to connect with the database
      */
-    public static Connection getDatabaseConnection()
+    protected static Connection getDatabaseConnection()
     {
         InitialContext initialContext = null;
         try
@@ -78,7 +78,7 @@ public class DatabaseUtils
         return aConnection;
     }
 
-    public static void loadDatabaseDriver()
+    protected static void loadDatabaseDriver()
     {
         try
         {
@@ -91,7 +91,7 @@ public class DatabaseUtils
         }
     }
 
-    public static void dersgisterDatabaseDriver()
+    protected static void dersgisterDatabaseDriver()
     {
         System.out.println("DatabaseUtils: getting driver list");
         ClassLoader aClassLoader = Thread.currentThread().getContextClassLoader();

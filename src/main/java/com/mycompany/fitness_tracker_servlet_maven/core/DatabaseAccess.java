@@ -326,13 +326,11 @@ public class DatabaseAccess
         //each attributeMap represents a single row
         ResultSetMetaData resultSetMetaData = aResultSet.getMetaData();
         List mainList = new ArrayList<>();
-        Map currentRecord;
         int columnCount = resultSetMetaData.getColumnCount();
-        int currentColumn;
         while (aResultSet.next())
         {
-            currentColumn = 1;
-            currentRecord = new HashMap();
+            int currentColumn = 1;
+            Map currentRecord = new HashMap();
 
             while (currentColumn <= columnCount)
             {
