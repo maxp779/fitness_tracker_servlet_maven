@@ -4,59 +4,12 @@
  * and open the template in the editor.
  */
 
-//$(document).ready(function () {
-//    getAPI(function () {
-//        setupserverAPI(function () {
-//            setupLoginPage();
-//        });
-//    });
-//});
-
-
-//function getServerAPI(callback)
-//{
-//    $.ajax({
-//        url: serverAPI.requests.frontController + serverAPI.requests.AJAX_SearchForFood,
-//        type: "GET",
-//        data: JSON.stringify(searchInputJSON),
-//        contentType: "application/json",
-//        dataType: "json",
-//        success: function (APIString)
-//        {
-//            localStorage.setItem("serverAPI",APIString);
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        },
-//        error: function (xhr, status, error)
-//        {
-//            // check status && error
-//            console.log("ajax failed");
-//        }
-//    });
-//}
-
-//function setupserverAPI(callback)
-//{
-//    serverAPI = localStorage.getItem('serverAPI');
-//    
-//    if(callback)
-//    {
-//        callback();
-//    }
-//}
 
 $(document).ready(function () {
 
-    //document.getElementById("loginForm").action = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.loginRequest;
-    document.getElementById("createAccountForm").action = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.createAccountPageRequest;
-    document.getElementById("forgotPasswordForm").action = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.forgotPasswordPageRequest;
-
-    //autologin for development
-    document.getElementById("email").value = "test@test.com";
-    document.getElementById("password").value = "testtest";
-
+    getServerAPI(function () {
+        setupForms();
+    });
 
     $('#loginForm').submit(function () {
         loginRequestAJAX();
@@ -74,27 +27,71 @@ $(document).ready(function () {
 
 });
 
+function setupForms()
+{
+    //document.getElementById("loginForm").action = serverAPI.requests.LOGIN_REQUEST;
+    document.getElementById("createAccountForm").action = serverAPI.requests.CREATE_ACCOUNT_PAGE_REQUEST;
+    document.getElementById("forgotPasswordForm").action = serverAPI.requests.FORGOT_PASSWORD_PAGE_REQUEST;
+
+    //autologin for development
+    document.getElementById("email").value = "test@test.com";
+    document.getElementById("password").value = "testtest";
+}
+
+function getServerAPI(callback)
+{
+    $.ajax({
+        dataType: "json",
+        type: "GET",
+        url: "/FrontControllerServlet/GET_SERVER_API",
+        success: function (returnedJSON)
+        {
+            console.log(returnedJSON);
+            if (returnedJSON.success === true)
+            {
+                serverAPI = returnedJSON.data;
+                localStorage.setItem("serverAPI", JSON.stringify(returnedJSON.data));
+                if (callback)
+                {
+                    callback();
+                }
+            }
+            else
+            {
+                console.log("Error 0: Failed to fetch API from server");
+            }
+
+        },
+        error: function (xhr, status, error)
+        {
+            // check status && error
+            console.log("ajax failed");
+        }
+    });
+}
+
+
 function loginRequestAJAX()
 {
     //get data from form, it is formatted as an array of JSON objects with the
     //form data held in name/value pairs like so:
     //[{"name":"email", "value":"test@test.com"},{"name":"password", "value":"testtest"}]
     var formData = $("#loginForm").serializeArray();
-
+    
     $.ajax({
-        url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.loginRequest,
+        url: serverAPI.requests.LOGIN_REQUEST,
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json",
         success: function (data)
         {
             var returnObject = JSON.parse(data);
-            
+
             if (returnObject.success === "true")
             {
                 console.log("valid credentials");
 
-                window.location = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.mainPageRequest;
+                window.location = serverAPI.requests.MAIN_PAGE_REQUEST;
             } else
             {
                 document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + errorCodes[returnObject.errorCode] + " please try again</div>";

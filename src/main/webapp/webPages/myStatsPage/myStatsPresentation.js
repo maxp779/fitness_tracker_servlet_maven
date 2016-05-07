@@ -8,54 +8,58 @@
 //WOMEN: BMR = [9.99 x weight (kg)] + [6.25 x height (cm)] - [4.92 x age (years)] -161
 function calculateMacros()
 {
-    globalValues.userStats.sex = $('input[name="sex"]:checked').val();
-    globalValues.userStats.weight = $('input[name="weight"]').val();
-    globalValues.userStats.height = $('input[name="height"]').val();
-    globalValues.userStats.age = $('input[name="age"]').val();
-    globalValues.userStats.activitylevel = $('#activitylevel').val(); //this should be a float
-    globalValues.userStats.goal = $('input[name="goal"]:checked').val();
+    var newUserStats = {};
+    
+    newUserStats.sex = $('input[name="sex"]:checked').val();
+    newUserStats.weight = $('input[name="weight"]').val();
+    newUserStats.height = $('input[name="height"]').val();
+    newUserStats.age = $('input[name="age"]').val();
+    newUserStats.activitylevel = $('#activitylevel').val(); //this should be a float
+    newUserStats.goal = $('input[name="goal"]:checked').val();
 
     //BMR = Basic Metabolic Rate, this is calories required to stay alive   
     //calculate BMR
-    if (globalValues.userStats.sex === "m")
+    if (newUserStats.sex === "m")
     {
-        globalValues.userStats.bmr = Math.round((9.99 * globalValues.userStats.weight) + (6.25 * globalValues.userStats.height) - (4.92 * globalValues.userStats.age) + 5);
+        newUserStats.bmr = Math.round((9.99 * newUserStats.weight) + (6.25 * newUserStats.height) - (4.92 * newUserStats.age) + 5);
     }
     else
     {
-        globalValues.userStats.bmr = Math.round((9.99 * globalValues.userStats.weight) + (6.25 * globalValues.userStats.height) - (4.92 * globalValues.userStats.age) - 161);
+        newUserStats.bmr = Math.round((9.99 * newUserStats.weight) + (6.25 * newUserStats.height) - (4.92 * newUserStats.age) - 161);
     }
 
     //TEE = Total Energy Expenditure, this is calories required including activity level
     //calculate TEE
-    globalValues.userStats.tee = globalValues.userStats.bmr * globalValues.userStats.activitylevel; //this should be a float
+    newUserStats.tee = newUserStats.bmr * newUserStats.activitylevel; //this should be a float
 
     //goalTEE = Ideal Total Energy Expenditure based on the users goal, it is normal TEE +15% to gain weight or -15% to lose weight
     //calculate goalTEE
-    if (globalValues.userStats.goal === "gain")
+    if (newUserStats.goal === "gain")
     {
-        globalValues.userStats.tee_goal = Math.round(globalValues.userStats.tee * 1.15);
+        newUserStats.tee_goal = Math.round(newUserStats.tee * 1.15);
     }
-    else if (globalValues.userStats.goal === "lose")
+    else if (newUserStats.goal === "lose")
     {
-        globalValues.userStats.tee_goal = Math.round(globalValues.userStats.tee * 0.85);
+        newUserStats.tee_goal = Math.round(newUserStats.tee * 0.85);
     }
     else
     {
-        globalValues.userStats.tee_goal = globalValues.userStats.tee;
+        newUserStats.tee_goal = newUserStats.tee;
     }
 
     //calculate nutrient macros
-    globalValues.userStats.protein_goal = globalValues.userStats.weight * 2;
-    globalValues.userStats.fat_goal = globalValues.userStats.weight * 1;
+    newUserStats.protein_goal = newUserStats.weight * 2;
+    newUserStats.fat_goal = newUserStats.weight * 1;
 
     //1g of protein = 4 calories, 1g of fat = 9 calories, 1g of carbs = 4 calories.
-    globalValues.userStats.proteincalorie = globalValues.userStats.protein_goal * 4;
-    globalValues.userStats.fatcalorie = globalValues.userStats.fat_goal * 9;
-    globalValues.userStats.carbohydratecalorie = globalValues.userStats.tee_goal - (globalValues.userStats.proteincalorie + globalValues.userStats.fatcalorie);
+    newUserStats.proteincalorie = newUserStats.protein_goal * 4;
+    newUserStats.fatcalorie = newUserStats.fat_goal * 9;
+    newUserStats.carbohydratecalorie = newUserStats.tee_goal - (newUserStats.proteincalorie + newUserStats.fatcalorie);
 
-    globalValues.userStats.carbohydrate_goal = globalValues.userStats.carbohydratecalorie / 4;
-    console.log(JSON.stringify(globalValues.userStats));
+    newUserStats.carbohydrate_goal = newUserStats.carbohydratecalorie / 4;
+    console.log(JSON.stringify(newUserStats));
+    
+    setGlobalValues.setUserStats(newUserStats);
 
     updateCalculationResult();
 }

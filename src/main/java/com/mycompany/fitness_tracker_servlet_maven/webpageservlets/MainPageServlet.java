@@ -5,15 +5,16 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.webpageservlets;
 
-import com.mycompany.fitness_tracker_servlet_maven.core.GlobalValues;
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,11 +24,10 @@ import javax.servlet.http.HttpServletResponse;
 {
     "/MainPageServlet"
 })
-//@ServletSecurity(value = @HttpConstraint(transportGuarantee = TransportGuarantee.CONFIDENTIAL))
-//@ServletSecurity(@HttpConstraint(rolesAllowed={"javaee"}))
-
 public class MainPageServlet extends HttpServlet
 {
+
+    private static final Logger log = LoggerFactory.getLogger(MainPageServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -41,37 +41,8 @@ public class MainPageServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("MainPageServlet executing: " + request.getRequestURL());
+        log.trace("processRequest");
 
-//            boolean sessionValid = SessionManager.sessionValidate(request);
-//            //if session invalid, redirect back to login page
-//            if(!sessionValid)
-//            {
-//                response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getWebPagesDirectory() +"/"+ GlobalValues.getLoginPage());
-//            }
-//            else //if session valid execute normalls
-//            {
-        //        if(jsessionid == null)
-        //        {
-        //            RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage());
-        //            view.forward(request, response);
-        //        }
-        //        else
-        //        {
-        //            RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
-        //            view.forward(request, response);
-        //        }
-//        //        boolean sessionValid = SessionManager.sessionValidate(request);
-        //        if(!sessionValid) //path for invalid session
-        //        {
-        //            response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFirstLoginServlet());
-        //        }
-        //        else //path for valid session
-        //        {
-        //            response.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
-        //        }
-        //        RequestDispatcher view = request.getRequestDispatcher(GlobalValues.getDesktopPagesDirectory() +"/"+ GlobalValues.getDesktopMainPage()+ request.getAttribute("jsessionid"));
-        //        view.forward(request, response);
         ServletContext servletContext = this.getServletContext();
         String webPageURL = servletContext.getContextPath()
                 + "/"
@@ -80,13 +51,7 @@ public class MainPageServlet extends HttpServlet
                 + GlobalValues.getMAIN_PAGE_FOLDER()
                 + "/"
                 + GlobalValues.getMAIN_PAGE();
-        String encodedURL = response.encodeRedirectURL(webPageURL);
-        response.sendRedirect(encodedURL);
-        
-//        try (PrintWriter out = response.getWriter())
-//        {
-//            out.write(encodedURL);
-//        }
+        response.sendRedirect(webPageURL);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -5,6 +5,8 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
+import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -15,6 +17,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,28 +31,30 @@ import javax.servlet.http.HttpSession;
 public class DeleteAccountServlet extends HttpServlet
 {
 
+    private static final Logger log = LoggerFactory.getLogger(DeleteAccountServlet.class);
     private static final String DELETE_ACCOUNT_SUCCESS = "<div class=\"alert alert-success\" role=\"alert\">The account for #EMAIL has been deleted successfully.</div>";
     private static final String DELETE_ACCOUNT_FAIL = "<div class=\"alert alert-danger\" role=\"alert\">An error occurred, please try again.</div>";
     private static final String INCORRECT_PASSWORD = "<div class=\"alert alert-danger\" role=\"alert\">Incorrect password.</div>";
 
     /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * Handles the HTTP <code>POST</code> method.
      *
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
+        log.trace("doPost");
         HttpSession session = request.getSession();
-        String id_user = (String) session.getAttribute("id_user");
+        UserObject user = (UserObject) session.getAttribute("user");
+        String id_user = user.getId_user();
         String password = request.getParameter("deleteAccountPassword");
         boolean authorized = Authorization.isCurrentUserAuthorized(password, id_user);
-        boolean success;
-        
+
         //THIS IF CONDITION CAN BE DELETED WHEN OUT OF TESTING! It is only to prevent test account deletion
         if ("30".equals(id_user))
         {
@@ -59,7 +65,8 @@ public class DeleteAccountServlet extends HttpServlet
             requestDispatcher.include(request, response);
             return;
         }
-
+        
+        boolean success;
         if (authorized)
         {
             success = DatabaseAccess.deleteAccount(id_user);
@@ -77,57 +84,28 @@ public class DeleteAccountServlet extends HttpServlet
         {
             writeOutput(request, response, DELETE_ACCOUNT_FAIL, false);
         }
-
     }
 
     private void writeOutput(HttpServletRequest request, HttpServletResponse response, String output, boolean accountDeleted) throws IOException, ServletException
     {
+        log.trace("writeOutput");
         ServletContext servletContext = this.getServletContext();
         RequestDispatcher requestDispatcher;
 
         if (accountDeleted)
         {
-            requestDispatcher = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getLOGIN_PAGE_FOLDER()+ "/" + GlobalValues.getLOGIN_PAGE());
+            log.debug("account deleted");
+            requestDispatcher = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getLOGIN_PAGE_FOLDER() + "/" + GlobalValues.getLOGIN_PAGE());
             SessionManager.httpSessionRemove(request.getSession());
         } else
         {
-            requestDispatcher = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getSETTINGS_PAGE_FOLDER()+ "/" + GlobalValues.getSETTINGS_PAGE());
+            log.debug("account not deleted");
+            requestDispatcher = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getSETTINGS_PAGE_FOLDER() + "/" + GlobalValues.getSETTINGS_PAGE());
         }
 
         PrintWriter out = response.getWriter();
         out.println(output);
         requestDispatcher.include(request, response);
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        processRequest(request, response);
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        processRequest(request, response);
     }
 
     /**

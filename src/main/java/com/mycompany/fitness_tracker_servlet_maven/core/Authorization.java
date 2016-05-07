@@ -5,9 +5,10 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
+import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,17 +17,20 @@ import javax.servlet.http.HttpSession;
 public class Authorization
 {
 
+    private static final Logger log = LoggerFactory.getLogger(Authorization.class);
+
     protected static boolean isCurrentUserAuthorized(String password, String id_user)
     {
+        log.trace("isCurrentUserAuthorized");
         boolean output = false;
 
         Map<String, String> userCredentials = DatabaseAccess.getUserCredentialsFromid_user(id_user);
         String storedHashedPassword = userCredentials.get("hashedPassword");
-        if (Security.passwordMatch(password, storedHashedPassword))
+        if (PasswordEncoder.passwordMatch(password, storedHashedPassword))
         {
             output = true;
         }
-
+        log.debug("user authorization:"+String.valueOf(output));
         return output;
     }
 }

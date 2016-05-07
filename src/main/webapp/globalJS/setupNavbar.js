@@ -5,12 +5,12 @@
  */
 
 $(document).ready(function () {
-    document.getElementById("myStats").href = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.myStatsPageRequest;
-    document.getElementById("workoutLog").href = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.workoutLogPageRequest;
-    document.getElementById("logout").href = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.logoutRequest;
-    document.getElementById("mainPage").href = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.mainPageRequest;
-    document.getElementById("customFoods").href = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.customFoodsPageRequest;
-    document.getElementById("settings").href = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.settingsPageRequest;
+    document.getElementById("myStats").href = serverAPI.requests.MY_STATS_PAGE_REQUEST;
+    document.getElementById("workoutLog").href = serverAPI.requests.WORKOUT_LOG_PAGE_REQUEST;
+    document.getElementById("logout").href = serverAPI.requests.LOGOUT_REQUEST;
+    document.getElementById("mainPage").href = serverAPI.requests.MAIN_PAGE_REQUEST;
+    document.getElementById("customFoods").href = serverAPI.requests.CUSTOM_FOODS_PAGE_REQUEST;
+    document.getElementById("settings").href = serverAPI.requests.SETTINGS_PAGE_REQUEST;
     document.getElementById("aboutPage").href = "../aboutPage/aboutPage.html";
     document.getElementById("cookiesPage").href = "../cookiesPolicyPage/cookiesPolicyPage.html";
     

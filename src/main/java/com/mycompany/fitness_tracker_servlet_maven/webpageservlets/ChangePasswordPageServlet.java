@@ -5,7 +5,8 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.webpageservlets;
 
-import com.mycompany.fitness_tracker_servlet_maven.core.GlobalValues;
+import com.mycompany.fitness_tracker_servlet_maven.controllerservlets.AddEatenFoodServlet;
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
 import java.io.IOException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -13,6 +14,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,6 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class ChangePasswordPageServlet extends HttpServlet
 {
+
+    private static final Logger log = LoggerFactory.getLogger(ChangePasswordPageServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,27 +42,18 @@ public class ChangePasswordPageServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("ChangePasswordPageServlet executing: " + request.getRequestURL());
+        log.trace("processRequest");
         ServletContext servletContext = this.getServletContext();
-      
+
         String identifierToken = request.getQueryString();
-        identifierToken = identifierToken.substring(identifierToken.indexOf("=")+1);
-        //boolean tokenValid = DatabaseAccess.validateForgotPasswordRequest(identifierToken);
-        
-        //if(tokenValid)
-       // {
-            response.sendRedirect(servletContext.getContextPath()+"/"+ GlobalValues.getWEB_PAGES_DIRECTORY() 
-                    +"/"
-                    + GlobalValues.getCHANGE_PASSWORD_PAGE_FOLDER()
-                    +"/"
-                    + GlobalValues.getCHANGE_PASSWORD_PAGE()+"?identifierToken="+identifierToken);
-       // }
-      //  else
-       // {
-            //do something, token invalid, link expired
-            
-      //  }
-        
+        identifierToken = identifierToken.substring(identifierToken.indexOf("=") + 1);
+
+        response.sendRedirect(servletContext.getContextPath() + "/" + GlobalValues.getWEB_PAGES_DIRECTORY()
+                + "/"
+                + GlobalValues.getCHANGE_PASSWORD_PAGE_FOLDER()
+                + "/"
+                + GlobalValues.getCHANGE_PASSWORD_PAGE() + "?identifierToken=" + identifierToken);
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

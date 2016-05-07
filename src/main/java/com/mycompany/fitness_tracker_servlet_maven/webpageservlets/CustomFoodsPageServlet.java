@@ -5,15 +5,16 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.webpageservlets;
 
-import com.mycompany.fitness_tracker_servlet_maven.core.GlobalValues;
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class CustomFoodsPageServlet extends HttpServlet
 {
+
+    private static final Logger log = LoggerFactory.getLogger(CustomFoodsPageServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,12 +41,12 @@ public class CustomFoodsPageServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("CustomFoodsPageServlet executing: " + request.getRequestURL());
+        log.trace("processRequest");
         ServletContext sc = this.getServletContext();
 
-        String webPageURL = response.encodeRedirectURL(sc.getContextPath() 
-                + "/" 
-                + GlobalValues.getWEB_PAGES_DIRECTORY() 
+        String webPageURL = response.encodeRedirectURL(sc.getContextPath()
+                + "/"
+                + GlobalValues.getWEB_PAGES_DIRECTORY()
                 + "/"
                 + GlobalValues.getCUSTOM_FOODS_PAGE_FOLDER()
                 + "/"

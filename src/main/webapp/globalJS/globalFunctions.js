@@ -4,11 +4,51 @@
  * and open the template in the editor.
  */
 
+var setGlobalValues = {
+    setUserStats: function (userStats) {
+        globalValues.userStats = userStats;
+        globalFunctions.setGlobalValuesLocalStorage();
+    },
+    setCustomFoodsArray: function (customFoods) {
+        globalValues.customFoodsArray = customFoods;
+        globalFunctions.setGlobalValuesLocalStorage();
+    },
+    setEatenFoodsArray: function (eatenFoods) {
+        globalValues.eatenFoodsArray = eatenFoods;
+        globalFunctions.setGlobalValuesLocalStorage();
+    },
+    setSearchResultsArray: function (searchResults) {
+        globalValues.searchResultsArray = searchResults;
+        globalFunctions.setGlobalValuesLocalStorage();
+    },
+    setFoodAttributes: function (foodAttributes) {
+        globalValues.foodAttributes = foodAttributes;
+        globalFunctions.setGlobalValuesLocalStorage();
+    },
+    setFriendlyNames: function (friendlyNames) {
+        globalValues.friendlyNames = friendlyNames;
+        globalFunctions.setGlobalValuesLocalStorage();
+    },
+    setTotalMacrosToday: function (totalMacros) {
+        globalValues.totalMacrosToday = totalMacros;
+        globalFunctions.setGlobalValuesLocalStorage();
+    },
+    setNonOperableAttributes: function (nonOperableAttributes) {
+        globalValues.nonOperableAttributes = nonOperableAttributes;
+        globalFunctions.setGlobalValuesLocalStorage();
+    },
+    setWholeIntegerAttributes: function (wholeIntegerAttributes) {
+        globalValues.wholeIntegerAttributes = wholeIntegerAttributes;
+        globalFunctions.setGlobalValuesLocalStorage();
+    },
+};
+
+
 var globalFunctionsAJAX = {
     getUserStats: function (callback)
     {
         $.ajax({
-            url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.AJAX_GetUserStats,
+            url:serverAPI.requests.GET_USER_STATS,
             type: "GET",
             //async : false,
             dataType: "json",
@@ -19,9 +59,9 @@ var globalFunctionsAJAX = {
                     console.log("get user stats failed" + returnedJSON);
                 } else
                 {
-                    console.log("get user stats succeded" + JSON.stringify(returnedJSON));
-                    globalValues.userStats = returnedJSON[0];
-                    globalFunctions.setGlobalValuesLocalStorage();
+                    console.log("get user stats succeded");
+                    setGlobalValues.setUserStats(returnedJSON[0]);
+                    //globalFunctions.setGlobalValuesLocalStorage();
 //                    populateUserStats();
 //                    updateMyStatsPieChart();
                 }
@@ -47,17 +87,17 @@ var globalFunctionsAJAX = {
         var UNIXtimeJSON = {};
         UNIXtimeJSON.UNIXtime = getSelectedUNIXdate();
 
-        console.log("AJAX request: AJAX_GetEatenFoodList for date " + JSON.stringify(UNIXtimeJSON));
+        console.log("AJAX request: AJAX_GetEatenFoodList for date ");
         $.ajax({
-            url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.AJAX_GetEatenFoodList,
+            url:serverAPI.requests.GET_EATEN_FOOD_LIST,
             type: "GET",
             data: JSON.stringify(UNIXtimeJSON),
             dataType: "json",
             success: function (returnedJSON)
             {
-                console.log("AJAX request: AJAX_GetEatenFoodList gotten list " + JSON.stringify(returnedJSON));
-                globalValues.eatenFoodsArray = returnedJSON;
-                globalFunctions.setGlobalValuesLocalStorage();
+                console.log("AJAX request: AJAX_GetEatenFoodList gotten list");
+                setGlobalValues.setEatenFoodsArray(returnedJSON);
+                //globalFunctions.setGlobalValuesLocalStorage();
                 //populateEatenFoodList();
                 //calculateTotalMacros();
                 //updatePieCharts();
@@ -83,7 +123,7 @@ var globalFunctionsAJAX = {
     getCustomFoodList: function (callback)
     {
         $.ajax({
-            url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.AJAX_GetCustomFoodList,
+            url:serverAPI.requests.GET_CUSTOM_FOOD_LIST,
             type: "GET",
             dataType: "json",
             success: function (returnedJSON)
@@ -93,9 +133,9 @@ var globalFunctionsAJAX = {
                     console.log("get custom food list failed" + returnedJSON);
                 } else
                 {
-                    console.log("get custom food list succeded" + returnedJSON);
-                    globalValues.customFoodsArray = returnedJSON;
-                    globalFunctions.setGlobalValuesLocalStorage();
+                    console.log("get custom food list succeded");
+                    setGlobalValues.setCustomFoodsArray(returnedJSON);
+                    //globalFunctions.setGlobalValuesLocalStorage();
                 }
                 if (callback)
                 {
@@ -116,7 +156,7 @@ var globalFunctionsAJAX = {
     getFriendlyNamesJSON: function (callback)
     {
         $.ajax({
-            url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.AJAX_GetFriendlyNames,
+            url:serverAPI.requests.GET_FRIENDLY_NAMES,
             type: "GET",
             //async : false,
             dataType: "json",
@@ -127,9 +167,9 @@ var globalFunctionsAJAX = {
                     console.log("get friendly names failed" + returnedJSON);
                 } else
                 {
-                    console.log("get friendly names succeded" + returnedJSON);
-                    globalValues.friendlyNames = returnedJSON;
-                    globalFunctions.setGlobalValuesLocalStorage();
+                    console.log("get friendly names succeded");
+                    setGlobalValues.setFriendlyNames(returnedJSON);
+                    //globalFunctions.setGlobalValuesLocalStorage();
                 }
                 if (callback)
                 {
@@ -149,9 +189,8 @@ var globalFunctionsAJAX = {
     },
     getFoodAttributes: function (callback)
     {
-
         $.ajax({
-            url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.AJAX_GetViewableAttributesList,
+            url:serverAPI.requests.GET_VIEWABLE_ATTRIBUTES,
             type: "GET",
             //async : false,
             dataType: "json",
@@ -162,9 +201,9 @@ var globalFunctionsAJAX = {
                     console.log("get food attributes failed" + returnedJSON);
                 } else
                 {
-                    console.log("get food attributes succeded" + JSON.stringify(returnedJSON[0]));
-                    globalValues.foodAttributes = returnedJSON[0];
-                    globalFunctions.setGlobalValuesLocalStorage();
+                    console.log("get food attributes succeded");
+                    setGlobalValues.setFoodAttributes(returnedJSON[0]);
+                    //globalFunctions.setGlobalValuesLocalStorage();
                 }
                 if (callback)
                 {
@@ -182,34 +221,12 @@ var globalFunctionsAJAX = {
             }
         });
     },
-    updateSelectedAttributes: function (callback)
+    updateSelectedAttributes: function (newFoodAttributes, callback)
     {
-        //iterate through each attribute
-        //var attributesJSON = globalValues.foodAttributes;
-        for (var currentAttribute in globalValues.foodAttributes)
-        {
-            var currentAttributeElementName = currentAttribute + "checkbox";
-            var currentElement = document.getElementById(currentAttributeElementName);
-
-            //if the a checkbox matching the attribute exists, take appropriate action
-            if (currentElement !== null)
-            {
-                if (currentElement.checked)
-                {
-                    globalValues.foodAttributes[currentAttribute] = "t";
-                } else
-                {
-                    globalValues.foodAttributes[currentAttribute] = "f";
-                }
-            }
-        }
-        //globalValues["foodAttributes"][0] = attributesJSON;
-
-        //send updated selectedFoodAttributeJSON to server for severside update
         $.ajax({
-            url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.AJAX_ModifySelectedAttributes,
+            url:serverAPI.requests.MODIFY_SELECTED_ATTRIBUTES,
             type: "POST",
-            data: JSON.stringify(globalValues.foodAttributes),
+            data: JSON.stringify(newFoodAttributes),
             contentType: "application/json",
             success: function (data)
             {
@@ -218,7 +235,8 @@ var globalFunctionsAJAX = {
                 if (returnObject.success === "true")
                 {
                     console.log("attributes updated");
-                    globalFunctions.setGlobalValuesLocalStorage();
+
+                    setGlobalValues.setFoodAttributes(newFoodAttributes);
                     document.getElementById("attributeFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Attributes updated successfully</div>";
                 } else
                 {
@@ -228,28 +246,6 @@ var globalFunctionsAJAX = {
                 {
                     callback();
                 }
-
-
-
-//                if (data === "true")
-//                {
-//                    console.log("update selected attributes suceeded");
-//                    //getFoodAttributes(); <-- do not refactor, was already commented out
-////                    populateEatenFoodList();
-////                    populateCustomFoodList();
-////                    populateSearchResultList();
-//                    if (callback)
-//                    {
-//                        callback();
-//                    }
-//                } else
-//                {
-//                    console.log("update selected attributes failed");
-//                    if (callback)
-//                    {
-//                        callback();
-//                    }
-//                }
             },
             error: function (xhr, status, error)
             {
@@ -257,6 +253,7 @@ var globalFunctionsAJAX = {
                 console.log("ajax failed");
             }
         });
+
     },
     makeRedirectRequestAJAX: function (URL)
     {
@@ -277,6 +274,14 @@ var globalFunctionsAJAX = {
     }
 
 };
+
+/**
+ * None of these functions are intended to be used directly! If I could I would
+ * make them private
+ * @type type
+ */
+var helperFunctions = {
+}
 
 var globalFunctions = {
     showSelectedAttributes: function (callback)

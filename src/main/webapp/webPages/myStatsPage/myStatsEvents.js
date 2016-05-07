@@ -51,15 +51,19 @@ function getNewMacros(callback)
     var caloriesInProtein = 4;
     var caloriesInCarbs = 4;
     var caloriesInFat = 9;
-
-    globalValues.userStats.protein_goal = document.getElementById("protein_goal").value;
-    globalValues.userStats.carbohydrate_goal = document.getElementById("carbohydrate_goal").value;
-    globalValues.userStats.fat_goal = document.getElementById("fat_goal").value;
+    var newUserStats = {};
+    
+    
+    newUserStats.protein_goal = document.getElementById("protein_goal").value;
+    newUserStats.carbohydrate_goal = document.getElementById("carbohydrate_goal").value;
+    newUserStats.fat_goal = document.getElementById("fat_goal").value;
 
     //fat has 9 calories per gram, protein and carbs both have 4 calories per gram. So to get
     //the total energy expenditure (calories) we must multiply accordingly e.g 160g of protein = 160*4 = 640 calories
-    globalValues.userStats.teegoal = (globalValues.userStats.fat_goal * caloriesInFat) + (globalValues.userStats.carbohydrate_goal * caloriesInCarbs)
-            + (globalValues.userStats.protein_goal * caloriesInProtein);
+    newUserStats.teegoal = (newUserStats.fat_goal * caloriesInFat) + (newUserStats.carbohydrate_goal * caloriesInCarbs)
+            + (newUserStats.protein_goal * caloriesInProtein);
+    
+    setGlobalValues.setUserStats(newUserStats);
 
     if (callback)
     {

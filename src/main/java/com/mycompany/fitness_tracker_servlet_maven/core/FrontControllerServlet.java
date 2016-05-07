@@ -5,13 +5,20 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
+import com.mycompany.fitness_tracker_servlet_maven.controllerservlets.*;
+import com.mycompany.fitness_tracker_servlet_maven.serverAPI.*;
+import com.mycompany.fitness_tracker_servlet_maven.webpageservlets.*;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the servlet that routes all client requests to the appropriate
@@ -29,6 +36,46 @@ import javax.servlet.http.HttpServletResponse;
 public class FrontControllerServlet extends HttpServlet
 {
 
+    private static final Logger log = LoggerFactory.getLogger(FrontControllerServlet.class);
+    private static final Map<String, String> requestToServletMapping;
+    //private static final Map<Requests, String> ServerAPIReference = ServerAPI.getREQUESTS_API_MAP();
+
+    static
+    {
+        requestToServletMapping = new HashMap<>();
+        requestToServletMapping.put(Request.LOGIN_PAGE_REQUEST.toString(), "/"+LoginPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.LOGOUT_REQUEST.toString(), "/"+LogoutServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.LOGIN_REQUEST.toString(), "/"+AuthenticationServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.MAIN_PAGE_REQUEST.toString(), "/"+MainPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CREATE_ACCOUNT_REQUEST.toString(), "/"+CreateAccountServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CREATE_ACCOUNT_PAGE_REQUEST.toString(), "/"+CreateAccountPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.WORKOUT_LOG_PAGE_REQUEST.toString(), "/"+WorkoutLogPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CUSTOM_FOODS_PAGE_REQUEST.toString(), "/"+CustomFoodsPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.MY_STATS_PAGE_REQUEST.toString(), "/"+MyStatsPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_CUSTOM_FOOD_LIST.toString(), "/"+GetCustomFoodListServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.DELETE_CUSTOM_FOOD.toString(), "/"+DeleteCustomFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CREATE_CUSTOM_FOOD.toString(), "/"+CreateCustomFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.EDIT_CUSTOM_FOOD.toString(), "/"+EditCustomFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.ADD_EATEN_FOOD.toString(), "/"+AddEatenFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_EATEN_FOOD_LIST.toString(), "/"+GetEatenFoodListServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.REMOVE_EATEN_FOOD.toString(), "/"+RemoveEatenFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.SEARCH_FOR_FOOD.toString(), "/"+SearchForFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.MODIFY_SELECTED_ATTRIBUTES.toString(), "/"+ModifySelectedAttributesServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_VIEWABLE_ATTRIBUTES.toString(), "/"+GetViewableAttributesListServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_FRIENDLY_NAMES.toString(), "/"+GetFriendlyNamesServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.MODIFY_USER_STATS.toString(), "/"+ModifyUserStatsServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_USER_STATS.toString(), "/"+GetUserStatsServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.FORGOT_PASSWORD_PAGE_REQUEST.toString(), "/"+ForgotPasswordPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.FORGOT_PASSWORD_EMAIL_REQUEST.toString(), "/"+ForgotPasswordEmailServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CHANGE_PASSWORD_PAGE_REQUEST.toString(), "/"+ChangePasswordPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CHANGE_PASSWORD_REQUEST.toString(), "/"+ChangePasswordServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_IDENTIFIER_TOKEN_EMAIL.toString(), "/"+GetIdentifierTokenEmailServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.SETTINGS_PAGE_REQUEST.toString(), "/"+SettingsPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CHANGE_EMAIL_REQUEST.toString(), "/"+ChangeEmailServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.DELETE_ACCOUNT_REQUEST.toString(), "/"+DeleteAccountServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_SERVER_API.toString(), "/"+GetServerAPIServlet.class.getSimpleName());
+    }
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -41,183 +88,31 @@ public class FrontControllerServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("FrontController: executing");
-        System.out.println("FrontController: current request URI = " + request.getRequestURI());
-        String currentRequest = getRequest(request);
-        //String currentRequest = request.getRequestURI();
-        RequestDispatcher rd;
-        System.out.println("FrontController: current request = " + currentRequest);
+        log.trace("processRequest");
+        log.info(request.getRequestURI());
+        log.info("querystring:"+request.getQueryString());
+        String currentRequest = request.getRequestURI();
+        currentRequest = currentRequest.replaceAll("/" + FrontControllerServlet.class.getSimpleName() + "/", "");
+        log.info(currentRequest);
 
-        //String currentServlet = ClientAPI.clientAPIMap.get(currentRequest);
-        //if initial API request
-//        if (currentRequest.equals("AJAX_GetAPI"))
-//        {
-//            System.out.println("FrontController: login page request");
-//            rd = request.getRequestDispatcher("/AJAX_GetAPI");
-//            rd.forward(request, response);
-//
-//        } else //else client has API already
-//        {
-//            System.out.println("FrontController: Request for " + currentRequest);
-//            rd = request.getRequestDispatcher("/" + currentRequest);
-//            rd.forward(request, response);
-//        }
-        //Request routing
-        if (currentRequest.equals(ClientAPI.getLOGIN_PAGE_REQUEST()))
+        if (requestToServletMapping.containsKey(currentRequest))
         {
-            System.out.println("FrontController: login page request");
-            rd = request.getRequestDispatcher("/LoginPageServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getLOGOUT_REQUEST()))
+            String servletName = requestToServletMapping.get(currentRequest);
+            forwardRequest(request, response, servletName);
+        } else
         {
-            System.out.println("FrontController: logout request");
-            rd = request.getRequestDispatcher("/LogoutServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getLOGIN_REQUEST()))
-        {
-            System.out.println("FrontController: authentication request");
-            rd = request.getRequestDispatcher("/AuthenticationServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getMAIN_PAGE_REQUEST()))
-        {
-            System.out.println("FrontController: main page request");
-            rd = request.getRequestDispatcher("/MainPageServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getCREATE_ACCOUNT_REQUEST()))
-        {
-            System.out.println("FrontController: create account request");
-            rd = request.getRequestDispatcher("/CreateAccountServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getCREATE_ACCOUNT_PAGE_REQUEST()))
-        {
-            System.out.println("FrontController: create account page request");
-            rd = request.getRequestDispatcher("/CreateAccountPageServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getWORKOUTLOG_PAGE_REQUEST()))
-        {
-            System.out.println("FrontController: workout log page request");
-            rd = request.getRequestDispatcher("/WorkoutLogPageServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getCUSTOM_FOODS_PAGE_REQUEST()))
-        {
-            System.out.println("FrontController: custom foods page request");
-            rd = request.getRequestDispatcher("/CustomFoodsPageServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getMY_STATS_PAGE_REQUEST()))
-        {
-            System.out.println("FrontController: my stats page request");
-            rd = request.getRequestDispatcher("/MyStatsPageServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_CUSTOM_FOOD_LIST()))
-        {
-            System.out.println("FrontController: get custom food list AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_GetCustomFoodList");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_REMOVE_CUSTOM_FOOD()))
-        {
-            System.out.println("FrontController: remove a custom food AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_RemoveCustomFood");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_ADD_CUSTOM_FOOD()))
-        {
-            System.out.println("FrontController: add a custom food AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_AddCustomFood");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_EDIT_CUSTOM_FOOD()))
-        {
-            System.out.println("FrontController: edit a custom food AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_EditCustomFood");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_ADD_EATEN_FOOD()))
-        {
-            System.out.println("FrontController: add a food that was eaten AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_AddEatenFood");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_EATEN_FOOD_LIST()))
-        {
-            System.out.println("FrontController: get eaten food list AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_GetEatenFoodList");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_REMOVE_EATEN_FOOD()))
-        {
-            System.out.println("FrontController: remove eaten food AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_RemoveEatenFood");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_SEARCH_FOR_FOOD()))
-        {
-            System.out.println("FrontController: food search AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_SearchForFood");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_MODIFY_SELECTED_ATTRIBUTES()))
-        {
-            System.out.println("FrontController: modify selected food attributes AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_ModifySelectedAttributes");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_VIEWABLE_ATTRIBUTES()))
-        {
-            System.out.println("FrontController: get selected food attributes list AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_GetViewableAttributesList");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_FRIENDLY_NAMES()))
-        {
-            System.out.println("FrontController: get selected friendly names for food attributes AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_GetFriendlyNames");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_MODIFY_USER_STATS()))
-        {
-            System.out.println("FrontController: modify user stats AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_ModifyUserStats");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_USER_STATS()))
-        {
-            System.out.println("FrontController: get user stats AJAX request");
-            rd = request.getRequestDispatcher("/AJAX_GetUserStats");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getFORGOT_PASSWORD_PAGE_REQUEST()))
-        {
-            System.out.println("FrontController: forgotten password request");
-            rd = request.getRequestDispatcher("/ForgotPasswordPageServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getFORGOT_PASSWORD_EMAIL_REQUEST()))
-        {
-            System.out.println("FrontController: forgotten password email request");
-            rd = request.getRequestDispatcher("/ForgotPasswordEmailServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getCHANGE_PASSWORD_PAGE_REQUEST()))
-        {
-            System.out.println("FrontController: change password page request");
-            rd = request.getRequestDispatcher("/ChangePasswordPageServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getCHANGE_PASSWORD_REQUEST()))
-        {
-            System.out.println("FrontController: change password request");
-            rd = request.getRequestDispatcher("/ChangePasswordServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getAJAX_GET_IDENTIFIER_TOKEN_EMAIL()))
-        {
-            System.out.println("FrontController: identifier token email request");
-            rd = request.getRequestDispatcher("/AJAX_GetIdentifierTokenEmail");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getSETTINGS_PAGE_REQUEST()))
-        {
-            System.out.println("FrontController: setting page request");
-            rd = request.getRequestDispatcher("/SettingsPageServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getCHANGE_EMAIL_REQUEST()))
-        {
-            System.out.println("FrontController: change email request");
-            rd = request.getRequestDispatcher("/ChangeEmailServlet");
-            rd.forward(request, response);
-        } else if (currentRequest.equals(ClientAPI.getDELETE_ACCOUNT_REQUEST()))
-        {
-            System.out.println("FrontController: delete account request");
-            rd = request.getRequestDispatcher("/DeleteAccountServlet");
-            rd.forward(request, response);
-        }else
-        {
-            response.sendRedirect("/fitness_tracker_servlet_maven/invalid.html");
+            log.error("invalid request");
+            forwardRequest(request, response, "/ErrorPageServlet");
         }
-        
+
+    }
+
+    private void forwardRequest(HttpServletRequest request, HttpServletResponse response, String servletName) throws ServletException, IOException
+    {
+        log.trace("forwardRequest");
+        log.info(servletName);
+        RequestDispatcher rd = request.getRequestDispatcher(servletName);
+        rd.forward(request, response);
     }
 
     /**
@@ -228,28 +123,30 @@ public class FrontControllerServlet extends HttpServlet
      * @param request
      * @return A String representing the request made
      */
-    public static String getRequest(HttpServletRequest request)
-    {
-        //get and format the request from the URL given
-        String output = "";
-        String currentRequestURL = request.getRequestURI();
-        StringBuilder currentRequestStringBuilder = new StringBuilder(currentRequestURL);
-
-        //get the command
-        int slashIndex = currentRequestStringBuilder.lastIndexOf("/");
-        currentRequestStringBuilder = currentRequestStringBuilder.delete(0, slashIndex + 1);
-
-        //if jsessionid is part of the URI remove it
-        //strangely enough this seems to be needed with tomee and not glassfish
-        int jsessionidIndex = currentRequestStringBuilder.indexOf(";jsessionid=");
-        if (jsessionidIndex != -1)
-        {
-            currentRequestStringBuilder = currentRequestStringBuilder.delete(jsessionidIndex, currentRequestStringBuilder.length());
-
-        }
-
-        return currentRequestStringBuilder.toString();
-    }
+//    public static String getRequest(HttpServletRequest request)
+//    {
+//        log.trace("getRequest");
+//
+//        //get and format the request from the URL given
+//        String output = "";
+//        String currentRequestURL = request.getRequestURI();
+//        StringBuilder currentRequestStringBuilder = new StringBuilder(currentRequestURL);
+//
+//        //get the command
+//        int slashIndex = currentRequestStringBuilder.lastIndexOf("/");
+//        currentRequestStringBuilder = currentRequestStringBuilder.delete(0, slashIndex + 1);
+//
+//        //if jsessionid is part of the URI remove it
+//        //strangely enough this seems to be needed with tomee and not glassfish
+//        int jsessionidIndex = currentRequestStringBuilder.indexOf(";jsessionid=");
+//        if (jsessionidIndex != -1)
+//        {
+//            currentRequestStringBuilder = currentRequestStringBuilder.delete(jsessionidIndex, currentRequestStringBuilder.length());
+//
+//        }
+//
+//        return currentRequestStringBuilder.toString();
+//    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

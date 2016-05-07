@@ -10,8 +10,8 @@ var requestEmail;
 $(document).ready(function () {
 
     //document.getElementById("changePasswordForm").action = "/"+serverAPI.requests.frontController +"/"+ serverAPI.requests.changePasswordRequest;
-    document.getElementById("loginPageForm").action = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.loginPageRequest;
-    document.getElementById("forgotPasswordForm").action = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.forgotPasswordPageRequest;
+    document.getElementById("loginPageForm").action = serverAPI.requests.LOGIN_PAGE_REQUEST;
+    document.getElementById("forgotPasswordForm").action = serverAPI.requests.FORGOT_PASSWORD_PAGE_REQUEST;
 
 
     //var currentURL = window.location.href;
@@ -85,7 +85,7 @@ function getEmail()
     var identifierToken = urlParams.identifierToken;
     console.log(identifierToken);
     $.ajax({
-        url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.AJAX_GetIdentifierTokenEmail,
+        url: serverAPI.requests.GET_IDENTIFIER_TOKEN_EMAIL,
         type: "POST",
         data: identifierToken.toString(),
         contentType: "text/plain",
@@ -125,7 +125,7 @@ function changePasswordRequestAJAX()
     formData.push(email);
 
     $.ajax({
-        url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.changePasswordRequest,
+        url: serverAPI.requests.CHANGE_PASSWORD_REQUEST,
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json",

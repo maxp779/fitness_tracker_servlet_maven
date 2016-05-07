@@ -8,7 +8,7 @@
 $(document).ready(function () {
     
     //document.getElementById("forgottenPasswordForm").action = "/"+serverAPI["requests"]["frontController"] +"/"+ serverAPI["requests"]["forgotPasswordEmailRequest"];
-    document.getElementById("loginPageForm").action = "/"+serverAPI["requests"]["frontController"] +"/"+ serverAPI["requests"]["loginPageRequest"];
+    document.getElementById("loginPageForm").action = serverAPI.requests.LOGIN_PAGE_REQUEST;
     
     $('#forgottenPasswordForm').submit(function () {
         forgottonPasswordRequestAJAX();
@@ -33,7 +33,7 @@ function forgottonPasswordRequestAJAX()
     var formData = $("#forgottenPasswordForm").serializeArray();
     var email = document.getElementById("email").value;
     $.ajax({
-        url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.forgotPasswordEmailRequest,
+        url: serverAPI.requests.FORGOT_PASSWORD_EMAIL_REQUEST,
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json",

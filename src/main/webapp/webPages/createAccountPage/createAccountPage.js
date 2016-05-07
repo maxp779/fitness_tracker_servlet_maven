@@ -6,8 +6,7 @@
 
 
 $(document).ready(function () {
-    //document.getElementById("createAccountForm").action = "/"+serverAPI.requests.frontController +"/"+ serverAPI.requests.createAccountRequest;
-    document.getElementById("loginPageForm").action = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.loginPageRequest;
+    document.getElementById("loginPageForm").action = serverAPI.requests.LOGIN_PAGE_REQUEST;
 
     $('#createAccountForm').submit(function (event) {
         event.preventDefault();
@@ -34,7 +33,7 @@ function createAccountRequestAJAX()
     var formData = $("#createAccountForm").serializeArray();
     var email = document.getElementById("email").value;
     $.ajax({
-        url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.createAccountRequest,
+        url: serverAPI.requests.CREATE_ACCOUNT_REQUEST,
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json",

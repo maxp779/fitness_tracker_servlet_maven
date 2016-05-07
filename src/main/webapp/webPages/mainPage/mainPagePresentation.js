@@ -74,9 +74,9 @@ function populateCustomFoodList()
     //iterate through each JSON object (currentFood) in the Array
     //populates the foods eaten table, one row = one food item
 //    for (var currentFood in globalValues["eatenFoodsArray"])
-    for (var index = 0; index < globalValues["customFoodsArray"].length; index++)
+    for (var index = 0; index < globalValues.customFoodsArray.length; index++)
     {
-        var currentFoodJSON = globalValues["customFoodsArray"][index];
+        var currentFoodJSON = globalValues.customFoodsArray[index];
 
         innerHTML = innerHTML.concat("<a href='javascript:void(0)' class='list-group-item customfood' id='" + currentFoodJSON["id_customfood"] + "customfood" + "'>"
                 + globalFunctions.createFoodAttributesHTML(currentFoodJSON, "id_customfood")
@@ -164,14 +164,14 @@ function populateSearchResultList()
     //empty table
     $('#searchResultList').empty();
 
-    if ($.isEmptyObject(globalValues["searchResultsArray"]))
+    if ($.isEmptyObject(globalValues.searchResultsArray))
     {
         document.getElementById("searchResultList").innerHTML = "<li class='list-group-item searchresult'> No results </li>";
     } else
     {
         
         //sort list by size of "foodname" property
-        globalValues["searchResultsArray"].sort(function (a, b) {
+        globalValues.searchResultsArray.sort(function (a, b) {
             return a.foodname.length - b.foodname.length;
         });
         
@@ -179,9 +179,9 @@ function populateSearchResultList()
 
         //iterate through each JSON object (currentFood) in the Array
         //populates the foods eaten table, one row = one food item
-        for (var index = 0; index < globalValues["searchResultsArray"].length; index++)
+        for (var index = 0; index < globalValues.searchResultsArray.length; index++)
         {
-            var currentFoodObject = globalValues["searchResultsArray"][index];
+            var currentFoodObject = globalValues.searchResultsArray[index];
             innerHTML = innerHTML.concat("<div class='row'>"
                     + "<div class='col-sm-12'>"
                     + "<a href='javascript:void(0)' class='list-group-item searchresult' id='" + currentFoodObject["id_searchablefood"] + "searchablefood" + "'>"
@@ -273,9 +273,9 @@ function populateEatenFoodList()
     //iterate through each JSON object (currentFood) in the Array
     //populates the foods eaten table, one row = one food item
 //    for (var currentFood in globalValues["eatenFoodsArray"])
-    for (var index = 0; index < globalValues["eatenFoodsArray"].length; index++)
+    for (var index = 0; index < globalValues.eatenFoodsArray.length; index++)
     {
-        var currentFoodJSON = globalValues["eatenFoodsArray"][index];
+        var currentFoodJSON = globalValues.eatenFoodsArray[index];
 
 //            innerHTML = innerHTML.concat("<tr>"
 //                    + "<td>" + eatenFoodListJSON[index].foodname + "</td>"
@@ -439,10 +439,10 @@ function calculateMacrosFromWeight(id_searchablefood, foodObject)
         var currentValue = foodObject[aProperty];
 
         //if non operable e.g "foodname" then ignore
-        if (globalValues["nonOperableAttributes"].indexOf(aProperty) === -1)
+        if (globalValues.nonOperableAttributes.indexOf(aProperty) === -1)
         {
             //if operable but treated as float to 1 decimal place
-            if (globalValues["wholeIntegerAttributes"].indexOf(aProperty) === -1)
+            if (globalValues.wholeIntegerAttributes.indexOf(aProperty) === -1)
             {
                 currentValue = currentValue * multiplier;
                 foodObject[aProperty] = currentValue.toFixed(1);
@@ -459,47 +459,50 @@ function calculateMacrosFromWeight(id_searchablefood, foodObject)
 
 function calculateTotalMacros(callback)
 {
-    globalValues["totalMacrosToday"] = {};
+    var totalMacrosToday ={};
+    //globalValues.totalMacrosToday = {};
     //currentMacroSplit = {};
 
-    for (var index = 0; index < globalValues["eatenFoodsArray"].length; index++)
+    for (var index = 0; index < globalValues.eatenFoodsArray.length; index++)
     {
-        var currentFoodJSON = globalValues["eatenFoodsArray"][index];
+        var currentFoodJSON = globalValues.eatenFoodsArray[index];
         for (var aProperty in currentFoodJSON)
         {
             //if non operable e.g "foodname" then ignore
-            if (globalValues["nonOperableAttributes"].indexOf(aProperty) === -1 && !isUndefinedOrNull(currentFoodJSON[aProperty]))
+            if (globalValues.nonOperableAttributes.indexOf(aProperty) === -1 && !isUndefinedOrNull(currentFoodJSON[aProperty]))
             {
                 //if first occurrance of aProperty
-                if (isUndefinedOrNull(globalValues["totalMacrosToday"][aProperty]))
+                if (isUndefinedOrNull(globalValues.totalMacrosToday[aProperty]))
                 {
-                    globalValues["totalMacrosToday"][aProperty] = currentFoodJSON[aProperty];
+                    totalMacrosToday[aProperty] = currentFoodJSON[aProperty];
                 } else
                 {
-                    globalValues["totalMacrosToday"][aProperty] = +globalValues["totalMacrosToday"][aProperty] + +currentFoodJSON[aProperty];
+                    totalMacrosToday[aProperty] = + totalMacrosToday[aProperty] + +currentFoodJSON[aProperty];
                 }
             }
         }
     }
-    console.log(JSON.stringify("TOTAL MACROS TODAY: " + globalValues["totalMacrosToday"]));
+    console.log(JSON.stringify("TOTAL MACROS TODAY: " + JSON.stringify(totalMacrosToday)));
 
-    if (isUndefinedOrNull(globalValues["totalMacrosToday"]["protein"]))
+    if (isUndefinedOrNull(totalMacrosToday.protein))
     {
-        globalValues["totalMacrosToday"]["protein"] = 0;
+        totalMacrosToday.protein = 0;
     }
-    if (isUndefinedOrNull(globalValues["totalMacrosToday"]["carbohydrate"]))
+    if (isUndefinedOrNull(totalMacrosToday.carbohydrate))
     {
-        globalValues["totalMacrosToday"]["carbohydrate"] = 0;
+        totalMacrosToday.carbohydrate = 0;
     }
-    if (isUndefinedOrNull(globalValues["totalMacrosToday"]["fat"]))
+    if (isUndefinedOrNull(totalMacrosToday.fat))
     {
-        globalValues["totalMacrosToday"]["fat"] = 0;
+        totalMacrosToday.fat = 0;
     }
-    if (isUndefinedOrNull(globalValues["totalMacrosToday"]["calorie"]))
+    if (isUndefinedOrNull(totalMacrosToday.calorie))
     {
-        globalValues["totalMacrosToday"]["calorie"] = 0;
+        totalMacrosToday.calorie = 0;
     }
-    globalFunctions["setGlobalValuesLocalStorage"]();
+    
+    setGlobalValues.setTotalMacrosToday(totalMacrosToday);
+    //globalFunctions.setGlobalValuesLocalStorage();
 
     if (callback)
     {
@@ -509,9 +512,9 @@ function calculateTotalMacros(callback)
 
 function updatePieCharts(callback)
 {
-    var totalProtein = parseInt(globalValues["totalMacrosToday"]["protein"]);
-    var totalCarbohydrate = parseInt(globalValues["totalMacrosToday"]["carbohydrate"]);
-    var totalFat = parseInt(globalValues["totalMacrosToday"]["fat"]);
+    var totalProtein = parseInt(globalValues.totalMacrosToday.protein);
+    var totalCarbohydrate = parseInt(globalValues.totalMacrosToday.carbohydrate);
+    var totalFat = parseInt(globalValues.totalMacrosToday.fat);
 
 
 //    caloriePie
@@ -730,9 +733,9 @@ function updatePieCharts(callback)
         });
     });
 
-    var idealprotein = globalValues["userStats"]["idealprotein"];
-    var idealcarbohydrate = globalValues["userStats"]["idealcarbohydrate"];
-    var idealfat = globalValues["userStats"]["idealfat"];
+    var idealprotein = globalValues.userStats.idealprotein;
+    var idealcarbohydrate = globalValues.userStats.idealcarbohydrate;
+    var idealfat = globalValues.userStats.idealfat;
 
     if (!isUndefinedOrNull(idealprotein) && !isUndefinedOrNull(idealcarbohydrate) && !isUndefinedOrNull(idealfat))
     {
@@ -823,13 +826,13 @@ function updatePieCharts(callback)
 
 function updateGraphs(callback)
 {
-    var proteinEaten = parseInt(globalValues["totalMacrosToday"]["protein"]);
-    var carbohydrateEaten = parseInt(globalValues["totalMacrosToday"]["carbohydrate"]);
-    var fatEaten = parseInt(globalValues["totalMacrosToday"]["fat"]);
+    var proteinEaten = parseInt(globalValues.totalMacrosToday.protein);
+    var carbohydrateEaten = parseInt(globalValues.totalMacrosToday.carbohydrate);
+    var fatEaten = parseInt(globalValues.totalMacrosToday.fat);
 
-    var proteinGoal = parseInt(globalValues["userStats"]["protein_goal"]);
-    var carbohydrateGoal = parseInt(globalValues["userStats"]["carbohydrate_goal"]);
-    var fatGoal = parseInt(globalValues["userStats"]["fat_goal"]);
+    var proteinGoal = parseInt(globalValues.userStats.protein_goal);
+    var carbohydrateGoal = parseInt(globalValues.userStats.carbohydrate_goal);
+    var fatGoal = parseInt(globalValues.userStats.fat_goal);
 
     var macroArray = [proteinEaten, carbohydrateEaten, fatEaten, proteinGoal, carbohydrateGoal, fatGoal];
 
@@ -986,8 +989,8 @@ function updateGraphs(callback)
             color: "orange"
         }]);
 
-    var calorieGoal = parseInt(globalValues["userStats"]["tee"]);
-    var calorieEaten = parseInt(globalValues["totalMacrosToday"]["calorie"]);
+    var calorieGoal = parseInt(globalValues.userStats.tee);
+    var calorieEaten = parseInt(globalValues.totalMacrosToday.calorie);
     var calorieArray = [calorieGoal, calorieEaten];
     var calorieChart;
 
@@ -1142,11 +1145,11 @@ function updateSearchResultMacros(id)
     var currentFood = {};
 
 
-    for (var aFood in globalValues["searchResultsArray"])
+    for (var aFood in globalValues.searchResultsArray)
     {
-        if (globalValues["searchResultsArray"][aFood]["id_searchablefood"] === id_searchablefood)
+        if (globalValues.searchResultsArray[aFood].id_searchablefood === id_searchablefood)
         {
-            var matchingFood = globalValues["searchResultsArray"][aFood];
+            var matchingFood = globalValues.searchResultsArray[aFood];
             for (var currentProperty in matchingFood)
             {
                 currentFood[currentProperty] = matchingFood[currentProperty];
@@ -1172,10 +1175,10 @@ function updateMacrosNeededPanel()
 {
     var macroPanel = document.getElementById("currentMacros");
     var innerHTML = "";
-    var proteinNeeded = parseInt(globalValues["userStats"]["protein_goal"]) - parseInt(globalValues["totalMacrosToday"]["protein"]);
-    var carbohydrateNeeded = parseInt(globalValues["userStats"]["carbohydrate_goal"]) - parseInt(globalValues["totalMacrosToday"]["carbohydrate"]);
-    var fatNeeded = parseInt(globalValues["userStats"]["fat_goal"]) - parseInt(globalValues["totalMacrosToday"]["fat"]);
-    var calorieRemaining = parseInt(globalValues["userStats"]["tee"]) - parseInt(globalValues["totalMacrosToday"]["calorie"]);
+    var proteinNeeded = parseInt(globalValues.userStats.protein_goal) - parseInt(globalValues.totalMacrosToday.protein);
+    var carbohydrateNeeded = parseInt(globalValues.userStats.carbohydrate_goal) - parseInt(globalValues.totalMacrosToday.carbohydrate);
+    var fatNeeded = parseInt(globalValues.userStats.fat_goal) - parseInt(globalValues.totalMacrosToday.fat);
+    var calorieRemaining = parseInt(globalValues.userStats.tee) - parseInt(globalValues.totalMacrosToday.calorie);
 
     if (proteinNeeded <= 0)
     {
@@ -1221,13 +1224,8 @@ function updateMainPage()
     populateEatenFoodList();
     populateCustomFoodList();
     populateSearchResultList();
-//    sortSearchResultList(function() {
-//        populateSearchResultList(); 
-//    });
-
 
     calculateTotalMacros(function () {
-        //updatePieCharts();
         updateGraphs();
         updateMacrosNeededPanel();
     });

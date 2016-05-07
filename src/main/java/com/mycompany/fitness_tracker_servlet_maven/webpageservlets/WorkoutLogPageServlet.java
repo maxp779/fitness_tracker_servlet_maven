@@ -5,15 +5,16 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.webpageservlets;
 
-import com.mycompany.fitness_tracker_servlet_maven.core.GlobalValues;
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,6 +26,9 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class WorkoutLogPageServlet extends HttpServlet
 {
+
+    private static final Logger log = LoggerFactory.getLogger(WorkoutLogPageServlet.class);
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -37,7 +41,7 @@ public class WorkoutLogPageServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        System.out.println("WorkoutLogPageServlet executing: " + request.getRequestURL());
+        log.trace("processRequest");
         ServletContext servletContext = this.getServletContext();
         String webPageURL = servletContext.getContextPath()
                 + "/"
@@ -46,8 +50,7 @@ public class WorkoutLogPageServlet extends HttpServlet
                 + GlobalValues.getWORKOUT_LOG_PAGE_FOLDER()
                 + "/"
                 + GlobalValues.getWORKOUT_LOG_PAGE();
-        String encodedURL = response.encodeRedirectURL(webPageURL);
-        response.sendRedirect(encodedURL);
+        response.sendRedirect(webPageURL);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

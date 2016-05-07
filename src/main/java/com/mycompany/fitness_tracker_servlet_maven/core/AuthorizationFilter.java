@@ -5,6 +5,8 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
+import com.mycompany.fitness_tracker_servlet_maven.serverAPI.Request;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -19,9 +21,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
+ * This class intercepts every request to the server and ascertains if the request
+ * needs authorization or not.
+ * 
+ * This class came with a lot of default code I dont want to touch in case it breaks
+ * things.
+ * 
  * @author max
  */
 @WebFilter(filterName = "AuthorizationFilter", urlPatterns =
@@ -30,31 +39,28 @@ import javax.servlet.http.HttpServletResponse;
 })
 public class AuthorizationFilter implements Filter
 {
-    
+    private static final Logger log = LoggerFactory.getLogger(AuthorizationFilter.class);
+
     private static final boolean debug = true;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
-    
+
     public AuthorizationFilter()
     {
-    }    
-    
+    }
+
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException
     {
-//        if (debug)
-//        {
-//            log("AuthorizationFilter:DoBeforeProcessing");
-//        }
 
-	// Write code here to process the request and/or response before
+        // Write code here to process the request and/or response before
         // the rest of the filter chain is invoked.
-	// For example, a logging filter might log items on the request object,
+        // For example, a logging filter might log items on the request object,
         // such as the parameters.
-	/*
+        /*
          for (Enumeration en = request.getParameterNames(); en.hasMoreElements(); ) {
          String name = (String)en.nextElement();
          String values[] = request.getParameterValues(name);
@@ -70,22 +76,16 @@ public class AuthorizationFilter implements Filter
          log(buf.toString());
          }
          */
-        
-    }    
-    
+    }
+
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException
     {
-//        if (debug)
-//        {
-//            log("AuthorizationFilter:DoAfterProcessing");
-//        }
-
-	// Write code here to process the request and/or response after
+        // Write code here to process the request and/or response after
         // the rest of the filter chain is invoked.
-	// For example, a logging filter might log the attributes on the
+        // For example, a logging filter might log the attributes on the
         // request object after the request has been processed. 
-	/*
+        /*
          for (Enumeration en = request.getAttributeNames(); en.hasMoreElements(); ) {
          String name = (String)en.nextElement();
          Object value = request.getAttribute(name);
@@ -93,15 +93,16 @@ public class AuthorizationFilter implements Filter
 
          }
          */
-	// For example, a filter might append something to the response.
-	/*
+        // For example, a filter might append something to the response.
+        /*
          PrintWriter respOut = new PrintWriter(response.getWriter());
          respOut.println("<P><B>This has been appended by an intrusive filter.</B>");
          */
     }
 
     /**
-     *
+     * This method does the actual filtering.
+     * 
      * @param request The servlet request we are processing
      * @param response The servlet response we are creating
      * @param chain The filter chain we are processing
@@ -109,115 +110,57 @@ public class AuthorizationFilter implements Filter
      * @exception IOException if an input/output error occurs
      * @exception ServletException if a servlet error occurs
      */
+    @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException
     {
-        
-//        if (debug)
-//        {
-//            log("AuthorizationFilter:doFilter()");
-//        }
-//        
-        doBeforeProcessing(request, response);
-//        
-//        Throwable problem = null;
-
+        log.trace("doFilter");
         HttpServletRequest aRequest = (HttpServletRequest) request;
         HttpServletResponse aResponse = (HttpServletResponse) response;
         String currentURL = aRequest.getRequestURL().toString();
-        //System.out.println("AuthorizationFilter: currentURL " + currentURL);
         ServletContext sc = getFilterConfig().getServletContext();
         boolean sessionValid;
-       
-        
-//        String requestPath = aRequest.getRequestURI();
-//
-//        if (needsAuthentication(requestPath) &&
-//            session == null) { // change "user" for the session attribute you have defined
-//
-//            aResponse.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFirstLoginServlet()); // No logged-in user found, so redirect to login page.
-//        } else {
-//            chain.doFilter(aRequest, aResponse); // Logged-in user found, so just continue request.
-//        }
 
-        
-        doAfterProcessing(request, response);
-        
-        //if request is for FrontController servlet
-        //if(currentURI.contains(ClientAPI.getFrontController()))
-        
-        //if request needs auth
-        if(this.needsAuthentication(currentURL))
+        if (this.needsAuthentication(currentURL))
         {
             sessionValid = SessionManager.sessionValidate((HttpServletRequest) request);
             //if valid session pass on request
-            if(sessionValid)
+            if (sessionValid)
             {
                 chain.doFilter(request, response);
-            }
-            else//if invalid session, back to login page
+            } else//if invalid session, back to login page
             {
-                System.out.println("AuthorizationFilter: redirecting back to login page!");
-//                //if invalid session but contains requests to login, pass on request
-//                if(currentURL.contains(ClientAPI.getLoginPageRequest()) || currentURL.contains(ClientAPI.getLoginRequest()))
-//                {
-//                    chain.doFilter(request, response);
-//                }
-//                else //if invalid session and contains no login requests, kick back to login page
-//                {
-                    aResponse.sendRedirect(sc.getContextPath()+"/"+ GlobalValues.getFIRST_LOGIN_SERVLET());
-                //}
+                aResponse.sendRedirect(sc.getContextPath() + "/" + GlobalValues.getFIRST_LOGIN_SERVLET());
+
             }
-        }
-        else //request dosent need auth so can be ignored
+        } else //request dosent need auth so can be ignored
         {
             chain.doFilter(request, response);
         }
-
-
-	// If there was a problem, we want to rethrow it if it is
-        // a known type, otherwise log it.
-//        if (problem != null)
-//        {
-//            if (problem instanceof ServletException)
-//            {
-//                throw (ServletException) problem;
-//            }
-//            if (problem instanceof IOException)
-//            {
-//                throw (IOException) problem;
-//            }
-//            sendProcessingError(problem, response);
-//        }
     }
-    
+
     /**
-     * This method contains a list of all resources that do not
-     * require authentication
+     * This method contains a list of all resources that do not require
+     * authentication
+     *
      * @param url
-     * @return if auth is required true is returned, false if it
-     * is not required
+     * @return if auth is required true is returned, false if it is not required
      */
-    private boolean needsAuthentication(String url) 
-    {   
-        String[] nonAuthResources = GlobalValues.getNON_AUTH_RESOURCES();
-        
-        for(String nonAuthRequest : nonAuthResources) 
+    private boolean needsAuthentication(String url)
+    {
+        log.trace("needsAuthentication");
+        Request[] authResources = GlobalValues.getAUTH_RESOURCES();
+        for (Request authRequest : authResources)
         {
-            if(url.equals(GlobalValues.getWEB_ADDRESS()))
+            String authRequestString = authRequest.toString();
+            if (url.contains(authRequestString))
             {
-                //System.out.println("AuthorizationFilter: skipping authentication as currentURI is initial request");
-                return false;
-            }
-            else if (url.contains(nonAuthRequest)) 
-            {
-                //System.out.println("AuthorizationFilter: skipping authentication as currentURI contains: " + nonAuthRequest);
-                return false;
+                log.debug("auth required for: "+url);
+                return true;
             }
         }
-        System.out.println("AuthorizationFilter: authentication required for " + url);
-        return true;
+        return false;
     }
 
     /**
@@ -242,19 +185,19 @@ public class AuthorizationFilter implements Filter
      * Destroy method for this filter
      */
     public void destroy()
-    {        
+    {
     }
 
     /**
      * Init method for this filter
      */
     public void init(FilterConfig filterConfig)
-    {        
+    {
         this.filterConfig = filterConfig;
         if (filterConfig != null)
         {
             if (debug)
-            {                
+            {
                 log("AuthorizationFilter:Initializing filter");
             }
         }
@@ -275,23 +218,23 @@ public class AuthorizationFilter implements Filter
         sb.append(")");
         return (sb.toString());
     }
-    
+
     private void sendProcessingError(Throwable t, ServletResponse response)
     {
-        String stackTrace = getStackTrace(t);        
-        
+        String stackTrace = getStackTrace(t);
+
         if (stackTrace != null && !stackTrace.equals(""))
         {
             try
             {
                 response.setContentType("text/html");
                 PrintStream ps = new PrintStream(response.getOutputStream());
-                PrintWriter pw = new PrintWriter(ps);                
+                PrintWriter pw = new PrintWriter(ps);
                 pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
 
                 // PENDING! Localize this for next official release
-                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");                
-                pw.print(stackTrace);                
+                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                pw.print(stackTrace);
                 pw.print("</pre></body>\n</html>"); //NOI18N
                 pw.close();
                 ps.close();
@@ -312,7 +255,7 @@ public class AuthorizationFilter implements Filter
             }
         }
     }
-    
+
     public static String getStackTrace(Throwable t)
     {
         String stackTrace = null;
@@ -329,11 +272,11 @@ public class AuthorizationFilter implements Filter
         }
         return stackTrace;
     }
-    
+
     public void log(String msg)
     {
-        filterConfig.getServletContext().log(msg);        
+        filterConfig.getServletContext().log(msg);
     }
-    
+
 }
 ////

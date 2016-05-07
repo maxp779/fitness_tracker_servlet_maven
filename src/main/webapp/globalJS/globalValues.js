@@ -23,65 +23,67 @@ var globalValues = {
 };
 
 //not currently used but may be of use in the future!
-var errorCodes = {
-    "10":"Error 10: password too short",
-    "11":"Error 11: account with that email already exists",
-    "12":"Error 12: account dosent exist",
-    "13":"Error 13: change password request already used or expired",
-    "14":"Error 14: password change failed",
-    "15":"Error 15: account name or password incorrect",
-    "16":"Error 16: your password was incorrect",
-    "17":"Error 17: email change failed",
-    "18":"Error 18: update attributes failed",
-    "19":"Error 19: add custom food failed"
+//var errorCodes = {
+//    "10":"Error 10: password too short",
+//    "11":"Error 11: account with that email already exists",
+//    "12":"Error 12: account dosent exist",
+//    "13":"Error 13: change password request already used or expired",
+//    "14":"Error 14: password change failed",
+//    "15":"Error 15: account name or password incorrect",
+//    "16":"Error 16: your password was incorrect",
+//    "17":"Error 17: email change failed",
+//    "18":"Error 18: update attributes failed",
+//    "19":"Error 19: add custom food failed"
+//
+//};
 
-};
+var serverAPI = JSON.parse(localStorage.getItem("serverAPI"));
 
-var serverAPI = {
-    parameters: {
-        port: 8080,
-        projectName: "fitness_tracker_servlet_maven",
-        mainURL: "http://localhost:8080" // replace with "window.location.hostname" ??
-    },
-    requests: {
-        //action requests
-        loginRequest: "login",
-        logoutRequest: "logout",
-        createAccountRequest: "createAccount",
-        //frontController: "/fitness_tracker_servlet_maven/FrontControllerServlet/", //for when webapp is non ROOT
-        frontController: "FrontControllerServlet", //for when webapp is hosted as ROOT
-        //page requests
-        customFoodsPageRequest: "customFoodsPage",
-        mainPageRequest: "mainPage",
-        workoutLogPageRequest: "workoutLogPage",
-        sessionPlaceholderPageRequest: "sessionPlaceholderPage",
-        loginPageRequest: "loginPage",
-        createAccountPageRequest: "createAccountPage",
-        myStatsPageRequest: "myStatsPage",
-        forgotPasswordPageRequest: "forgotPasswordPage",
-        forgotPasswordEmailRequest: "forgotPasswordEmail",
-        changePasswordRequest: "changePassword",
-        changeEmailRequest: "changeEmail",
-        settingsPageRequest: "settingsPage",
-        deleteAccountRequest: "deleteAccount",
-        
-        //AJAX requests
-        AJAX_GetCustomFoodList: "AJAX_GetCustomFoodList",
-        AJAX_GetEatenFoodList: "AJAX_GetEatenFoodList",
-        AJAX_RemoveCustomFood: "AJAX_RemoveCustomFood",
-        AJAX_AddCustomFood: "AJAX_AddCustomFood",
-        AJAX_EditCustomFood: "AJAX_EditCustomFood",
-        AJAX_AddEatenFood: "AJAX_AddEatenFood",
-        AJAX_RemoveEatenFood: "AJAX_RemoveEatenFood",
-        AJAX_SearchForFood: "AJAX_SearchForFood",
-        AJAX_ModifySelectedAttributes: "AJAX_ModifySelectedAttributes",
-        AJAX_GetViewableAttributesList: "AJAX_GetViewableAttributesList",
-        AJAX_GetFriendlyNames: "AJAX_GetFriendlyNames",
-        AJAX_ModifyUserStats: "AJAX_ModifyUserStats",
-        AJAX_GetUserStats: "AJAX_GetUserStats",
-        AJAX_GetIdentifierTokenEmail:"AJAX_GetIdentifierTokenEmail"
-    }
-};
+
+//    parameters: {
+//        port: 8080,
+//        projectName: "fitness_tracker_servlet_maven",
+//        mainURL: "http://localhost:8080" // replace with "window.location.hostname" ??
+//    },
+//    requests: {
+//        //action requests
+//        loginRequest: "login",
+//        logoutRequest: "logout",
+//        createAccountRequest: "createAccount",
+//        //frontController: "/fitness_tracker_servlet_maven/FrontControllerServlet/", //for when webapp is non ROOT
+//        frontController: "FrontControllerServlet", //for when webapp is hosted as ROOT
+//        //page requests
+//        customFoodsPageRequest: "customFoodsPage",
+//        mainPageRequest: "mainPage",
+//        workoutLogPageRequest: "workoutLogPage",
+//        sessionPlaceholderPageRequest: "sessionPlaceholderPage",
+//        loginPageRequest: "loginPage",
+//        createAccountPageRequest: "createAccountPage",
+//        myStatsPageRequest: "myStatsPage",
+//        forgotPasswordPageRequest: "forgotPasswordPage",
+//        forgotPasswordEmailRequest: "forgotPasswordEmail",
+//        changePasswordRequest: "changePassword",
+//        changeEmailRequest: "changeEmail",
+//        settingsPageRequest: "settingsPage",
+//        deleteAccountRequest: "deleteAccount",
+//        
+//        //AJAX requests
+//        AJAX_GetCustomFoodList: "AJAX_GetCustomFoodList",
+//        AJAX_GetEatenFoodList: "AJAX_GetEatenFoodList",
+//        AJAX_RemoveCustomFood: "AJAX_RemoveCustomFood",
+//        AJAX_AddCustomFood: "AJAX_AddCustomFood",
+//        AJAX_EditCustomFood: "AJAX_EditCustomFood",
+//        AJAX_AddEatenFood: "AJAX_AddEatenFood",
+//        AJAX_RemoveEatenFood: "AJAX_RemoveEatenFood",
+//        AJAX_SearchForFood: "AJAX_SearchForFood",
+//        AJAX_ModifySelectedAttributes: "AJAX_ModifySelectedAttributes",
+//        AJAX_GetViewableAttributesList: "AJAX_GetViewableAttributesList",
+//        AJAX_GetFriendlyNames: "AJAX_GetFriendlyNames",
+//        AJAX_ModifyUserStats: "AJAX_ModifyUserStats",
+//        AJAX_GetUserStats: "AJAX_GetUserStats",
+//        AJAX_GetIdentifierTokenEmail:"AJAX_GetIdentifierTokenEmail"
+    
+
 
 
 

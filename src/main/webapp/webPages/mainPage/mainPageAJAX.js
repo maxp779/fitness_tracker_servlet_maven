@@ -20,8 +20,8 @@ function searchForFood(searchInput)
     if (globalFunctions.isUndefinedOrNull(searchInput) || searchInput === "")
     {
         console.log("invalid search parameter, aborting search");
-        globalValues.searchResultsArray = []; //empty this otherwise the previous successful search results will show when updateMainPage() is called
-        localStorage.setItem("globalValues",globalValues); //mirror the change in localStorage for consistency
+        setGlobalValues.setSearchResultsArray([]) //empty this otherwise the previous successful search results will show when updateMainPage() is called
+        //localStorage.setItem("globalValues",globalValues);
         var innerHTML = "<li class='list-group-item searchresult'> Invalid search parameter please retry.</li>";  
         document.getElementById("searchResultList").innerHTML = innerHTML;
     }
@@ -30,15 +30,15 @@ function searchForFood(searchInput)
         searchInputJSON.searchInput = searchInput.toLowerCase(); //database is lower case so user input must be converted to lower case
         console.log("AJAX request: searching for food: " + JSON.stringify(searchInputJSON));
         $.ajax({
-            url: "/"+serverAPI.requests.frontController +"/"+ serverAPI.requests.AJAX_SearchForFood,
+            url: serverAPI.requests.SEARCH_FOR_FOOD,
             type: "GET",
             data: JSON.stringify(searchInputJSON),
             contentType: "application/json",
             dataType: "json",
             success: function (data)
             {
-                globalValues.searchResultsArray = data;
-                globalFunctions.setGlobalValuesLocalStorage();
+                setGlobalValues.setSearchResultsArray(data)
+                //globalFunctions.setGlobalValuesLocalStorage();
                 updateMainPage();
             },
             error: function (xhr, status, error)
@@ -49,59 +49,6 @@ function searchForFood(searchInput)
         });
     }
 }
-
-/**
- * This method gets the foods the user has eaten from the server
- * @returns {undefined}
- */
-
-//function getEatenFoodList(callback) //REARCHITECT
-//{
-//    //get the date from the datepicker
-//    var UNIXtimeJSON = {};
-//    UNIXtimeJSON["UNIXtime"] = getSelectedUNIXdate();
-//
-//    //this is an AJAX request to the server, it invokes the AJAX_GetCustomFoodsServlet which returns a JSON object
-//    //containing all custom foods in full detail from the database
-////    $.getJSON(frontController + AJAX_GetEatenFoodList,timestampJSON, function (JSONObject) {
-////
-////        console.log("getEatenFoodList " + JSON.stringify(JSONObject));
-////        eatenFoodListJSON = JSONObject;
-////        populateEatenFoodList();
-////    });
-//
-//    console.log("AJAX request: AJAX_GetEatenFoodList for date " + JSON.stringify(UNIXtimeJSON));
-//    $.ajax({
-//        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_GetEatenFoodList"],
-//        type: "GET",
-//        data: JSON.stringify(UNIXtimeJSON),
-//        dataType: "json",
-//        success: function (returnedJSON)
-//        {
-//            console.log("AJAX request: AJAX_GetEatenFoodList gotten list " + JSON.stringify(returnedJSON));
-//            globalValues["eatenFoodsArray"] = returnedJSON;
-//            //populateEatenFoodList();
-//            //calculateTotalMacros();
-//            //updatePieCharts();
-//            //updateGraphs();
-//            if (callback)
-//            {
-//                callback();
-//            }
-//
-//        },
-//        error: function (xhr, status, error)
-//        {
-//            // check status && error
-//            console.log("ajax failed");
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-//    });
-//
-//}
 
 /**
  * This method prepares a JSON to be used by addEatenFood(). This method directly deals with
@@ -116,11 +63,11 @@ function addEatenFoodFromCustomFood(id_customfood)
     var outputJSON = {};
 
     //search customFoodListJSON for the food the user wants to add to their food log
-    for (var currentFood in globalValues["customFoodsArray"])
+    for (var currentFood in globalValues.customFoodsArray)
     {
-        if (globalValues["customFoodsArray"][currentFood]["id_customfood"] === id_customfood)
+        if (globalValues.customFoodsArray[currentFood].id_customfood === id_customfood)
         {
-            outputJSON = globalValues["customFoodsArray"][currentFood];
+            outputJSON = globalValues.customFoodsArray[currentFood];
         }
     }
     addEatenFood(outputJSON);
@@ -139,11 +86,11 @@ function addEatenFoodFromSearchResult(id_searchablefood)
     var outputJSON = {};
 
     //search customFoodListJSON for the food the user wants to add to their food log
-    for (var currentFood in globalValues["searchResultsArray"])
+    for (var currentFood in globalValues.searchResultsArray)
     {
-        if (globalValues["searchResultsArray"][currentFood]["id_searchablefood"] === id_searchablefood)
+        if (globalValues.searchResultsArray[currentFood].id_searchablefood === id_searchablefood)
         {
-            var matchingFood = globalValues["searchResultsArray"][currentFood];
+            var matchingFood = globalValues.searchResultsArray[currentFood];
 
             for (var currentProperty in matchingFood)
             {
@@ -217,7 +164,7 @@ function addEatenFood(foodJSON)
     //date to add the food, user may wish to update the previous days log etc
     foodJSON["UNIXtime"] = getSelectedUNIXdate();
     $.ajax({
-        url: "/"+serverAPI["requests"]["frontController"] +"/"+ serverAPI["requests"]["AJAX_AddEatenFood"],
+        url: serverAPI.requests.ADD_EATEN_FOOD,
         type: "POST",
         data: JSON.stringify(foodJSON),
         contentType: "application/json",
@@ -226,7 +173,7 @@ function addEatenFood(foodJSON)
             if (data === "true")
             {
                 console.log("food eaten add suceeded");
-                globalFunctionsAJAX["getEatenFoodList"](function () {
+                globalFunctionsAJAX.getEatenFoodList(function () {
                     updateMainPage();
                 });
 
@@ -260,7 +207,7 @@ function removeEatenFood(id_eatenfood)
         var eatenfoodJSON = {};
         eatenfoodJSON["id_eatenfood"] = id_eatenfood;
         $.ajax({
-            url: "/"+serverAPI["requests"]["frontController"] +"/"+ serverAPI["requests"]["AJAX_RemoveEatenFood"],
+            url: serverAPI.requests.REMOVE_EATEN_FOOD,
             type: "POST",
             data: JSON.stringify(eatenfoodJSON),
             contentType: "application/json",
@@ -290,205 +237,3 @@ function removeEatenFood(id_eatenfood)
         console.log("currently selected food is " + selectedEatenFood + " no action taken");
     }
 }
-
-/**
- * Gets the users custom foods from the server
- * @returns {undefined}
- */
-//function getCustomFoodList(callback)
-//{
-//    //this is an AJAX request to the server, it invokes the AJAX_GetCustomFoodsServlet which returns a JSON object
-//    //containing all custom foods in full detail from the database
-////    $.getJSON(frontController + AJAX_GetCustomFoodList, function (JSONObject) {
-////
-////        console.log("AJAX request: AJAX_GetCustomFoodList " + JSON.stringify(JSONObject));
-////        globalValues["customFoodsArray"] = JSONObject;
-////        populateCustomFoodList();
-////
-////    });
-//
-//    $.ajax({
-//        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_GetCustomFoodList"],
-//        type: "GET",
-//        dataType: "json",
-//        success: function (returnedJSON)
-//        {
-//            if ($.isEmptyObject(returnedJSON))
-//            {
-//                console.log("get custom food list failed" + returnedJSON);
-//            }
-//            else
-//            {
-//                console.log("get custom food list succeded" + returnedJSON);
-//                globalValues["customFoodsArray"] = returnedJSON;
-//                populateCustomFoodList();
-//            }
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        },
-//        error: function (xhr, status, error)
-//        {
-//            // check status && error
-//            console.log("ajax failed");
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-//    });
-//}
-
-//function getFriendlyNamesJSON(callback)
-//{
-//    $.ajax({
-//        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_GetFriendlyNames"],
-//        type: "GET",
-//        //async : false,
-//        dataType: "json",
-//        success: function (returnedJSON)
-//        {
-//            if ($.isEmptyObject(returnedJSON))
-//            {
-//                console.log("get friendly names failed" + returnedJSON);
-//            }
-//            else
-//            {
-//                console.log("get friendly names succeded" + returnedJSON);
-//                globalValues["friendlyNames"] = returnedJSON;
-//            }
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        },
-//        error: function (xhr, status, error)
-//        {
-//            // check status && error
-//            console.log("ajax failed");
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-//    });
-//}
-
-//function getFoodAttributes(callback)
-//{
-////    $.getJSON(frontController + AJAX_GetViewableAttributesList, function (JSONObject) {
-////
-////        console.log("AJAX request: AJAX_GetViewableAttributesList " + JSON.stringify(JSONObject));
-////        globalValues["selectedFoodAttributesArray"] = JSONObject;
-////    });
-////    
-//    $.ajax({
-//        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_GetViewableAttributesList"],
-//        type: "GET",
-//        //async : false,
-//        dataType: "json",
-//        success: function (returnedJSON)
-//        {
-//            if ($.isEmptyObject(returnedJSON))
-//            {
-//                console.log("get selected attributes failed" + returnedJSON);
-//            }
-//            else
-//            {
-//                console.log("get selected attributes succeded" + returnedJSON);
-//                globalValues["selectedFoodAttributesArray"] = returnedJSON;
-//            }
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        },
-//        error: function (xhr, status, error)
-//        {
-//            // check status && error
-//            console.log("ajax failed");
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-//    });
-//}
-
-//function updateSelectedAttributes()
-//{
-//    //iterate through each attribute
-//    var attributesJSON = globalValues["selectedFoodAttributesArray"][0];
-//    for (var currentAttribute in attributesJSON)
-//    {
-//        var currentAttributeElementName = currentAttribute + "checkbox";
-//        var currentElement = document.getElementById(currentAttributeElementName);
-//
-//        //if the a checkbox matching the attribute exists, take appropriate action
-//        if (currentElement !== null)
-//        {
-//            if (currentElement.checked)
-//            {
-//                attributesJSON[currentAttribute] = "t";
-//            }
-//            else
-//            {
-//                attributesJSON[currentAttribute] = "f";
-//            }
-//        }
-//    }
-//    globalValues["selectedFoodAttributesArray"][0] = attributesJSON;
-//
-//    //send updated selectedFoodAttributeJSON to server for severside update
-//    $.ajax({
-//        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_ModifySelectedAttributes"],
-//        type: "POST",
-//        data: JSON.stringify(globalValues["selectedFoodAttributesArray"][0]),
-//        contentType: "application/json",
-//        success: function (data)
-//        {
-//            if (data === "true")
-//            {
-//                console.log("update selected attributes suceeded");
-//                //getFoodAttributes();
-//                populateEatenFoodList();
-//                populateCustomFoodList();
-//                populateSearchResultList();
-//            }
-//            else
-//            {
-//                console.log("update selected attributes failed");
-//            }
-//        },
-//        error: function (xhr, status, error)
-//        {
-//            // check status && error
-//            console.log("ajax failed");
-//        }
-//    });
-//}
-
-//function editSelectedAttributes()
-//{
-//    console.log("editSelectedAttributes(): current selected attributes " + JSON.stringify(globalValues["selectedFoodAttributesArray"]));
-//
-//    //clear form
-//    document.getElementById("editSelectedAttributesForm").reset();
-//
-//    var attributesJSON = globalValues["selectedFoodAttributesArray"][0];
-//
-//    for (var currentProperty in attributesJSON)
-//    {
-//        var currentElementName = currentProperty.toString();
-//        currentElementName = currentElementName + "checkbox";
-//        var currentElement = document.getElementById(currentElementName);
-//        if (currentElement !== null)
-//        {
-//            if (attributesJSON[currentProperty] === "t")
-//            {
-//                currentElement.checked = true;
-//            }
-//        }
-//    }
-//}

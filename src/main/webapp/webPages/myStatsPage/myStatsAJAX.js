@@ -15,7 +15,7 @@ function updateUserStatsManually()
     {
         //send updated stats to server for severside update
         $.ajax({
-            url: "/"+serverAPI.requests.frontController +"/"+ serverAPI.requests.AJAX_ModifyUserStats,
+            url: serverAPI.requests.MODIFY_USER_STATS,
             type: "POST",
             data: JSON.stringify(globalValues.userStats),
             contentType: "application/json",
@@ -52,7 +52,7 @@ function updateUserStats()
     {
         //send updated stats to server for severside update
         $.ajax({
-            url: "/"+serverAPI.requests.frontController +"/"+ serverAPI.requests.AJAX_ModifyUserStats,
+            url: serverAPI.requests.MODIFY_USER_STATS,
             type: "POST",
             data: JSON.stringify(globalValues.userStats),
             contentType: "application/json",
@@ -77,42 +77,4 @@ function updateUserStats()
         });
     }
 }
-
-//function getUserStats(callback)
-//{
-//    $.ajax({
-//        url: serverAPI["requests"]["frontController"] + serverAPI["requests"]["AJAX_GetUserStats"],
-//        type: "GET",
-//        //async : false,
-//        dataType: "json",
-//        success: function (returnedJSON)
-//        {
-//            if ($.isEmptyObject(returnedJSON))
-//            {
-//                console.log("get user stats failed" + returnedJSON);
-//            }
-//            else
-//            {
-//                console.log("get user stats succeded" + returnedJSON);
-//                globalValues["userStats"] = returnedJSON[0];
-////                populateUserStats();
-////                updateMyStatsPieChart();
-//            }
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        },
-//        error: function (xhr, status, error)
-//        {
-//            // check status && error
-//            console.log("ajax failed");
-//            if (callback)
-//            {
-//                callback();
-//            }
-//        }
-//    });
-//}
-
 

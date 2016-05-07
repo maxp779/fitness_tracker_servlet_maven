@@ -23,7 +23,7 @@ $(document).ready(function () {
     $(document).on("click", ".remove-food-button", function () {
         var id_customfood = $(this).attr("id");
         id_customfood = globalFunctions.removeCharacters(id_customfood);
-        removeCustomFood(id_customfood, function () {
+        deleteCustomFood(id_customfood, function () {
             populateCustomFoodList();
         });
         console.log("remove food button clicked");
@@ -63,7 +63,7 @@ $(document).ready(function () {
 
     $(document).on("submit", "#addFoodForm", function (event) {
         event.preventDefault();
-        addCustomFood();
+        createCustomFood();
     });
 
     $(document).on("focus", "#addFoodForm", function () {
@@ -148,24 +148,10 @@ function populateCustomFoodList()
 }
 
 
-//AJAX REQUESTS
-//function getCustomFoodsList()
-//{
-//    //this is an AJAX request to the server, it invokes the AJAX_GetCustomFoodsServlet which returns a JSON object
-//    //containing all custom foods in full detail from the database
-//    $.getJSON("/" + serverAPI["requests"]["frontController"] + "/" + serverAPI["requests"]["AJAX_GetCustomFoodList"], function (JSONObject) {
-//
-//        console.log("getCustomFoodsList " + JSON.stringify(JSONObject));
-//        customFoodListJSON = JSONObject;
-//        populateCustomFoodList();
-//
-//    });
-//}
-
-function removeCustomFood(id_customfood, callback)
+function deleteCustomFood(id_customfood, callback)
 {
     $.ajax({
-        url: "/" + serverAPI["requests"]["frontController"] + "/" + serverAPI["requests"]["AJAX_RemoveCustomFood"],
+        url: serverAPI.requests.DELETE_CUSTOM_FOOD,
         type: "POST",
         data: JSON.stringify({id_customfood: id_customfood}),
         contentType: "application/json",
@@ -195,7 +181,7 @@ function removeCustomFood(id_customfood, callback)
 
 }
 
-function addCustomFood()
+function createCustomFood()
 {
     //get data from form, it is formatted as an array of JSON object with the
     //form data held in name/value pairs like so:
@@ -211,9 +197,9 @@ function addCustomFood()
 //            outputJSON[formData[count]["name"]] = formData[count]["value"];
 //        }
 //    }
-    console.log("attempting to add food " + JSON.stringify(formData));
+    console.log("attempting to create custom food " + JSON.stringify(formData));
     $.ajax({
-        url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.AJAX_AddCustomFood,
+        url: serverAPI.requests.CREATE_CUSTOM_FOOD,
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json",
@@ -228,7 +214,7 @@ function addCustomFood()
                     populateCustomFoodList();
                 });
 
-                globalFunctions.setGlobalValuesLocalStorage();
+                //globalFunctions.setGlobalValuesLocalStorage();
                 document.getElementById("addFoodForm").reset();
                 document.getElementById("addCustomFoodFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Custom food " + returnObject.foodname + " successfully created</div>";
 
@@ -302,7 +288,7 @@ function saveEditedCustomFood()
 //    }
     console.log("attempting to edit food " + JSON.stringify(outputJSON));
     $.ajax({
-        url: "/" + serverAPI["requests"]["frontController"] + "/" + serverAPI["requests"]["AJAX_EditCustomFood"],
+        url: serverAPI.requests.EDIT_CUSTOM_FOOD,
         type: "POST",
         data: JSON.stringify(outputJSON),
         contentType: "application/json",

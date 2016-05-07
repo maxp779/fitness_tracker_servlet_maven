@@ -7,22 +7,23 @@ var emailValid = false;
 
 $(document).ready(function () {
 
-//    document.getElementById("changePasswordForm").action = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.changePasswordRequest;
-//    document.getElementById("changeEmailForm").action = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.changeEmailRequest;
-    document.getElementById("deleteAccountForm").action = "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.deleteAccountRequest;
-
+    document.getElementById("deleteAccountForm").action = serverAPI.requests.DELETE_ACCOUNT_REQUEST;
 
     globalFunctions.refreshGlobalValuesFromLocalStorage(function () {
         globalFunctions.showSelectedAttributes();
     });
-    //globalValues = JSON.parse(localStorage.getItem("globalValues"));
 
     //to tick/untick the checkboxes on the selected attributes form showing which are currently selected
-
     $('#editSelectedAttributesForm').submit(function (event) {
         event.preventDefault();
-        globalFunctionsAJAX.updateSelectedAttributes(function () {
-            globalFunctions.showSelectedAttributes();
+
+        var newFoodAttributes = {};
+
+        getNewFoodAttributes(newFoodAttributes, function ()
+        {
+            globalFunctionsAJAX.updateSelectedAttributes(newFoodAttributes, function () {
+                globalFunctions.showSelectedAttributes();
+            });
         });
     });
 
@@ -78,7 +79,7 @@ function changePasswordRequestAJAX()
 {
     var formData = $("#changePasswordForm").serializeArray();
     $.ajax({
-        url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.changePasswordRequest,
+        url: serverAPI.requests.CHANGE_PASSWORD_REQUEST,
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json",
@@ -106,11 +107,35 @@ function changePasswordRequestAJAX()
     });
 }
 
+
+function getNewFoodAttributes(newFoodAttributesObject, callback) {
+    for (var currentAttribute in globalValues.foodAttributes)
+    {
+        var currentAttributeElementName = currentAttribute + "checkbox";
+        var currentElement = document.getElementById(currentAttributeElementName);
+        //if the a checkbox matching the attribute exists, take appropriate action
+        if (currentElement !== null)
+        {
+            if (currentElement.checked)
+            {
+                newFoodAttributesObject[currentAttribute] = "t";
+            } else
+            {
+                newFoodAttributesObject[currentAttribute] = "f";
+            }
+        }
+    }
+    if (callback)
+    {
+        callback();
+    }
+}
+
 function changeEmailRequestAJAX()
 {
     var formData = $("#changeEmailForm").serializeArray();
     $.ajax({
-        url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.changeEmailRequest,
+        url: serverAPI.requests.CHANGE_EMAIL_REQUEST,
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json",
@@ -140,32 +165,3 @@ function changeEmailRequestAJAX()
         }
     });
 }
-
-//function changeAttributesRequestAJAX()
-//{
-//    var formData = $("#editSelectedAttributesForm").serializeArray();
-//    $.ajax({
-//        url: "/" + serverAPI.requests.frontController + "/" + serverAPI.requests.AJAX_ModifySelectedAttributes,
-//        type: "POST",
-//        data: JSON.stringify(formData),
-//        contentType: "application/json",
-//        success: function (data)
-//        {
-//            var returnObject = JSON.parse(data); 
-//
-//            if (returnObject.success === "true")
-//            {
-//                console.log("Selected attributes updated");
-//                document.getElementById("attributeFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Selected attributes updated</div>";
-//            } else
-//            {
-//                document.getElementById("emailFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + errorCodes[returnObject.errorCode] + ", no action taken</div>";
-//            }
-//        },
-//        error: function (xhr, status, error)
-//        {
-//            // check status && error
-//            console.log("ajax failed");
-//        }
-//    });
-//}

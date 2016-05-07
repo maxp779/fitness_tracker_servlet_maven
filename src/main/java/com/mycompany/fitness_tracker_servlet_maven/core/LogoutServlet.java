@@ -5,6 +5,7 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
 import java.io.IOException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -12,11 +13,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This servlet logs out the user by invalidating their current session
- * then it redirects them back to the appropriate login page.
+ * This servlet logs out the user by invalidating their current session then it
+ * redirects them back to the appropriate login page.
+ *
  * @author max
  */
 @WebServlet(name = "LogoutServlet", urlPatterns =
@@ -26,57 +29,7 @@ import javax.servlet.http.HttpSession;
 public class LogoutServlet extends HttpServlet
 {
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        System.out.println("LogoutServlet: executing");
-        HttpSession session = request.getSession(false);
-        
-        if(session == null)
-        {
-            String jsessionID = (String) request.getAttribute("jsessionid");
-        }
-        else
-        {
-            SessionManager.httpSessionRemove(session);
-        }
-        
-        ServletContext sc = request.getServletContext();
-        
-
-        response.sendRedirect(sc.getContextPath() 
-                +"/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY() 
-                +"/"
-                + GlobalValues.getLOGIN_PAGE_FOLDER()
-                +"/"
-                + GlobalValues.getLOGIN_PAGE());
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        processRequest(request, response);
-    }
+    private static final Logger log = LoggerFactory.getLogger(LogoutServlet.class);
 
     /**
      * Handles the HTTP <code>POST</code> method.
@@ -90,7 +43,18 @@ public class LogoutServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        processRequest(request, response);
+        log.trace("doPost");
+
+        SessionManager.httpSessionRemove(request.getSession());
+        ServletContext sc = request.getServletContext();
+
+        response.sendRedirect(sc.getContextPath()
+                + "/"
+                + GlobalValues.getWEB_PAGES_DIRECTORY()
+                + "/"
+                + GlobalValues.getLOGIN_PAGE_FOLDER()
+                + "/"
+                + GlobalValues.getLOGIN_PAGE());
     }
 
     /**
