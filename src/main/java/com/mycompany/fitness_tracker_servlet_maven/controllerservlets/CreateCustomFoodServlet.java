@@ -8,6 +8,7 @@ package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -49,13 +50,12 @@ public class CreateCustomFoodServlet extends HttpServlet
         log.trace("doPost");
         String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
         Map<String, String> customFoodMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
-        String id_user = (String) request.getSession().getAttribute("id_user");
-        //customFoodMap.put("id_user", id_user);
-
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        
         boolean success = false;
         try
         {
-            success = DatabaseAccess.createCustomFood(customFoodMap, id_user);
+            success = DatabaseAccess.createCustomFood(customFoodMap, currentUser.getId_user());
         } catch (SQLException ex)
         {
             log.error("DatabaseAccess.createCustomFood failed", ex);

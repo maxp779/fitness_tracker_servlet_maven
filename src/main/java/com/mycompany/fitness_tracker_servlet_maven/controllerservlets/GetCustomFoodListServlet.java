@@ -5,7 +5,9 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
+import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
@@ -45,8 +47,8 @@ public class GetCustomFoodListServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet");
-        String id_user = (String) request.getSession().getAttribute("id_user");
-        List customFoodList = DatabaseAccess.getCustomFoodList(id_user);
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        List customFoodList = DatabaseAccess.getCustomFoodList(currentUser.getId_user());
         boolean success = (customFoodList != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

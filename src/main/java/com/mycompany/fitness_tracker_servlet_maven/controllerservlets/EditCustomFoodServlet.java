@@ -7,6 +7,7 @@ package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
 import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
@@ -46,12 +47,12 @@ public class EditCustomFoodServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doPost");
-        String id_user = (String) request.getSession().getAttribute("id_user");
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
         String customFoodJSONString = ServletUtilities.getPOSTRequestJSONString(request);
         log.debug(customFoodJSONString);
         Map<String, String> customFoodMap = ServletUtilities.convertJSONStringToMap(customFoodJSONString);
         //customFoodMap.put("id_user", id_user); <-- this could break this method, I do not know why this line is needed so I commented it out
-        boolean success = DatabaseAccess.editCustomFood(customFoodMap, id_user);
+        boolean success = DatabaseAccess.editCustomFood(customFoodMap, currentUser.getId_user());
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

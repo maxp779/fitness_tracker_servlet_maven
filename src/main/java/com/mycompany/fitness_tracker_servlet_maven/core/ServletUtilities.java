@@ -126,4 +126,9 @@ public class ServletUtilities
         log.debug(output.toString());
         return output;
     }
+    
+    public static UserObject getCurrentUser(HttpServletRequest request)
+    {
+        return (UserObject) request.getSession().getAttribute("user");
+    }
 }

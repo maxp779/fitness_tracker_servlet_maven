@@ -47,13 +47,13 @@ public class ChangeEmailServlet extends HttpServlet
     {
         log.trace("doPost");
         HttpSession session = request.getSession();
-        String id_user = (String) session.getAttribute("id_user");
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
         String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
         Map<String, String> requestDetailsMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
         String password = requestDetailsMap.get("changeEmailPassword");
 
         StandardOutputObject outputObject = new StandardOutputObject();
-        if (!Authorization.isCurrentUserAuthorized(password, id_user))
+        if (!Authorization.isCurrentUserAuthorized(password, currentUser.getId_user()))
         {
             log.debug("user not authorized");
             outputObject.setSuccess(false);
@@ -72,7 +72,7 @@ public class ChangeEmailServlet extends HttpServlet
             return;
         }
 
-        if (DatabaseAccess.changeEmail(newEmail, id_user))
+        if (DatabaseAccess.changeEmail(newEmail, currentUser.getId_user()))
         {
             log.debug("email changed successfully");
             outputObject.setSuccess(true);

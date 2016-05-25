@@ -5,7 +5,9 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
+import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
@@ -56,11 +58,12 @@ public class GetEatenFoodListServlet extends HttpServlet
 
         //UNIXTime is the 
         //String UNIXTime = queryMap.get("UNIXtime");
-        Timestamp timestamp = new Timestamp(Long.parseLong(UNIXTime));
-        String id_user = (String) request.getSession().getAttribute("id_user");
-        System.out.println("Getting eaten foods for user " + id_user + " for date " + timestamp.toString() + " UNIX time:" + UNIXTime);
+        Timestamp timestamp = new Timestamp(Long.parseLong(UNIXTime+"000")); //+"000" because Timestamp sucks and only works in milliseconds even though UNIX time is seconds since 1970
+        
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        System.out.println("Getting eaten foods for user " + currentUser.getId_user() + " for date " + timestamp.toString() + " UNIX time:" + UNIXTime);
 
-        List eatenFoodList = DatabaseAccess.getEatenFoodList(id_user, timestamp);
+        List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getId_user(), timestamp);
         StandardOutputObject outputObject = new StandardOutputObject();
         boolean success = (eatenFoodList != null);
         outputObject.setSuccess(success);

@@ -42,11 +42,7 @@ public class SessionManager
         {
             log.debug("session invalid, session is null");
             sessionValid = false;
-        } else if (session.getAttribute("email") == null) //path for invalid identifier
-        {
-            log.debug("session invalid, invalid identifier");
-            sessionValid = false;
-        } else //path for valid session
+        }else //path for valid session
         {
             log.debug("session valid");
             sessionValid = true;

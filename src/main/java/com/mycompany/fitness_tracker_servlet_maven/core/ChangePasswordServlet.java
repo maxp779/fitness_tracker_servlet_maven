@@ -61,11 +61,12 @@ public class ChangePasswordServlet extends HttpServlet
     }
 
     /**
-     * User is not logged in, likely cannot log in and has likely forgotten their password
-     * 
+     * User is not logged in, likely cannot log in and has likely forgotten
+     * their password
+     *
      * @param request
      * @param requestDetails
-     * @return 
+     * @return
      */
     private StandardOutputObject changePasswordWithoutSession(HttpServletRequest request, Map<String, String> requestDetails)
     {
@@ -108,29 +109,28 @@ public class ChangePasswordServlet extends HttpServlet
 
     /**
      * User is logged in and simply wants to change their password
-     * 
+     *
      * @param request
      * @param requestDetails
-     * @return 
+     * @return
      */
     private StandardOutputObject changePasswordWithSession(HttpServletRequest request, Map<String, String> requestDetails)
     {
         log.trace("changePasswordWithSession");
-        UserObject user = (UserObject) request.getSession().getAttribute("user");
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
         StandardOutputObject outputObject = new StandardOutputObject();
 
-        String id_user = user.getId_user();
         String oldPassword = requestDetails.get("oldPassword");
-        if (Authorization.isCurrentUserAuthorized(oldPassword, id_user))
+        if (Authorization.isCurrentUserAuthorized(oldPassword, currentUser.getId_user()))
         {
             log.debug("user authorized to change password");
             String newHashedPassword = PasswordEncoder.hashPassword(requestDetails.get("newPassword"));
-            boolean success = DatabaseAccess.changePassword(id_user, newHashedPassword);
+            boolean success = DatabaseAccess.changePassword(currentUser.getId_user(), newHashedPassword);
             outputObject.setSuccess(success);
             if (success)
             {
                 log.debug("password change succeeded");
-                outputObject.setData(user.toMap());
+                outputObject.setData(currentUser.toMap());
             } else
             {
                 log.debug("password change failed");

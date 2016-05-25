@@ -47,23 +47,20 @@ var setGlobalValues = {
 var globalFunctionsAJAX = {
     getUserStats: function (callback)
     {
+        console.log("getUserStats()");
         $.ajax({
-            url:serverAPI.requests.GET_USER_STATS,
+            url: serverAPI.requests.GET_USER_STATS,
             type: "GET",
-            //async : false,
             dataType: "json",
-            success: function (returnedJSON)
+            success: function (returnObject)
             {
-                if ($.isEmptyObject(returnedJSON))
+                if (returnObject.success === true)
                 {
-                    console.log("get user stats failed" + returnedJSON);
+                    console.log("getUserStats() succeded " + JSON.stringify(returnObject.data));
+                    setGlobalValues.setUserStats(returnObject.data);
                 } else
                 {
-                    console.log("get user stats succeded");
-                    setGlobalValues.setUserStats(returnedJSON[0]);
-                    //globalFunctions.setGlobalValuesLocalStorage();
-//                    populateUserStats();
-//                    updateMyStatsPieChart();
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
                 }
                 if (callback)
                 {
@@ -72,8 +69,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -83,25 +79,29 @@ var globalFunctionsAJAX = {
     },
     getEatenFoodList: function (callback)
     {
+        console.log("getEatenFoodList()");
         //get the date from the datepicker
         var UNIXtimeJSON = {};
         UNIXtimeJSON.UNIXtime = getSelectedUNIXdate();
 
-        console.log("AJAX request: AJAX_GetEatenFoodList for date ");
+        console.log("getEatenFoodList()" + JSON.stringify(UNIXtimeJSON));
         $.ajax({
-            url:serverAPI.requests.GET_EATEN_FOOD_LIST,
+            url: serverAPI.requests.GET_EATEN_FOOD_LIST,
             type: "GET",
-            data: JSON.stringify(UNIXtimeJSON),
+            data: UNIXtimeJSON,
+            contentType: "application/json",
             dataType: "json",
-            success: function (returnedJSON)
+            success: function (returnObject)
             {
-                console.log("AJAX request: AJAX_GetEatenFoodList gotten list");
-                setGlobalValues.setEatenFoodsArray(returnedJSON);
-                //globalFunctions.setGlobalValuesLocalStorage();
-                //populateEatenFoodList();
-                //calculateTotalMacros();
-                //updatePieCharts();
-                //updateGraphs();
+                if (returnObject.success === true)
+                {
+                    console.log("getEatenFoodList() succeeded " + JSON.stringify(returnObject.data));
+                    setGlobalValues.setEatenFoodsArray(returnObject.data);
+                } else
+                {
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                }
+
                 if (callback)
                 {
                     callback();
@@ -110,32 +110,30 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
                 }
             }
         });
-
     },
     getCustomFoodList: function (callback)
     {
+        console.log("getCustomFoodList()");
         $.ajax({
-            url:serverAPI.requests.GET_CUSTOM_FOOD_LIST,
+            url: serverAPI.requests.GET_CUSTOM_FOOD_LIST,
             type: "GET",
             dataType: "json",
-            success: function (returnedJSON)
+            success: function (returnObject)
             {
-                if ($.isEmptyObject(returnedJSON))
+                if (returnObject.success === true)
                 {
-                    console.log("get custom food list failed" + returnedJSON);
+                    console.log("getCustomFoodList() succeded " + JSON.stringify(returnObject.data));
+                    setGlobalValues.setCustomFoodsArray(returnObject.data);
                 } else
                 {
-                    console.log("get custom food list succeded");
-                    setGlobalValues.setCustomFoodsArray(returnedJSON);
-                    //globalFunctions.setGlobalValuesLocalStorage();
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
                 }
                 if (callback)
                 {
@@ -144,8 +142,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -155,21 +152,20 @@ var globalFunctionsAJAX = {
     },
     getFriendlyNamesJSON: function (callback)
     {
+        console.log("getFriendlyNamesJSON()");
         $.ajax({
-            url:serverAPI.requests.GET_FRIENDLY_NAMES,
+            url: serverAPI.requests.GET_FRIENDLY_NAMES,
             type: "GET",
-            //async : false,
             dataType: "json",
-            success: function (returnedJSON)
+            success: function (returnObject)
             {
-                if ($.isEmptyObject(returnedJSON))
+                if (returnObject.success === true)
                 {
-                    console.log("get friendly names failed" + returnedJSON);
+                    console.log("getFriendlyNamesJSON() succeded " + JSON.stringify(returnObject.data));
+                    setGlobalValues.setFriendlyNames(returnObject.data);
                 } else
                 {
-                    console.log("get friendly names succeded");
-                    setGlobalValues.setFriendlyNames(returnedJSON);
-                    //globalFunctions.setGlobalValuesLocalStorage();
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
                 }
                 if (callback)
                 {
@@ -178,8 +174,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -189,21 +184,20 @@ var globalFunctionsAJAX = {
     },
     getFoodAttributes: function (callback)
     {
+        console.log("getFoodAttributes()");
         $.ajax({
-            url:serverAPI.requests.GET_VIEWABLE_ATTRIBUTES,
+            url: serverAPI.requests.GET_VIEWABLE_ATTRIBUTES,
             type: "GET",
-            //async : false,
             dataType: "json",
-            success: function (returnedJSON)
+            success: function (returnObject)
             {
-                if ($.isEmptyObject(returnedJSON))
+                if (returnObject.success === true)
                 {
-                    console.log("get food attributes failed" + returnedJSON);
+                    console.log("getFoodAttributes() succeded " + JSON.stringify(returnObject.data));
+                    setGlobalValues.setFoodAttributes(returnObject.data);
                 } else
                 {
-                    console.log("get food attributes succeded");
-                    setGlobalValues.setFoodAttributes(returnedJSON[0]);
-                    //globalFunctions.setGlobalValuesLocalStorage();
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
                 }
                 if (callback)
                 {
@@ -212,8 +206,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -223,24 +216,23 @@ var globalFunctionsAJAX = {
     },
     updateSelectedAttributes: function (newFoodAttributes, callback)
     {
+        console.log("updateSelectedAttributes()");
         $.ajax({
-            url:serverAPI.requests.MODIFY_SELECTED_ATTRIBUTES,
+            url: serverAPI.requests.MODIFY_SELECTED_ATTRIBUTES,
             type: "POST",
             data: JSON.stringify(newFoodAttributes),
             contentType: "application/json",
-            success: function (data)
+            dataType: "json",
+            success: function (returnObject)
             {
-                var returnObject = JSON.parse(data);
-
-                if (returnObject.success === "true")
+                if (returnObject.success === true)
                 {
-                    console.log("attributes updated");
-
+                    console.log("updateSelectedAttributes() succeeded");
                     setGlobalValues.setFoodAttributes(newFoodAttributes);
                     document.getElementById("attributeFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Attributes updated successfully</div>";
                 } else
                 {
-                    document.getElementById("attributeFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + errorCodes[returnObject.errorCode] + ", no action taken</div>";
+                    document.getElementById("attributeFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + ", no action taken</div>";
                 }
                 if (callback)
                 {
@@ -249,14 +241,20 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
             }
         });
 
     },
+    /**
+     *  This method is currently redundant however it has been left in as an 
+     *  optional way to redirect the user to another page via an AJAX request.
+     * @param {type} URL
+     * @returns {undefined}
+     */
     makeRedirectRequestAJAX: function (URL)
     {
+        console.log("makeRedirectRequestAJAX()");
         $.ajax({
             url: URL,
             type: "POST",
@@ -267,8 +265,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
             }
         });
     }
@@ -364,11 +361,11 @@ var globalFunctions = {
      * A small but important method.
      * 
      * Each html element relating to a food that is dynamically generated is given an id. This id is based on
-     * the numeric primary key in the database for that particular element e.g for a custom food
-     * id_customfood is the primary key which could be 1084. For an eaten food
-     * id_eatenfood is the primary key which could be 982.
+     * the numeric primary key in the database for that particular element e.g 
+     * For a custom food id_customfood is the primary key which could be 1084. 
+     * For an eaten food id_eatenfood is the primary key which could be 982.
      * 
-     * To prevent conflict i.e two elements having the same id, a string is added to the end to differentiate the elements.
+     * To prevent conflict i.e in a situation where two elements having the same numeric id, a string is added to the end to differentiate the elements.
      * e.g if id_customfood is 1084 then its id will be "1084customfood". If id_eatenfood is 982
      * it will be "982eatenfood". This method simply removes the added characters leaving just the numeric id
      * for the database to operate on.
@@ -384,7 +381,6 @@ var globalFunctions = {
     createFoodAttributesHTML: function (currentFoodJSON, foodIDType) //food ID is "id_searchablefood" or "id_customfood" etc, it defines the category of food object to look for
     {
         var outputHTML = "";
-        //var selectedFoodAttributeJSON = globalValues.foodAttributes;
         var selectedAttributeArray = globalFunctions.getSelectedAttributes();
         var primaryAttributeArray = ["protein", "carbohydrate", "fat", "calorie", "weight"];
         var secondaryAttributeArray = [];
@@ -401,33 +397,6 @@ var globalFunctions = {
                 primaryAttributeArray.splice(index, 1);
             }
         }
-
-//        if (selectedAttributeArray.indexOf("protein") === -1)
-//        {
-//            var removalIndex = primaryAttributeArray.indexOf("protein");
-//            primaryAttributeArray.splice(removalIndex, 1);
-//        }
-//        if (selectedAttributeArray.indexOf("carbohydrate") === -1)
-//        {
-//            var removalIndex = primaryAttributeArray.indexOf("carbohydrate");
-//            primaryAttributeArray.splice(removalIndex, 1);
-//        }
-//        if (selectedAttributeArray.indexOf("fat") === -1)
-//        {
-//            var removalIndex = primaryAttributeArray.indexOf("fat");
-//            primaryAttributeArray.splice(removalIndex, 1);
-//        }
-//        if (selectedAttributeArray.indexOf("calorie") === -1)
-//        {
-//            var removalIndex = primaryAttributeArray.indexOf("calorie");
-//            primaryAttributeArray.splice(removalIndex, 1);
-//        }
-//        if (selectedAttributeArray.indexOf("weight") === -1)
-//        {
-//            var removalIndex = primaryAttributeArray.indexOf("weight");
-//            primaryAttributeArray.splice(removalIndex, 1);
-//        }
-
 
         for (var index = 0; index < selectedAttributeArray.length; index++)
         {
@@ -510,16 +479,3 @@ var globalFunctions = {
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
     }
 };
-
-//function isUndefinedOrNull(aVariable)
-//{
-//    var output;
-//    if (typeof aVariable === 'undefined' || aVariable === null)
-//    {
-//        output = true;
-//    } else
-//    {
-//        output = false;
-//    }
-//    return output;
-//}

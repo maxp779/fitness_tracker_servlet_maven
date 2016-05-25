@@ -29,10 +29,19 @@ public class StandardOutputObject
 
     /**
      * Uses googles gson library to turn this object into a JSON string to be
-     * sent to the client. The JSON has the format: { success:true
-     * errorCode:{"10":"Some error description"} data{"someDataIdentifier":Some
-     * data} }
-     *
+     * sent to the client. The JSON has the format: 
+     * { 
+     * "success":true,
+     * "errorCode":{"10":"Some error description"},
+     * "data":{"someDataIdentifier":someData}
+     * }
+     * 
+     * *IMPORTANT* 
+     * gson will convert a List of Maps into an array of objects [{},{},{}]
+     * gson will convert a single Map into an object {}
+     * Use the appropriate storage method for data, a List of Maps which only have
+     * a single key value pair each is better represented as a single Map!
+     * 
      * The idea is to standardize the responses the client recieves from the
      * server. Every response will be a JSON of some form.
      *

@@ -71,10 +71,6 @@ function setupEvents(callback)
         addEatenFoodManually(function () {
 
             globalFunctionsAJAX["getEatenFoodList"](function () {
-//                    populateEatenFoodList();
-//                    calculateTotalMacros();
-//                    updatePieCharts();
-//                    updateGraphs();
                 updateMainPage();
 
             });
@@ -97,7 +93,7 @@ function setupEvents(callback)
         var id_customFood = $(this).attr("id");
         console.log("id_customfood " + id_customFood + " will be added");
         id_customFood = globalFunctions["removeCharacters"](id_customFood);
-        addEatenFoodFromCustomFood(id_customFood, function () {
+        addCustomFood(id_customFood, function () {
 
             updateMainPage();
         });
@@ -181,23 +177,6 @@ function setupEvents(callback)
     $(document).on('click', 'input', function () {
         this.select();
     });
-
-
-//    $(document).on("click", ".selectAttributesButton", function (e) {
-//        console.log("edit attributes button clicked");
-//        globalFunctions["editSelectedAttributes"](function () {
-//            updateMainPage();
-//        });
-//    });
-//
-//    $('#editSelectedAttributesForm').submit(function () {
-//        globalFunctionsAJAX["updateSelectedAttributes"](function () {
-//            updateMainPage();
-//        });
-//        $('#foodAttributeModal').modal('hide');
-//        return false;
-//    });
-
 
     if (callback)
     {

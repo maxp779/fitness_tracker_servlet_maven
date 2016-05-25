@@ -7,6 +7,7 @@ package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
 import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
@@ -48,10 +49,10 @@ public class AddEatenFoodServlet extends HttpServlet
         log.trace("doPost");
         String eatenFoodJSONString = ServletUtilities.getPOSTRequestJSONString(request);
         Map<String, String> eatenFoodMap = ServletUtilities.convertJSONStringToMap(eatenFoodJSONString);
-        String id_user = (String) request.getSession().getAttribute("id_user");
-        eatenFoodMap.put("id_user", id_user);
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        eatenFoodMap.put("id_user", currentUser.getId_user());
 
-        boolean success = DatabaseAccess.addEatenFood(eatenFoodMap, id_user);
+        boolean success = DatabaseAccess.addEatenFood(eatenFoodMap, currentUser.getId_user());
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

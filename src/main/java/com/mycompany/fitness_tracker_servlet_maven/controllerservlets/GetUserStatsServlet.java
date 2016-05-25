@@ -5,12 +5,15 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
+import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,14 +48,14 @@ public class GetUserStatsServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet");
-        String id_user = (String) request.getSession().getAttribute("id_user");
-        List userStatsList = DatabaseAccess.getUserStats(id_user);
-        boolean success = (userStatsList != null);
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        Map userStatsMap = DatabaseAccess.getUserStats(currentUser.getId_user());
+        boolean success = (userStatsMap != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)
         {
-            outputObject.setData(userStatsList);
+            outputObject.setData(userStatsMap);
             writeOutput(response, outputObject);
         } else
         {

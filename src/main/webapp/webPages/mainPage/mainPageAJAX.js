@@ -16,16 +16,15 @@ function searchForFood(searchInput)
 {
     var searchInputJSON = {};
 
-    //check for empty strings/null values
+    //check for invalid search parameters, empty strings, null values etc
     if (globalFunctions.isUndefinedOrNull(searchInput) || searchInput === "")
     {
         console.log("invalid search parameter, aborting search");
         setGlobalValues.setSearchResultsArray([]) //empty this otherwise the previous successful search results will show when updateMainPage() is called
         //localStorage.setItem("globalValues",globalValues);
-        var innerHTML = "<li class='list-group-item searchresult'> Invalid search parameter please retry.</li>";  
+        var innerHTML = "<li class='list-group-item searchresult'> Invalid search parameter please retry.</li>";
         document.getElementById("searchResultList").innerHTML = innerHTML;
-    }
-    else
+    } else
     {
         searchInputJSON.searchInput = searchInput.toLowerCase(); //database is lower case so user input must be converted to lower case
         console.log("AJAX request: searching for food: " + JSON.stringify(searchInputJSON));
@@ -35,16 +34,21 @@ function searchForFood(searchInput)
             data: JSON.stringify(searchInputJSON),
             contentType: "application/json",
             dataType: "json",
-            success: function (data)
+            success: function (returnObject)
             {
-                setGlobalValues.setSearchResultsArray(data)
-                //globalFunctions.setGlobalValuesLocalStorage();
-                updateMainPage();
+                if (returnObject.success === true)
+                {
+                    setGlobalValues.setSearchResultsArray(returnObject.data)
+                    updateMainPage();
+                } else
+                {
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                }
+
             },
             error: function (xhr, status, error)
             {
-                // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
             }
         });
     }
@@ -58,7 +62,7 @@ function searchForFood(searchInput)
  * @returns {undefined}
  */
 
-function addEatenFoodFromCustomFood(id_customfood)
+function addCustomFood(id_customfood)
 {
     var outputJSON = {};
 
@@ -100,30 +104,6 @@ function addEatenFoodFromSearchResult(id_searchablefood)
     }
 
     outputJSON = calculateMacrosFromWeight(id_searchablefood, outputJSON);
-//    var currentWeightID = id_searchablefood + "weight";
-//    var currentWeightValue = document.getElementById(currentWeightID).value;
-
-//    //ensure a valid weight is entered
-//    var maxWeight = 100000;
-//    var minWeight = 1;
-//    if (currentWeightValue < minWeight)
-//    {
-//        document.getElementById(currentWeightID).value = minWeight;
-//        currentWeightValue = minWeight;
-//    }
-//
-//    if (currentWeightValue > maxWeight)
-//    {
-//        document.getElementById(currentWeightID).value = maxWeight;
-//        currentWeightValue = maxWeight;
-//    }
-
-//    //calculate the macros based on the weight
-//    var multiplier = currentWeightValue / outputJSON["weight"];
-//    outputJSON["protein"] = outputJSON["protein"] * multiplier;
-//    outputJSON["carbohydrate"] = outputJSON["carbohydrate"] * multiplier;
-//    outputJSON["fat"] = outputJSON["fat"] * multiplier;
-//    outputJSON["calorie"] = outputJSON["calorie"] * multiplier;
     addEatenFood(outputJSON);
 }
 
@@ -148,7 +128,6 @@ function addEatenFoodManually()
             outputJSON[formData[count]["name"]] = formData[count]["value"];
         }
     }
-
     addEatenFood(outputJSON);
 }
 
@@ -160,7 +139,7 @@ function addEatenFoodManually()
  */
 function addEatenFood(foodJSON)
 {
-    console.log("AJAX request: attempting to add food that was eaten " + JSON.stringify(foodJSON));
+    console.log("addEatenFood(): attempting to add food that was eaten " + JSON.stringify(foodJSON));
     //date to add the food, user may wish to update the previous days log etc
     foodJSON["UNIXtime"] = getSelectedUNIXdate();
     $.ajax({
@@ -168,27 +147,26 @@ function addEatenFood(foodJSON)
         type: "POST",
         data: JSON.stringify(foodJSON),
         contentType: "application/json",
-        success: function (data)
+        dataType: "json",
+        success: function (returnObject)
         {
-            if (data === "true")
+            if (returnObject.success === true)
             {
-                console.log("food eaten add suceeded");
+                console.log("addEatenFood() suceeded");
                 globalFunctionsAJAX.getEatenFoodList(function () {
                     updateMainPage();
                 });
 
                 //clear form
                 document.getElementById("addEatenFoodForm").reset();
-            }
-            else
+            } else
             {
-                console.log("food eaten add failed");
+                console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
             }
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("AJAX request failed:" + error.toString());
         }
     });
 }
@@ -211,28 +189,27 @@ function removeEatenFood(id_eatenfood)
             type: "POST",
             data: JSON.stringify(eatenfoodJSON),
             contentType: "application/json",
-            success: function (data)
+            dataType: "json",
+            success: function (returnObject)
             {
-                if (data === "true")
+                if (returnObject.success === true)
                 {
-                    console.log("removal suceeded");
-                    globalFunctionsAJAX["getEatenFoodList"](function () {
+                    console.log("eaten food removal suceeded");
+                    globalFunctionsAJAX.getEatenFoodList(function () {
                         updateMainPage();
                     });
-                }
-                else
+                } else
                 {
-                    console.log("removal failed");
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
                 }
             },
             error: function (xhr, status, error)
             {
                 // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
             }
         });
-    }
-    else
+    } else
     {
         console.log("currently selected food is " + selectedEatenFood + " no action taken");
     }

@@ -5,7 +5,6 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.database;
 
-import com.mycompany.fitness_tracker_servlet_maven.core.Authorization;
 import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.sql.Connection;
@@ -336,7 +335,7 @@ public class DatabaseAccess
         {
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
-        log.debug(resultSetList.toString());
+        log.debug("resultset: "+resultSetList.toString());
         return resultSetList;
     }
 
@@ -387,6 +386,27 @@ public class DatabaseAccess
         }
         log.debug(mainList.toString());
         return mainList;
+    }
+    
+    private static Map convertResultSetToMap(ResultSet aResultSet) throws SQLException
+    {
+        log.trace("convertResultSetToMap");
+        log.debug(aResultSet.toString());
+        //turn resultset into a map
+        ResultSetMetaData resultSetMetaData = aResultSet.getMetaData();
+        Map mainMap = new HashMap<>();
+        int columnCount = resultSetMetaData.getColumnCount();
+        while (aResultSet.next())
+        {
+            int currentColumn = 1;
+            while (currentColumn <= columnCount)
+            {
+                mainMap.put(resultSetMetaData.getColumnName(currentColumn),aResultSet.getString(currentColumn));
+                currentColumn++;
+            }
+        }
+        log.debug(mainMap.toString());
+        return mainMap;
     }
 
     /**
@@ -598,8 +618,15 @@ public class DatabaseAccess
         LocalDateTime atStartOfDay = toLocalDate.atStartOfDay();
         long currentDayStart = atStartOfDay.toEpochSecond(ZoneOffset.UTC);
         long nextDayStart = atStartOfDay.plusDays(1L).toEpochSecond(ZoneOffset.UTC);
-        //currentDayStart = currentDayStart * 1000; //convert to milliseconds *not needed UNIX time is in seconds
-        //nextDayStart = nextDayStart * 1000; //convert to milliseconds
+        
+        /**
+         * Here we convert to milliseconds. UNIX time is seconds since 1970 but since
+         * the Timestamp object needed for the PreparedStatement is a load of ass 
+         * it only deals in milliseconds and not seconds.
+         */
+        currentDayStart = currentDayStart * 1000;
+        nextDayStart = nextDayStart * 1000;
+        
         log.info("start of selected day " + currentDayStart);
         log.info("start of next day " + nextDayStart);
 
@@ -622,7 +649,7 @@ public class DatabaseAccess
         {
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
-        log.info(resultSetList.toString());
+        log.info("resultset: "+"resultset: "+resultSetList.toString());
         return resultSetList;
     }
 
@@ -754,7 +781,7 @@ public class DatabaseAccess
         {
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
-        log.info(resultSetList.toString());
+        log.info("resultset: "+resultSetList.toString());
         return resultSetList;
     }
 
@@ -855,29 +882,29 @@ public class DatabaseAccess
         return success;
     }
 
-    public static List getViewableAttributesList(String id_user)
+    public static Map getViewableAttributesList(String id_user)
     {
         log.trace("getViewableAttributesList");
         log.debug(id_user);
         String getSelectedAttributesSQL = "SELECT * FROM viewable_attributes_table WHERE id_user = ?";
 
-        List resultSetList = null;
-
+        Map resultSetMap = null;
+        
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement getSelectedAttributesListStatement = databaseConnection.prepareStatement(getSelectedAttributesSQL);)
         {
             getSelectedAttributesListStatement.setLong(1, Long.parseLong(id_user));
             try (ResultSet resultSet = getSelectedAttributesListStatement.executeQuery();)
             {
-                resultSetList = convertResultSetToList(resultSet);
+                resultSetMap = convertResultSetToMap(resultSet);
             }
 
         } catch (SQLException ex)
         {
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
-        log.info(resultSetList.toString());
-        return resultSetList;
+        log.info(resultSetMap.toString());
+        return resultSetMap;
     }
 
     public static boolean setupUserStats(String id_user)
@@ -959,13 +986,13 @@ public class DatabaseAccess
         return success;
     }
 
-    public static List getUserStats(String id_user)
+    public static Map getUserStats(String id_user)
     {
         log.trace("getUserStats");
         log.debug(id_user);
         String getuserstatsSQL = "SELECT * FROM user_stats_table WHERE id_user = ?";
 
-        List resultSetList = null;
+        Map resultSetMap = null;
 
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement getUserStatsStatement = databaseConnection.prepareStatement(getuserstatsSQL);)
@@ -973,7 +1000,7 @@ public class DatabaseAccess
             getUserStatsStatement.setLong(1, Long.parseLong(id_user));
             try (ResultSet resultSet = getUserStatsStatement.executeQuery();)
             {
-                resultSetList = convertResultSetToList(resultSet);
+                resultSetMap = convertResultSetToMap(resultSet);
             }
 
         } catch (SQLException ex)
@@ -981,8 +1008,8 @@ public class DatabaseAccess
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
 
-        log.info(resultSetList.toString());
-        return resultSetList;
+        log.info(resultSetMap.toString());
+        return resultSetMap;
     }
 
     public static UUID createForgotPasswordRecord(String id_user, String email)

@@ -7,6 +7,7 @@ package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
 import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
@@ -49,8 +50,8 @@ public class DeleteCustomFoodServlet extends HttpServlet
         String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
         log.debug(JSONString);
         Map<String, String> JSONMap = ServletUtilities.convertJSONStringToMap(JSONString);
-        String id_customfood = JSONMap.get("id_customfood");
-        boolean success = DatabaseAccess.deleteCustomFood(id_customfood);
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        boolean success = DatabaseAccess.deleteCustomFood(currentUser.getId_user());
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

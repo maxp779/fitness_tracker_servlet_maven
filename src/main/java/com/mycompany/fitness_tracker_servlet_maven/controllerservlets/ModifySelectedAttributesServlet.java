@@ -7,6 +7,7 @@ package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
 import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
@@ -49,11 +50,11 @@ public class ModifySelectedAttributesServlet extends HttpServlet
         String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
         log.debug(JSONString);
         Map<String, String> selectedAttributesMap = ServletUtilities.convertJSONStringToMap(JSONString);
-        String id_user = (String) request.getSession().getAttribute("id_user");
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
         //selectedAttributesMap.put("id_user", id_user); <-- might break it, not sure why this is needed
 
         //execute database command and send response to client
-        boolean success = DatabaseAccess.modifySelectedAttributes(selectedAttributesMap, id_user);
+        boolean success = DatabaseAccess.modifySelectedAttributes(selectedAttributesMap, currentUser.getId_user());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
 

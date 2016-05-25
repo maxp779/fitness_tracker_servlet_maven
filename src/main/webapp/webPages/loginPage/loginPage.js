@@ -38,25 +38,48 @@ function setupForms()
     document.getElementById("password").value = "testtest";
 }
 
+/**
+ * This gets the serverAPI object from the server. It is needed so the other
+ * functions can make their requests using values from the serverAPI object. 
+ * This is the only function that uses a hard coded request URL 
+ * i.e "/FrontControlerServlet/GET_SERVER_API"
+ * @param {type} callback
+ * @returns serverAPI object in the form of:
+ * 
+ *  * {
+ "serverAPI": {
+ "errorCodes": {
+ "10": "SAMPLE_ERROR1",
+ "11": "SAMPLE_ERROR2",
+ "12": "SAMPLE_ERROR3"
+ 
+ },
+ "requests": {
+ "SAMPLE_REQUEST1": "/FrontControllerServlet/SAMPLE_REQUEST1",
+ "SAMPLE_REQUEST2": "/FrontControllerServlet/SAMPLE_REQUEST2",
+ "SAMPLE_REQUEST3": "/FrontControllerServlet/SAMPLE_REQUEST3"
+ }
+ }
+ }
+ */
 function getServerAPI(callback)
 {
     $.ajax({
         dataType: "json",
         type: "GET",
         url: "/FrontControllerServlet/GET_SERVER_API",
-        success: function (returnedJSON)
+        success: function (returnObject)
         {
-            console.log(returnedJSON);
-            if (returnedJSON.success === true)
+            console.log(returnObject);
+            if (returnObject.success === true)
             {
-                serverAPI = returnedJSON.data;
-                localStorage.setItem("serverAPI", JSON.stringify(returnedJSON.data));
+                serverAPI = returnObject.data;
+                localStorage.setItem("serverAPI", JSON.stringify(returnObject.data));
                 if (callback)
                 {
                     callback();
                 }
-            }
-            else
+            } else
             {
                 console.log("Error 0: Failed to fetch API from server");
             }
@@ -64,43 +87,44 @@ function getServerAPI(callback)
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("AJAX request failed:" + error.toString());
         }
     });
 }
 
-
+/**
+ * This function is called when the user attempts to login
+ * 
+ * @returns {undefined}
+ */
 function loginRequestAJAX()
 {
     //get data from form, it is formatted as an array of JSON objects with the
     //form data held in name/value pairs like so:
     //[{"name":"email", "value":"test@test.com"},{"name":"password", "value":"testtest"}]
     var formData = $("#loginForm").serializeArray();
-    
+
     $.ajax({
         url: serverAPI.requests.LOGIN_REQUEST,
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json",
-        success: function (data)
+        dataType: "json",
+        success: function (returnObject)
         {
-            var returnObject = JSON.parse(data);
-
-            if (returnObject.success === "true")
+            if (returnObject.success === true)
             {
-                console.log("valid credentials");
+                console.log("valid credentials, redirecting to main page");
 
                 window.location = serverAPI.requests.MAIN_PAGE_REQUEST;
             } else
             {
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + errorCodes[returnObject.errorCode] + " please try again</div>";
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + " please try again</div>";
             }
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("AJAX request failed:" + error.toString());
         }
     });
 }

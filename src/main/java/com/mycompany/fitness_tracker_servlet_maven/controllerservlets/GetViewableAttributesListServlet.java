@@ -6,11 +6,13 @@
 package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,14 +47,14 @@ public class GetViewableAttributesListServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet");
-        String id_user = (String) request.getSession().getAttribute("id_user");
-        List viewableAttributesList = DatabaseAccess.getViewableAttributesList(id_user);
-        boolean success = (viewableAttributesList != null);
+        UserObject currentUser = (UserObject) request.getSession().getAttribute("user");
+        Map viewableAttributesMap = DatabaseAccess.getViewableAttributesList(currentUser.getId_user());
+        boolean success = (viewableAttributesMap != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)
         {
-            outputObject.setData(viewableAttributesList);
+            outputObject.setData(viewableAttributesMap);
             writeOutput(response, outputObject);
         } else
         {

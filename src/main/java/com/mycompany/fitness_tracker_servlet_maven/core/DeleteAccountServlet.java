@@ -50,8 +50,8 @@ public class DeleteAccountServlet extends HttpServlet
     {
         log.trace("doPost");
         HttpSession session = request.getSession();
-        UserObject user = (UserObject) session.getAttribute("user");
-        String id_user = user.getId_user();
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+        String id_user = currentUser.getId_user();
         String password = request.getParameter("deleteAccountPassword");
         boolean authorized = Authorization.isCurrentUserAuthorized(password, id_user);
 
@@ -65,7 +65,7 @@ public class DeleteAccountServlet extends HttpServlet
             requestDispatcher.include(request, response);
             return;
         }
-        
+
         boolean success;
         if (authorized)
         {

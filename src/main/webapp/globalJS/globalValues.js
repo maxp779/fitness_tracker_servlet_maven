@@ -37,6 +37,26 @@ var globalValues = {
 //
 //};
 
+/**
+ * serverAPI which should look like the following:
+ * 
+ * {
+	"serverAPI": {
+		"errorCodes": {
+			"10": "SAMPLE_ERROR1",
+			"11": "SAMPLE_ERROR2",
+			"12": "SAMPLE_ERROR3"
+
+		},
+		"requests": {
+			"SAMPLE_REQUEST1": "/FrontControllerServlet/SAMPLE_REQUEST1",
+			"SAMPLE_REQUEST2": "/FrontControllerServlet/SAMPLE_REQUEST2",
+			"SAMPLE_REQUEST3": "/FrontControllerServlet/SAMPLE_REQUEST3"
+		}
+	}
+}
+ * @type Array|Object
+ */
 var serverAPI = JSON.parse(localStorage.getItem("serverAPI"));
 
 

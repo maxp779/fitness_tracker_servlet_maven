@@ -7,6 +7,7 @@ package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
 import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
+import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
@@ -49,11 +50,11 @@ public class ModifyUserStatsServlet extends HttpServlet
         String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
         log.debug(JSONString);
         Map<String, String> userStatsMap = ServletUtilities.convertJSONStringToMap(JSONString);
-        String id_user = (String) request.getSession().getAttribute("id_user");
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
         //userStatsMap.put("id_user", id_user); again i think the map should have this piece of info
 
         //execute database command and send response to client
-        boolean success = DatabaseAccess.modifyUserStats(userStatsMap, id_user);
+        boolean success = DatabaseAccess.modifyUserStats(userStatsMap, currentUser.getId_user());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)
