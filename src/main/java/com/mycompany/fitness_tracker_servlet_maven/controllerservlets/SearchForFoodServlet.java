@@ -45,17 +45,9 @@ public class SearchForFoodServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet");
-        //format query string correctly so it can be a valid JSON
-//        String queryString = request.getQueryString();
-//        queryString = queryString.replaceAll("%22", "\"");
-//        queryString = queryString.replaceAll("%20", " ");
-//        System.out.println("SearchForFoodServlet: request data: " + queryString);
-
         String searchInput = request.getParameter("searchInput");
         log.debug("searchInput");
 
-        //Map<String, String> JSONMap = ServletUtilities.convertJSONStringToMap(queryString);
-        //String searchInput = JSONMap.get("searchInput");
         List matchingFoods = DatabaseAccess.searchForFood(searchInput);
         boolean success = (matchingFoods != null);
         StandardOutputObject outputObject = new StandardOutputObject();

@@ -185,35 +185,6 @@ function populateEatenFoodList()
 }
 
 /**
- * This method gets the date that the user has selected with the datepicker and returns it in UNIX time
- * format. This is the number of seconds since the 1st of january 1970
- * @returns {Number}
- */
-function getSelectedUNIXdate()
-{
-    var currentDate = new Date();
-    var selectedDate = $('#foodDatepicker').datepicker('getUTCDate');
-
-
-    var currentDateUTCUNIX = Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(),
-            currentDate.getUTCDate(), currentDate.getUTCHours(), currentDate.getUTCMinutes(), currentDate.getUTCSeconds());
-    var selectedDateUNIX = Math.floor(selectedDate.getTime() / 1000); // we need /1000 to get seconds, otherwise milliseconds is returned
-    var startOfCurrentDateUNIX = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-
-    //if a date in the future or past i.e. tomorrow or yesterday is selected then
-    //that will be used as the foods timestamp, otherwise todays date and time will
-    //be used. This allows the user to modify a previous days food log or plan ahead
-    //and modify a future dates food log.
-    if (selectedDateUNIX > currentDateUTCUNIX || selectedDateUNIX < startOfCurrentDateUNIX)
-    {
-        return selectedDateUNIX;
-    } else
-    {
-        return currentDateUTCUNIX;
-    }
-}
-
-/**
  * A function to calculate the macros of a food based on the weight of the food.
  * The database only stores the food macros for 100g of each food.
  * So if user enters 250g of milk this method will calculate the amount of protein,carbs,fat,calories
@@ -289,12 +260,14 @@ function calculateTotalMacros(callback)
             if (globalValues.nonOperableAttributes.indexOf(aProperty) === -1 && !globalFunctions.isUndefinedOrNull(currentFoodJSON[aProperty]))
             {
                 //if first occurrance of aProperty
-                if (globalFunctions.isUndefinedOrNull(globalValues.totalMacrosToday[aProperty]))
+                if (globalFunctions.isUndefinedOrNull(totalMacrosToday[aProperty]))
                 {
-                    totalMacrosToday[aProperty] = currentFoodJSON[aProperty];
+                    console.log("first occurrance:"+totalMacrosToday[aProperty]);
+                    totalMacrosToday[aProperty] = parseInt(currentFoodJSON[aProperty]);
                 } else
                 {
-                    totalMacrosToday[aProperty] = +totalMacrosToday[aProperty] + +currentFoodJSON[aProperty];
+                    console.log("not first occurrance:"+totalMacrosToday[aProperty]);
+                    totalMacrosToday[aProperty] = parseInt(totalMacrosToday[aProperty]) + parseInt(currentFoodJSON[aProperty]);
                 }
             }
         }
@@ -590,7 +563,8 @@ function updateMainPage()
     populateSearchResultList();
 
     calculateTotalMacros(function () {
-        updateGraphs();
-        updateMacrosNeededPanel();
+        updateGraphs(function () {
+            updateMacrosNeededPanel();
+        });
     });
 }

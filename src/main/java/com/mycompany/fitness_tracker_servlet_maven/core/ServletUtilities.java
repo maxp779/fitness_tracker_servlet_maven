@@ -37,7 +37,7 @@ public class ServletUtilities
      */
     public static String getPOSTRequestJSONString(HttpServletRequest request)
     {
-        log.trace("getRequestData");        
+        log.trace("getPOSTRequestJSONString");        
         
         BufferedReader reader = null;
         try
@@ -71,6 +71,7 @@ public class ServletUtilities
     public static Map<String, String> convertJSONStringToMap(String aJSONString)
     {
         log.trace("convertJSONStringToMap");
+        log.debug("aJSONString:"+aJSONString);
         Gson gson = new Gson();
         Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
         {

@@ -31,7 +31,7 @@ function searchForFood(searchInput)
         $.ajax({
             url: serverAPI.requests.SEARCH_FOR_FOOD,
             type: "GET",
-            data: JSON.stringify(searchInputJSON),
+            data: searchInputJSON,
             contentType: "application/json",
             dataType: "json",
             success: function (returnObject)
@@ -139,9 +139,10 @@ function addEatenFoodManually()
  */
 function addEatenFood(foodJSON)
 {
-    console.log("addEatenFood(): attempting to add food that was eaten " + JSON.stringify(foodJSON));
     //date to add the food, user may wish to update the previous days log etc
-    foodJSON["UNIXtime"] = getSelectedUNIXdate();
+    foodJSON.UNIXTime = getSelectedUNIXdate();
+    console.log("addEatenFood(): attempting to add food that was eaten " + JSON.stringify(foodJSON));
+
     $.ajax({
         url: serverAPI.requests.ADD_EATEN_FOOD,
         type: "POST",
@@ -212,5 +213,34 @@ function removeEatenFood(id_eatenfood)
     } else
     {
         console.log("currently selected food is " + selectedEatenFood + " no action taken");
+    }
+}
+
+/**
+ * This method gets the date that the user has selected with the datepicker and returns it in UNIX time
+ * format. This is the number of seconds since the 1st of january 1970
+ * @returns {Number}
+ */
+function getSelectedUNIXdate()
+{
+    var currentDate = new Date();
+    var selectedDate = $('#foodDatepicker').datepicker('getUTCDate');
+
+
+    var currentDateUTCUNIX = Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(),
+            currentDate.getUTCDate(), currentDate.getUTCHours(), currentDate.getUTCMinutes(), currentDate.getUTCSeconds());
+    var selectedDateUNIX = Math.floor(selectedDate.getTime() / 1000); // we need /1000 to get seconds, otherwise milliseconds is returned
+    var startOfCurrentDateUNIX = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+
+    //if a date in the future or past i.e. tomorrow or yesterday is selected then
+    //that will be used as the foods timestamp, otherwise todays date and time will
+    //be used. This allows the user to modify a previous days food log or plan ahead
+    //and modify a future dates food log.
+    if (selectedDateUNIX > currentDateUTCUNIX || selectedDateUNIX < startOfCurrentDateUNIX)
+    {
+        return selectedDateUNIX;
+    } else
+    {
+        return currentDateUTCUNIX;
     }
 }

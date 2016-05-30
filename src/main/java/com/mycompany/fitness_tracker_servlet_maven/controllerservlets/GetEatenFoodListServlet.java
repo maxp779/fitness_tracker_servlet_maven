@@ -13,6 +13,8 @@ import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -52,18 +54,13 @@ public class GetEatenFoodListServlet extends HttpServlet
         //format query string correctly so it can be a valid JSON
         //String queryString = request.getQueryString();
         String UNIXTime = request.getParameter("UNIXtime");
-        log.debug(UNIXTime);
-        //queryString = queryString.replaceAll("%22", "\"");
-        //Map<String, String> queryMap = ServletUtilities.convertJSONStringToMap(queryString);
-
-        //UNIXTime is the 
-        //String UNIXTime = queryMap.get("UNIXtime");
-        Timestamp timestamp = new Timestamp(Long.parseLong(UNIXTime+"000")); //+"000" because Timestamp sucks and only works in milliseconds even though UNIX time is seconds since 1970
+        log.debug("UNIXTime:" + UNIXTime);
         
+        LocalDateTime inputTime = LocalDateTime.ofEpochSecond(Long.parseLong(UNIXTime), 0, ZoneOffset.UTC);
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        System.out.println("Getting eaten foods for user " + currentUser.getId_user() + " for date " + timestamp.toString() + " UNIX time:" + UNIXTime);
+        System.out.println("Getting eaten foods for user " + currentUser.getId_user() + " for date " + inputTime.toString() + " UNIX time:" + UNIXTime);
 
-        List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getId_user(), timestamp);
+        List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getId_user(), inputTime);
         StandardOutputObject outputObject = new StandardOutputObject();
         boolean success = (eatenFoodList != null);
         outputObject.setSuccess(success);

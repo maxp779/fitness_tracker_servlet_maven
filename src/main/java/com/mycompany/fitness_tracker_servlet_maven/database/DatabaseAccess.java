@@ -335,7 +335,7 @@ public class DatabaseAccess
         {
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
-        log.debug("resultset: "+resultSetList.toString());
+        log.debug("resultset: " + resultSetList.toString());
         return resultSetList;
     }
 
@@ -387,7 +387,7 @@ public class DatabaseAccess
         log.debug(mainList.toString());
         return mainList;
     }
-    
+
     private static Map convertResultSetToMap(ResultSet aResultSet) throws SQLException
     {
         log.trace("convertResultSetToMap");
@@ -401,7 +401,7 @@ public class DatabaseAccess
             int currentColumn = 1;
             while (currentColumn <= columnCount)
             {
-                mainMap.put(resultSetMetaData.getColumnName(currentColumn),aResultSet.getString(currentColumn));
+                mainMap.put(resultSetMetaData.getColumnName(currentColumn), aResultSet.getString(currentColumn));
                 currentColumn++;
             }
         }
@@ -604,34 +604,27 @@ public class DatabaseAccess
         return success;
     }
 
-    public static List getEatenFoodList(String id_user, Timestamp timestamp)
+    public static List getEatenFoodList(String id_user, LocalDateTime inputTime)
     {
         log.trace("getEatenFoodList");
         log.debug(id_user);
-        log.debug(timestamp.toString());
+        log.debug(inputTime.toString());
         String getfoodeatenlistSQL = "SELECT * FROM eaten_foods_table WHERE id_user = ? AND timestamp >= ? AND timestamp < ?";
 
         //get start of current day and start of next day both in UNIX time
         //this is to retrieve all foods within a single day, so between those two times
-        LocalDateTime toLocalDateTime = timestamp.toLocalDateTime();
-        LocalDate toLocalDate = toLocalDateTime.toLocalDate();
+        LocalDate toLocalDate = inputTime.toLocalDate();
         LocalDateTime atStartOfDay = toLocalDate.atStartOfDay();
-        long currentDayStart = atStartOfDay.toEpochSecond(ZoneOffset.UTC);
-        long nextDayStart = atStartOfDay.plusDays(1L).toEpochSecond(ZoneOffset.UTC);
+        LocalDateTime atEndOfDay = atStartOfDay.plusDays(1L);
         
         /**
-         * Here we convert to milliseconds. UNIX time is seconds since 1970 but since
-         * the Timestamp object needed for the PreparedStatement is a load of ass 
-         * it only deals in milliseconds and not seconds.
+         * remember if changing this UNIX time is generally in seconds
+         * however java.sql.Timestamp objects need milliseconds so seconds *1000
          */
-        currentDayStart = currentDayStart * 1000;
-        nextDayStart = nextDayStart * 1000;
-        
-        log.info("start of selected day " + currentDayStart);
-        log.info("start of next day " + nextDayStart);
-
-        Timestamp currentDayStartTimestamp = new Timestamp(currentDayStart);
-        Timestamp nextDayStartTimestamp = new Timestamp(nextDayStart);
+        Timestamp currentDayStartTimestamp = Timestamp.valueOf(atStartOfDay);
+        Timestamp nextDayStartTimestamp = Timestamp.valueOf(atEndOfDay);
+        log.info("start of selected day " + currentDayStartTimestamp.toString());
+        log.info("start of next day " + nextDayStartTimestamp.toString());
         List resultSetList = null;
 
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
@@ -649,7 +642,7 @@ public class DatabaseAccess
         {
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
-        log.info("resultset: "+"resultset: "+resultSetList.toString());
+        log.info("resultset: " + "resultset: " + resultSetList.toString());
         return resultSetList;
     }
 
@@ -689,11 +682,9 @@ public class DatabaseAccess
             } else //last attribute added, stick a timestamp and id_user on the end
             {
                 addEatenFoodColumns.append(",timestamp,id_user)");
-                String UNIXtimeString = eatenFoodMap.get("UNIXtime");
-                Timestamp timestamp = new Timestamp(Long.parseLong(UNIXtimeString));
-                Long timestampLong = timestamp.getTime(); //get unix time in milliseconds
-                timestampLong = timestampLong / 1000; //convert to seconds
-                addEatenFoodValues.append(",").append("to_timestamp(").append(timestampLong).append("),").append(id_user).append(")");
+                String UNIXtimeString = eatenFoodMap.get("UNIXTime");
+                long UNIXtimeLong = Long.parseLong(UNIXtimeString);
+                addEatenFoodValues.append(",").append("to_timestamp(").append(UNIXtimeLong).append("),").append(id_user).append(")");
             }
         }
 
@@ -781,7 +772,7 @@ public class DatabaseAccess
         {
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
-        log.info("resultset: "+resultSetList.toString());
+        log.info("resultset: " + resultSetList.toString());
         return resultSetList;
     }
 
@@ -889,7 +880,7 @@ public class DatabaseAccess
         String getSelectedAttributesSQL = "SELECT * FROM viewable_attributes_table WHERE id_user = ?";
 
         Map resultSetMap = null;
-        
+
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement getSelectedAttributesListStatement = databaseConnection.prepareStatement(getSelectedAttributesSQL);)
         {
