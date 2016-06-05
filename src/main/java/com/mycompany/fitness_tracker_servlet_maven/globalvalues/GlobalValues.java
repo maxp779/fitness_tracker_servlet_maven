@@ -15,28 +15,26 @@ import java.util.Map;
  * @author max
  */
 public class GlobalValues
-{
-
-    //info
-    //private static final String WEB_ADDRESS = "http://localhost:8080/fitness_tracker_servlet_maven/";
-    private static final String PROJECT_NAME = "fitness_tracker_servlet_maven";
-    private static final String WEB_PAGES_DIRECTORY = "webPages";
+{    
     private static final String FIRST_LOGIN_SERVLET = "LoginPageServlet";
-    private static final String CHANGE_PASSWORD_PAGE_SERVLET = "ChangePasswordPageServlet";
-    private static final String LOGIN_PAGE_FOLDER = "loginPage";
-    private static final String MAIN_PAGE_FOLDER = "mainPage";
-    private static final String WORKOUT_LOG_PAGE_FOLDER = "workoutLogPage";
-    private static final String SETTINGS_PAGE_FOLDER = "settingsPage";
-    private static final String CREATE_ACCOUNT_PAGE_FOLDER = "createAccountPage";
-    private static final String CUSTOM_FOODS_PAGE_FOLDER = "customFoodsPage";
-    private static final String MY_STATS_PAGE_FOLDER = "myStatsPage";
-    private static final String FORGOT_PASSWORD_PAGE_FOLDER = "forgotPasswordPage";
-    private static final String CHANGE_PASSWORD_PAGE_FOLDER = "changePasswordPage";
+    
+    //html page URL
+    private static final String LOGIN_PAGE_URL = "/webPages/loginPage/loginPage.html";
+    private static final String COOKIES_POLICY_URL = "/webPages/cookiesPolicyPage/cookiesPolicyPage.html";
+    private static final String ABOUT_PAGE_URL = "/webPages/aboutPage/aboutPage.html";
+    private static final String MAIN_PAGE_URL = "/webPages/mainPage/mainPage.html";
+    private static final String WORKOUT_LOG_PAGE_URL = "/webPages/workoutLogPage/workoutLogPage.html";
+    private static final String SETTINGS_PAGE_URL = "/webPages/settingsPage/settingsPage.html";
+    private static final String CREATE_ACCOUNT_PAGE_URL = "/webPages/createAccountPage/createAccountPage.html";
+    private static final String CUSTOM_FOODS_PAGE_URL = "/webPages/customFoodsPage/customFoodsPage.html";
+    private static final String MY_STATS_PAGE_URL = "/webPages/myStatsPage/myStatsPage.html";
+    private static final String FORGOT_PASSWORD_PAGE_URL = "/webPages/forgotPasswordPage/forgotPasswordPage.html";
+    private static final String CHANGE_PASSWORD_PAGE_URL = "/webPages/changePasswordPage/changePasswordPage.html";
+
 
     //html pages
     private static final String LOGIN_PAGE = "loginPage.html";
     private static final String COOKIES_POLICY = "cookiesPolicyPage.html";
-    //private static final String LOGOUT_PAGE = "logoutPage.html";
     private static final String ABOUT_PAGE = "aboutPage.html";
     private static final String MAIN_PAGE = "mainPage.html";
     private static final String WORKOUT_LOG_PAGE = "workoutLogPage.html";
@@ -48,38 +46,14 @@ public class GlobalValues
     private static final String CHANGE_PASSWORD_PAGE = "changePasswordPage.html";
 
     //misc values
-    private static final int SESSION_TIMEOUT_VALUE = 21600; // session timeout, 0 or less will never timeout, this value is in seconds, currently 21600 is 6 hours
-    
+    private static final int SESSION_TIMEOUT_VALUE = 21600; // session timeout, 0 or less will never timeout, this value is in seconds, currently 21600 is 6 hours    
     private static final int MIN_PASSWORD_LENGTH = 6;
+    
     //database values
     private static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/fitnessTrackerDatabase";
     private static final String DATABASE_CONNECTION_POOL = "jdbc/fitnessTrackerDB"; //JNDI name for connection pool
-
-    //AuthenticationFilter will skip the session check when these resources are requested
-//    private static final String[] NON_AUTH_RESOURCES =
-//    {
-//        "invalid.html", ".ico", ".css", ".js", ".png", ".jpeg", ".jpg", "testPage.html", "testDatabase", "http://localhost:8080/",
-//        GlobalValues.COOKIES_POLICY,
-//        GlobalValues.LOGIN_PAGE,
-//        GlobalValues.LOGOUT_PAGE,
-//        GlobalValues.FIRST_LOGIN_SERVLET,
-//        GlobalValues.CREATE_ACCOUNT_PAGE,
-//        GlobalValues.ABOUT_PAGE,
-//        GlobalValues.FORGOT_PASSWORD_PAGE,
-//        GlobalValues.CHANGE_PASSWORD_PAGE,
-//        GlobalValues.CHANGE_PASSWORD_PAGE_SERVLET,
-//        ServerAPIReference.get(Request.LOGIN_PAGE_REQUEST),
-//        ServerAPIReference.get(Request.LOGIN_REQUEST),
-//        ServerAPIReference.get(Request.CREATE_ACCOUNT_REQUEST),
-//        ServerAPIReference.get(Request.CREATE_ACCOUNT_PAGE_REQUEST),
-//        ServerAPIReference.get(Request.FORGOT_PASSWORD_PAGE_REQUEST),
-//        ServerAPIReference.get(Request.FORGOT_PASSWORD_EMAIL_REQUEST),
-//        ServerAPIReference.get(Request.CHANGE_PASSWORD_PAGE_REQUEST),
-//        ServerAPIReference.get(Request.GET_IDENTIFIER_TOKEN_EMAIL),
-//        ServerAPIReference.get(Request.CHANGE_PASSWORD_REQUEST),
-//        ServerAPIReference.get(Request.GET_SERVER_API)
-//    };
-
+    
+    //requests which require authentication
     private static final String[] AUTH_RESOURCES =
     {
         Request.MAIN_PAGE_REQUEST.toString(),
@@ -103,11 +77,11 @@ public class GlobalValues
         MAIN_PAGE,
         WORKOUT_LOG_PAGE,
         SETTINGS_PAGE,
-        CREATE_ACCOUNT_PAGE,
         CUSTOM_FOODS_PAGE,
         MY_STATS_PAGE
     };
-
+    
+    //user friendly values for the database column names
     private static final Map<String, String> FRIENDLY_VALUES_MAP;
 
     static
@@ -163,56 +137,6 @@ public class GlobalValues
     public static String[] getAUTH_RESOURCES()
     {
         return AUTH_RESOURCES;
-    }
-
-    public static String getCHANGE_PASSWORD_PAGE_SERVLET()
-    {
-        return CHANGE_PASSWORD_PAGE_SERVLET;
-    }
-
-    public static String getLOGIN_PAGE_FOLDER()
-    {
-        return LOGIN_PAGE_FOLDER;
-    }
-
-    public static String getMAIN_PAGE_FOLDER()
-    {
-        return MAIN_PAGE_FOLDER;
-    }
-
-    public static String getWORKOUT_LOG_PAGE_FOLDER()
-    {
-        return WORKOUT_LOG_PAGE_FOLDER;
-    }
-
-    public static String getSETTINGS_PAGE_FOLDER()
-    {
-        return SETTINGS_PAGE_FOLDER;
-    }
-
-    public static String getCREATE_ACCOUNT_PAGE_FOLDER()
-    {
-        return CREATE_ACCOUNT_PAGE_FOLDER;
-    }
-
-    public static String getCUSTOM_FOODS_PAGE_FOLDER()
-    {
-        return CUSTOM_FOODS_PAGE_FOLDER;
-    }
-
-    public static String getMY_STATS_PAGE_FOLDER()
-    {
-        return MY_STATS_PAGE_FOLDER;
-    }
-
-    public static String getFORGOT_PASSWORD_PAGE_FOLDER()
-    {
-        return FORGOT_PASSWORD_PAGE_FOLDER;
-    }
-
-    public static String getCHANGE_PASSWORD_PAGE_FOLDER()
-    {
-        return CHANGE_PASSWORD_PAGE_FOLDER;
     }
 
     public static String getSETTINGS_PAGE()
@@ -282,21 +206,6 @@ public class GlobalValues
         return SESSION_TIMEOUT_VALUE;
     }
 
-    public static String getPROJECT_NAME()
-    {
-        return PROJECT_NAME;
-    }
-
-    public static String getWEB_PAGES_DIRECTORY()
-    {
-        return WEB_PAGES_DIRECTORY;
-    }
-
-    public static String getFIRST_LOGIN_SERVLET()
-    {
-        return FIRST_LOGIN_SERVLET;
-    }
-
     public static String getLOGIN_PAGE()
     {
         return LOGIN_PAGE;
@@ -312,4 +221,63 @@ public class GlobalValues
         return FRIENDLY_VALUES_MAP;
     }
 
+    public static String getLOGIN_PAGE_URL()
+    {
+        return LOGIN_PAGE_URL;
+    }
+
+    public static String getCOOKIES_POLICY_URL()
+    {
+        return COOKIES_POLICY_URL;
+    }
+
+    public static String getABOUT_PAGE_URL()
+    {
+        return ABOUT_PAGE_URL;
+    }
+
+    public static String getMAIN_PAGE_URL()
+    {
+        return MAIN_PAGE_URL;
+    }
+
+    public static String getWORKOUT_LOG_PAGE_URL()
+    {
+        return WORKOUT_LOG_PAGE_URL;
+    }
+
+    public static String getSETTINGS_PAGE_URL()
+    {
+        return SETTINGS_PAGE_URL;
+    }
+
+    public static String getCREATE_ACCOUNT_PAGE_URL()
+    {
+        return CREATE_ACCOUNT_PAGE_URL;
+    }
+
+    public static String getCUSTOM_FOODS_PAGE_URL()
+    {
+        return CUSTOM_FOODS_PAGE_URL;
+    }
+
+    public static String getMY_STATS_PAGE_URL()
+    {
+        return MY_STATS_PAGE_URL;
+    }
+
+    public static String getFORGOT_PASSWORD_PAGE_URL()
+    {
+        return FORGOT_PASSWORD_PAGE_URL;
+    }
+
+    public static String getCHANGE_PASSWORD_PAGE_URL()
+    {
+        return CHANGE_PASSWORD_PAGE_URL;
+    }
+
+    public static String getFIRST_LOGIN_SERVLET()
+    {
+        return FIRST_LOGIN_SERVLET;
+    }
 }

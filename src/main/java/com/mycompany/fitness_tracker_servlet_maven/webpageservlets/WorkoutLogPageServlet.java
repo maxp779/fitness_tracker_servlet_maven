@@ -43,13 +43,7 @@ public class WorkoutLogPageServlet extends HttpServlet
     {
         log.trace("doGet()");
         ServletContext servletContext = this.getServletContext();
-        String webPageURL = servletContext.getContextPath()
-                + "/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getWORKOUT_LOG_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getWORKOUT_LOG_PAGE();
+        String webPageURL = servletContext.getContextPath() + GlobalValues.getWORKOUT_LOG_PAGE_URL();
         response.sendRedirect(webPageURL);
     }
 

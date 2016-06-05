@@ -43,13 +43,7 @@ public class CreateAccountPageServlet extends HttpServlet
     {
         log.trace("doGet()");
         ServletContext servletContext = this.getServletContext();
-        String webPageURL = servletContext.getContextPath()
-                + "/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getCREATE_ACCOUNT_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getCREATE_ACCOUNT_PAGE();
+        String webPageURL = servletContext.getContextPath() + GlobalValues.getCREATE_ACCOUNT_PAGE_URL();
 
         response.sendRedirect(webPageURL);
     }

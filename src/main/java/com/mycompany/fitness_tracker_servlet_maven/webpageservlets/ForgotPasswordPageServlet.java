@@ -43,13 +43,7 @@ public class ForgotPasswordPageServlet extends HttpServlet
     {
         log.trace("doGet()");
         ServletContext servletContext = this.getServletContext();
-        String webPageURL = servletContext.getContextPath()
-                + "/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getFORGOT_PASSWORD_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getFORGOT_PASSWORD_PAGE();
+        String webPageURL = servletContext.getContextPath() + GlobalValues.getFORGOT_PASSWORD_PAGE_URL();
 
         response.sendRedirect(webPageURL);
     }

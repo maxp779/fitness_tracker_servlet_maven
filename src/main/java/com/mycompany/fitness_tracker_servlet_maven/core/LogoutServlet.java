@@ -56,13 +56,7 @@ public class LogoutServlet extends HttpServlet
 
         if (success)
         {
-            outputObject.setData(sc.getContextPath()
-                    + "/"
-                    + GlobalValues.getWEB_PAGES_DIRECTORY()
-                    + "/"
-                    + GlobalValues.getLOGIN_PAGE_FOLDER()
-                    + "/"
-                    + GlobalValues.getLOGIN_PAGE());
+            outputObject.setData(sc.getContextPath() + GlobalValues.getLOGIN_PAGE_URL());
         } else
         {
             outputObject.setErrorCode(ErrorCode.LOGOUT_FAILED);

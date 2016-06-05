@@ -43,13 +43,7 @@ public class SettingsPageServlet extends HttpServlet
     {
         log.trace("doGet()");
         ServletContext servletContext = this.getServletContext();
-        String webPageURL = servletContext.getContextPath()
-                + "/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getSETTINGS_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getSETTINGS_PAGE();
+        String webPageURL = servletContext.getContextPath() + GlobalValues.getSETTINGS_PAGE_URL();
         response.sendRedirect(webPageURL);
     }
 

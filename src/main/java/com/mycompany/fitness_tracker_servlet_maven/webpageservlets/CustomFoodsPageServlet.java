@@ -44,13 +44,7 @@ public class CustomFoodsPageServlet extends HttpServlet
         log.trace("doGet()");
         ServletContext sc = this.getServletContext();
 
-        String webPageURL = response.encodeRedirectURL(sc.getContextPath()
-                + "/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getCUSTOM_FOODS_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getCUSTOM_FOODS_PAGE());
+        String webPageURL = response.encodeRedirectURL(sc.getContextPath() + GlobalValues.getCUSTOM_FOODS_PAGE_URL());
         response.sendRedirect(webPageURL);
     }
 

@@ -53,13 +53,7 @@ public class LoginPageServlet extends HttpServlet
         log.trace("doGet()");
         HttpSession session = request.getSession(false);
         ServletContext sc = this.getServletContext();
-        String webPageURL = sc.getContextPath()
-                + "/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getLOGIN_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getLOGIN_PAGE();
+        String webPageURL = sc.getContextPath() + GlobalValues.getLOGIN_PAGE_URL();
 
         //if no session exists i.e. user has to login and is referred to a login page
         if (session == null)

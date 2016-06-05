@@ -103,6 +103,11 @@ noscript div
     color: red;
 }
 
+#buttonGroup
+{
+    float:right;
+}
+
 
 /*.footer
 {

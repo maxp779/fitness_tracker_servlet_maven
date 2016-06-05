@@ -61,7 +61,7 @@ public class DeleteAccountServlet extends HttpServlet
             ServletContext servletContext = this.getServletContext();
             PrintWriter out = response.getWriter();
             out.println("<div class=\"alert alert-danger\" role=\"alert\">Sorry, cant let you delete the test account ;)</div>");
-            RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getSETTINGS_PAGE());
+            RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher(GlobalValues.getSETTINGS_PAGE_URL());
             requestDispatcher.include(request, response);
             return;
         }
@@ -95,12 +95,12 @@ public class DeleteAccountServlet extends HttpServlet
         if (accountDeleted)
         {
             log.debug("account deleted");
-            requestDispatcher = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getLOGIN_PAGE_FOLDER() + "/" + GlobalValues.getLOGIN_PAGE());
+            requestDispatcher = servletContext.getRequestDispatcher(GlobalValues.getLOGIN_PAGE_URL());
             SessionManager.httpSessionRemove(request.getSession());
         } else
         {
             log.debug("account not deleted");
-            requestDispatcher = servletContext.getRequestDispatcher("/" + GlobalValues.getWEB_PAGES_DIRECTORY() + "/" + GlobalValues.getSETTINGS_PAGE_FOLDER() + "/" + GlobalValues.getSETTINGS_PAGE());
+            requestDispatcher = servletContext.getRequestDispatcher(GlobalValues.getSETTINGS_PAGE_URL());
         }
 
         PrintWriter out = response.getWriter();

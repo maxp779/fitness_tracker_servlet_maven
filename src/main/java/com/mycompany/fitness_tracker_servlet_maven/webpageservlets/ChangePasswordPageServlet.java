@@ -5,7 +5,6 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.webpageservlets;
 
-import com.mycompany.fitness_tracker_servlet_maven.controllerservlets.AddEatenFoodServlet;
 import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
 import java.io.IOException;
 import javax.servlet.ServletContext;
@@ -48,11 +47,7 @@ public class ChangePasswordPageServlet extends HttpServlet
         String identifierToken = request.getQueryString();
         identifierToken = identifierToken.substring(identifierToken.indexOf("=") + 1);
 
-        response.sendRedirect(servletContext.getContextPath() + "/" + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getCHANGE_PASSWORD_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getCHANGE_PASSWORD_PAGE() + "?identifierToken=" + identifierToken);
+        response.sendRedirect(servletContext.getContextPath() + GlobalValues.getCHANGE_PASSWORD_PAGE_URL() + "?identifierToken=" + identifierToken);
     }
 
     /**

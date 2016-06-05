@@ -43,13 +43,7 @@ public class MyStatsPageServlet extends HttpServlet
     {
         log.trace("doGet()");
         ServletContext servletContext = this.getServletContext();
-        String webPageURL = servletContext.getContextPath()
-                + "/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getMY_STATS_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getMY_STATS_PAGE();
+        String webPageURL = servletContext.getContextPath() + GlobalValues.getMY_STATS_PAGE_URL();
         response.sendRedirect(webPageURL);
     }
 

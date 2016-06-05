@@ -43,13 +43,7 @@ public class MainPageServlet extends HttpServlet
     {
         log.trace("doGet()");
         ServletContext servletContext = this.getServletContext();
-        String webPageURL = servletContext.getContextPath()
-                + "/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getMAIN_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getMAIN_PAGE();
+        String webPageURL = servletContext.getContextPath() + GlobalValues.getMAIN_PAGE_URL();
         response.sendRedirect(webPageURL);
     }
 
