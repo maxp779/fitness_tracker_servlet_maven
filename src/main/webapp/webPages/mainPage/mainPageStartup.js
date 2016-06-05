@@ -9,12 +9,9 @@ $(document).ready(function () {
 
     setupEvents(function ()
     {
-        globalFunctions.getAllGlobalValues(function ()
+        globalFunctionsAJAX.getAllClientData(function ()
         {
-            globalFunctions.setGlobalValuesLocalStorage(function ()
-            {
-                updateMainPage();
-            });
+            updateMainPage();
         });
 
     });

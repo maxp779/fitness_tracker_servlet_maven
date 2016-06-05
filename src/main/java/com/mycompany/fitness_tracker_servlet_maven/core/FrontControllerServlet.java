@@ -43,37 +43,39 @@ public class FrontControllerServlet extends HttpServlet
     static
     {
         requestToServletMapping = new HashMap<>();
-        requestToServletMapping.put(Request.LOGIN_PAGE_REQUEST.toString(), "/"+LoginPageServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.LOGOUT_REQUEST.toString(), "/"+LogoutServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.LOGIN_REQUEST.toString(), "/"+AuthenticationServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.MAIN_PAGE_REQUEST.toString(), "/"+MainPageServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.CREATE_ACCOUNT_REQUEST.toString(), "/"+CreateAccountServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.CREATE_ACCOUNT_PAGE_REQUEST.toString(), "/"+CreateAccountPageServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.WORKOUT_LOG_PAGE_REQUEST.toString(), "/"+WorkoutLogPageServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.CUSTOM_FOODS_PAGE_REQUEST.toString(), "/"+CustomFoodsPageServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.MY_STATS_PAGE_REQUEST.toString(), "/"+MyStatsPageServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.GET_CUSTOM_FOOD_LIST.toString(), "/"+GetCustomFoodListServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.DELETE_CUSTOM_FOOD.toString(), "/"+DeleteCustomFoodServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.CREATE_CUSTOM_FOOD.toString(), "/"+CreateCustomFoodServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.EDIT_CUSTOM_FOOD.toString(), "/"+EditCustomFoodServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.ADD_EATEN_FOOD.toString(), "/"+AddEatenFoodServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.GET_EATEN_FOOD_LIST.toString(), "/"+GetEatenFoodListServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.REMOVE_EATEN_FOOD.toString(), "/"+RemoveEatenFoodServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.SEARCH_FOR_FOOD.toString(), "/"+SearchForFoodServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.MODIFY_SELECTED_ATTRIBUTES.toString(), "/"+ModifySelectedAttributesServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.GET_VIEWABLE_ATTRIBUTES.toString(), "/"+GetViewableAttributesListServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.GET_FRIENDLY_NAMES.toString(), "/"+GetFriendlyNamesServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.MODIFY_USER_STATS.toString(), "/"+ModifyUserStatsServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.GET_USER_STATS.toString(), "/"+GetUserStatsServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.FORGOT_PASSWORD_PAGE_REQUEST.toString(), "/"+ForgotPasswordPageServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.FORGOT_PASSWORD_EMAIL_REQUEST.toString(), "/"+ForgotPasswordEmailServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.CHANGE_PASSWORD_PAGE_REQUEST.toString(), "/"+ChangePasswordPageServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.CHANGE_PASSWORD_REQUEST.toString(), "/"+ChangePasswordServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.GET_IDENTIFIER_TOKEN_EMAIL.toString(), "/"+GetIdentifierTokenEmailServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.SETTINGS_PAGE_REQUEST.toString(), "/"+SettingsPageServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.CHANGE_EMAIL_REQUEST.toString(), "/"+ChangeEmailServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.DELETE_ACCOUNT_REQUEST.toString(), "/"+DeleteAccountServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.GET_SERVER_API.toString(), "/"+GetServerAPIServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.LOGIN_PAGE_REQUEST.toString(), "/" + LoginPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.LOGOUT_REQUEST.toString(), "/" + LogoutServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.LOGIN_REQUEST.toString(), "/" + AuthenticationServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.MAIN_PAGE_REQUEST.toString(), "/" + MainPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CREATE_ACCOUNT_REQUEST.toString(), "/" + CreateAccountServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CREATE_ACCOUNT_PAGE_REQUEST.toString(), "/" + CreateAccountPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.WORKOUT_LOG_PAGE_REQUEST.toString(), "/" + WorkoutLogPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CUSTOM_FOODS_PAGE_REQUEST.toString(), "/" + CustomFoodsPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.MY_STATS_PAGE_REQUEST.toString(), "/" + MyStatsPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_CUSTOM_FOOD_LIST.toString(), "/" + GetCustomFoodListServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.DELETE_CUSTOM_FOOD.toString(), "/" + DeleteCustomFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CREATE_CUSTOM_FOOD.toString(), "/" + CreateCustomFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.EDIT_CUSTOM_FOOD.toString(), "/" + EditCustomFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.ADD_EATEN_FOOD.toString(), "/" + AddEatenFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_EATEN_FOOD_LIST.toString(), "/" + GetEatenFoodListServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.REMOVE_EATEN_FOOD.toString(), "/" + RemoveEatenFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.SEARCH_FOR_FOOD.toString(), "/" + SearchForFoodServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.MODIFY_SELECTED_ATTRIBUTES.toString(), "/" + ModifySelectedAttributesServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_VIEWABLE_ATTRIBUTES.toString(), "/" + GetViewableAttributesListServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_FRIENDLY_NAMES.toString(), "/" + GetFriendlyNamesServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.MODIFY_USER_STATS.toString(), "/" + ModifyUserStatsServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_USER_STATS.toString(), "/" + GetUserStatsServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.FORGOT_PASSWORD_PAGE_REQUEST.toString(), "/" + ForgotPasswordPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.FORGOT_PASSWORD_EMAIL_REQUEST.toString(), "/" + ForgotPasswordEmailServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CHANGE_PASSWORD_PAGE_REQUEST.toString(), "/" + ChangePasswordPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CHANGE_PASSWORD_REQUEST.toString(), "/" + ChangePasswordServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_IDENTIFIER_TOKEN_EMAIL.toString(), "/" + GetIdentifierTokenEmailServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.SETTINGS_PAGE_REQUEST.toString(), "/" + SettingsPageServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.CHANGE_EMAIL_REQUEST.toString(), "/" + ChangeEmailServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.DELETE_ACCOUNT_REQUEST.toString(), "/" + DeleteAccountServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_SERVER_API.toString(), "/" + GetServerAPIServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_ALL_CLIENT_DATA.toString(), "/" + GetAllClientDataServlet.class.getSimpleName());
+
     }
 
     /**
@@ -90,7 +92,7 @@ public class FrontControllerServlet extends HttpServlet
     {
         log.trace("processRequest()");
         log.info(request.getRequestURI());
-        log.info("querystring:"+request.getQueryString());
+        log.info("querystring:" + request.getQueryString());
         String currentRequest = request.getRequestURI();
         currentRequest = currentRequest.replaceAll("/" + FrontControllerServlet.class.getSimpleName() + "/", "");
         log.info(currentRequest);
@@ -147,7 +149,6 @@ public class FrontControllerServlet extends HttpServlet
 //
 //        return currentRequestStringBuilder.toString();
 //    }
-
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

@@ -38,22 +38,6 @@ $(document).ready(function () {
         editCustomFood(id_customfood); //load the selected foods current values onto the form
     });
 
-//    $(document).on("click", ".btn-danger", function () {
-//        console.log("remove button triggered");
-//        var id_eatenfood = $(this).attr("id");
-//        console.log("id_eatenfood " + id_eatenfood + " selected for removal");
-//        id_eatenfood = globalFunctions["removeCharacters"](id_eatenfood);
-//        removeEatenFood(id_eatenfood, function () {
-//            updateMainPage();
-//        });
-//    });
-
-    //save food listener
-//    $(document).on("click", "#saveEditButton", function () {
-//        console.log("save button clicked");
-//        saveEditedCustomFood();
-//    });
-
     $(document).on("submit", "#edit-food-form", function (e) {
         console.log("EVENT FIRING!");
         saveEditedCustomFood();
@@ -70,19 +54,6 @@ $(document).ready(function () {
         document.getElementById("addCustomFoodFeedback").innerHTML = "";
     });
 
-
-
-
-//        $('#editFoodForm').submit(function () {
-//            console.log("EVENT FIRING!");
-//        saveEditedCustomFood();
-//        return false;
-//    });
-
-    //add food listener, not needed as form is used
-//    $(document).on("click", "#addFoodButton", function () {
-//        addCustomFood();
-//    });
 
 //auto selects form input text when clicked
     $(document).on('click', 'input', function () {
@@ -102,46 +73,22 @@ function populateCustomFoodList()
     for (var index = 0; index < globalValues.customFoodsArray.length; index++)
     {
         var currentFood = globalValues.customFoodsArray[index];
-        //populate the list, give the links an id that corresponds to the id_customfood value of the food from the database
-        // e.g. if there are two foods named "tasty pie" the id_customfood will allow us to tell them apart
-
-//            innerHTML = innerHTML.concat("<a href='javascript:void(0)' class='list-group-item' id='customfood" + customFoodListJSON[index].id_customfood + "'>" + customFoodListJSON[index].foodname
-//                    + "<br>"
-//                    + " <font color='green'>Protein: " + customFoodListJSON[index].protein + "</font>"
-//                    + " <font color='blue'>Carb: " + customFoodListJSON[index].carbohydrate + "</font>"
-//                    + " <font color='orange'>Fat: " + customFoodListJSON[index].fat + "</font>"
-//                    + " <font color='red'>Cals: " + customFoodListJSON[index].calorie + "</font>"
-//                    + "</a>"
-//                    + + "<div class='col-sm-4'>"
-//                + "<p><button type='button' class='btn btn-danger btn-md pull-right' id='" + customFoodListJSON[index].id_customfood + "customfoodremove" + "'>Remove <span class='glyphicon glyphicon-remove'></span></button>"
-//                + "<button type='button' class='btn btn-info btn-md pull-right' id='" + customFoodListJSON[index].id_customfood + "customfoodedit" + "'>Edit <span class='glyphicon glyphicon-info-sign'></span></button></p>"
-//                + "</div>"
-
         innerHTML = innerHTML.concat("<div class='row'>"
                 + "<div class='col-sm-12'>"
-
-
-
                 + "<li class='list-group-item' id='" + currentFood.id_customfood + "eatenfood" + "'>"
                 + "<div class='row'>"
                 + "<div class='col-sm-8'>"
-
                 + globalFunctions.createFoodAttributesHTML(currentFood, "id_customfood")
-
                 + "</div>"
                 + "<div class='col-sm-4'>"
                 + "<p><button type='button' class='btn btn-danger btn-md pull-right remove-food-button' id='" + currentFood["id_customfood"] + "customfoodremove" + "'>Remove <span class='glyphicon glyphicon-remove'></span></button>"
                 + "<button type='button' data-toggle='modal' data-target='#edit-food-modal' class='btn btn-info btn-md pull-right edit-food-button' id='" + currentFood["id_customfood"] + "customfoodedit" + "'>Edit <span class='glyphicon glyphicon-edit'></span></button></p>"
-
-
-
                 + "</div>"
                 + "</div>"
                 + "</li>"
                 + "</div>"
                 + "</div>"
                 );
-
 
     }
     document.getElementById("customFoodList").innerHTML = innerHTML;
@@ -150,14 +97,17 @@ function populateCustomFoodList()
 
 function deleteCustomFood(id_customfood, callback)
 {
+    var foodToDelete = {};
+    foodToDelete.id_customfood = id_customfood;
     $.ajax({
         url: serverAPI.requests.DELETE_CUSTOM_FOOD,
         type: "POST",
-        data: JSON.stringify({id_customfood: id_customfood}),
+        data: foodToDelete,
         contentType: "application/json",
-        success: function (data)
+        dataType: "json",
+        success: function (returnObject)
         {
-            if (data === "true")
+            if (returnObject.success === true)
             {
                 console.log("removal suceeded");
                 globalFunctionsAJAX.getCustomFoodList(function () {
@@ -169,13 +119,12 @@ function deleteCustomFood(id_customfood, callback)
 
             } else
             {
-                console.log("removal failed");
+                console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
             }
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("AJAX request failed:" + error.toString());
         }
     });
 
@@ -203,24 +152,23 @@ function createCustomFood()
         type: "POST",
         data: JSON.stringify(formData),
         contentType: "application/json",
-        success: function (data)
+        dataType: "json",
+        success: function (returnObject)
         {
-            var returnObject = JSON.parse(data);
-
-            if (returnObject.success === "true")
+            if (returnObject.success === true)
             {
                 console.log("food add suceeded");
                 globalFunctionsAJAX.getCustomFoodList(function () {
                     populateCustomFoodList();
                 });
 
-                //globalFunctions.setGlobalValuesLocalStorage();
                 document.getElementById("addFoodForm").reset();
-                document.getElementById("addCustomFoodFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Custom food " + returnObject.foodname + " successfully created</div>";
+                document.getElementById("addCustomFoodFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Custom food " + returnObject.data.foodname + " successfully created</div>";
 
             } else
             {
-                document.getElementById("addCustomFoodFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + returnObject.errorCode + " please try again</div>";
+                console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                document.getElementById("addCustomFoodFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + " please try again</div>";
             }
         },
         error: function (xhr, status, error)

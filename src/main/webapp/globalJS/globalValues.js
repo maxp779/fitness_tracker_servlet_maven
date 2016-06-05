@@ -15,6 +15,8 @@ var globalValues = {
     nonOperableAttributes: ["foodcode", "foodname", "foodnameoriginal", "description",
         "foodgroup", "previous", "foodreferences", "footnote", "id_user", "id_eatenfood", "id_searchablefood", "timestamp"], //attributes that should not be operated on mathematically
     wholeIntegerAttributes: ["calorie", "kj", "weight"], //attributes that are whole integers as opposed to floats
+    
+    //neither of these belong here either, will take out in future
     passwordValid:false,
     emailValid:false
     //taken out of globalvalues, dosent really belong here 

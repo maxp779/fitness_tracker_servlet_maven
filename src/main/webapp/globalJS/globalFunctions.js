@@ -45,6 +45,12 @@ var setGlobalValues = {
 
 
 var globalFunctionsAJAX = {
+    /**
+     * gets the users stats from the server
+     * 
+     * @param {type} callback
+     * @returns {undefined}
+     */
     getUserStats: function (callback)
     {
         console.log("getUserStats()");
@@ -81,14 +87,14 @@ var globalFunctionsAJAX = {
     {
         console.log("getEatenFoodList()");
         //get the date from the datepicker
-        var UNIXtimeJSON = {};
-        UNIXtimeJSON.UNIXtime = getSelectedUNIXdate();
+        var UnixTimeJson = {};
+        UnixTimeJson.UnixTime = getSelectedUNIXdate();
 
-        console.log("getEatenFoodList()" + JSON.stringify(UNIXtimeJSON));
+        console.log("getEatenFoodList()" + JSON.stringify(UnixTimeJson));
         $.ajax({
             url: serverAPI.requests.GET_EATEN_FOOD_LIST,
             type: "GET",
-            data: UNIXtimeJSON,
+            data: UnixTimeJson,
             contentType: "application/json",
             dataType: "json",
             success: function (returnObject)
@@ -269,7 +275,7 @@ var globalFunctionsAJAX = {
             }
         });
     },
-    logout: function()
+    logout: function ()
     {
         $.ajax({
             url: serverAPI.requests.LOGOUT_REQUEST,
@@ -277,7 +283,7 @@ var globalFunctionsAJAX = {
             dataType: "json",
             success: function (returnObject)
             {
-                console.log("logout() returnObject.data:"+returnObject.data);
+                console.log("logout() returnObject.data:" + returnObject.data);
                 if (returnObject.success === true)
                 {
                     window.location.href = returnObject.data;
@@ -292,8 +298,53 @@ var globalFunctionsAJAX = {
                 console.log("AJAX request failed:" + error.toString());
             }
         });
-    }
+    },
+    getAllClientData: function (callback)
+    {
+        console.log("getAllClientData()");
+        //get the date from the datepicker
+        var UnixTimeJson = {};
+        UnixTimeJson.UnixTime = getSelectedUNIXdate();
 
+        console.log("getAllClientData()" + JSON.stringify(UnixTimeJson));
+        $.ajax({
+            url: serverAPI.requests.GET_ALL_CLIENT_DATA,
+            type: "GET",
+            data: UnixTimeJson,
+            contentType: "application/json",
+            dataType: "json",
+            success: function (returnObject)
+            {
+                if (returnObject.success === true)
+                {
+                    console.log("getAllClientData() succeeded " + JSON.stringify(returnObject.data));
+                    setGlobalValues.setCustomFoodsArray(returnObject.data.customFoods);
+                    setGlobalValues.setFriendlyNames(returnObject.data.friendlyNames);
+                    setGlobalValues.setFoodAttributes(returnObject.data.viewableAttributes)
+                    setGlobalValues.setUserStats(returnObject.data.userStats)
+                    setGlobalValues.setEatenFoodsArray(returnObject.data.eatenFoods);
+
+                } else
+                {
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                }
+
+                if (callback)
+                {
+                    callback();
+                }
+
+            },
+            error: function (xhr, status, error)
+            {
+                console.log("AJAX request failed:" + error.toString());
+                if (callback)
+                {
+                    callback();
+                }
+            }
+        });
+    }
 };
 
 /**
@@ -364,23 +415,23 @@ var globalFunctions = {
             callback();
         }
     },
-    getAllGlobalValues: function (callback)
-    {
-        globalFunctionsAJAX["getFriendlyNamesJSON"](function () {
-            globalFunctionsAJAX["getFoodAttributes"](function () {
-                globalFunctionsAJAX["getUserStats"](function () {
-                    globalFunctionsAJAX["getCustomFoodList"](function () {
-                        globalFunctionsAJAX["getEatenFoodList"](function () {
-                            if (callback)
-                            {
-                                callback();
-                            }
-                        });
-                    });
-                });
-            });
-        });
-    },
+//    getAllGlobalValues: function (callback)
+//    {
+//        globalFunctionsAJAX["getFriendlyNamesJSON"](function () {
+//            globalFunctionsAJAX["getFoodAttributes"](function () {
+//                globalFunctionsAJAX["getUserStats"](function () {
+//                    globalFunctionsAJAX["getCustomFoodList"](function () {
+//                        globalFunctionsAJAX["getEatenFoodList"](function () {
+//                            if (callback)
+//                            {
+//                                callback();
+//                            }
+//                        });
+//                    });
+//                });
+//            });
+//        });
+//    },
     /**
      * A small but important method.
      * 
@@ -502,4 +553,7 @@ var globalFunctions = {
     getURLParameter: function (name) {
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
     }
+
+
+
 };

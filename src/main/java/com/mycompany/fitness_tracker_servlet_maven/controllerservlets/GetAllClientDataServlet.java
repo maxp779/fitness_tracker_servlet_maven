@@ -5,12 +5,19 @@
  */
 package com.mycompany.fitness_tracker_servlet_maven.controllerservlets;
 
+import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
 import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,14 +31,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "GetViewableAttributesListServlet", urlPatterns =
+@WebServlet(name = "GetAllClientDataServlet", urlPatterns =
 {
-    "/GetViewableAttributesListServlet"
+    "/GetAllClientDataServlet/*"
 })
-public class GetViewableAttributesListServlet extends HttpServlet
+public class GetAllClientDataServlet extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(GetViewableAttributesListServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(EditCustomFoodServlet.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -46,18 +53,52 @@ public class GetViewableAttributesListServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-        UserObject currentUser = (UserObject) request.getSession().getAttribute("user");
+
+        String UnixTime = request.getParameter("UnixTime");
+        log.debug("UnixTime:" + UnixTime);
+        LocalDateTime inputTime = LocalDateTime.ofEpochSecond(Long.parseLong(UnixTime), 0, ZoneOffset.UTC);
+
+        UserObject currentUser = ServletUtilities.getCurrentUser(request);
+
+        /**
+         * This is purely for testing purposes user 30 is the testing account
+         * test@test.com
+         */
+        if (currentUser == null)
+        {
+            currentUser = new UserObject();
+            currentUser.setId_user("30");
+        }
+
+        List customFoodList = DatabaseAccess.getCustomFoodList(currentUser.getId_user());
+        Map<String, String> friendlyNamesMap = GlobalValues.getFRIENDLY_VALUES_MAP();
         Map viewableAttributesMap = DatabaseAccess.getViewableAttributesList(currentUser.getId_user());
-        boolean success = (viewableAttributesMap != null);
+        Map userStatsMap = DatabaseAccess.getUserStats(currentUser.getId_user());
+        List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getId_user(), inputTime);
+
+        boolean success = (customFoodList != null
+                && friendlyNamesMap != null
+                && viewableAttributesMap != null
+                && userStatsMap != null
+                && eatenFoodList != null);
+
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
+
         if (success)
         {
-            outputObject.setData(viewableAttributesMap);
+            Map<String, Object> data = new HashMap<>();
+            data.put("customFoods", customFoodList);
+            data.put("friendlyNames", friendlyNamesMap);
+            data.put("viewableAttributes", viewableAttributesMap);
+            data.put("userStats", userStatsMap);
+            data.put("eatenFoods", eatenFoodList);
+            outputObject.setData(data);
             writeOutput(response, outputObject);
+
         } else
         {
-            outputObject.setErrorCode(ErrorCode.GET_VIEWABLE_ATTRIBUTES_FAILED);
+            outputObject.setErrorCode(ErrorCode.GET_ALL_CLIENT_DATA_FAILED);
             writeOutput(response, outputObject);
         }
     }
@@ -68,7 +109,6 @@ public class GetViewableAttributesListServlet extends HttpServlet
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");
-
         try (PrintWriter out = response.getWriter())
         {
             out.print(outputJSON);

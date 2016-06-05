@@ -52,12 +52,12 @@ public class GetEatenFoodListServlet extends HttpServlet
 
         //format query string correctly so it can be a valid JSON
         //String queryString = request.getQueryString();
-        String UNIXTime = request.getParameter("UNIXtime");
-        log.debug("UNIXTime:" + UNIXTime);
+        String UnixTime = request.getParameter("UnixTime");
+        log.debug("UnixTime:" + UnixTime);
         
-        LocalDateTime inputTime = LocalDateTime.ofEpochSecond(Long.parseLong(UNIXTime), 0, ZoneOffset.UTC);
+        LocalDateTime inputTime = LocalDateTime.ofEpochSecond(Long.parseLong(UnixTime), 0, ZoneOffset.UTC);
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        System.out.println("Getting eaten foods for user " + currentUser.getId_user() + " for date " + inputTime.toString() + " UNIX time:" + UNIXTime);
+        System.out.println("Getting eaten foods for user " + currentUser.getId_user() + " for date " + inputTime.toString() + " Unix time:" + UnixTime);
 
         List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getId_user(), inputTime);
         StandardOutputObject outputObject = new StandardOutputObject();
