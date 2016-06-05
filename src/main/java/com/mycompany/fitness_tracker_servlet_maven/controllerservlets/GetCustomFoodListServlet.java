@@ -46,7 +46,7 @@ public class GetCustomFoodListServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet");
+        log.trace("doGet()");
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
         List customFoodList = DatabaseAccess.getCustomFoodList(currentUser.getId_user());
         boolean success = (customFoodList != null);
@@ -66,7 +66,7 @@ public class GetCustomFoodListServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

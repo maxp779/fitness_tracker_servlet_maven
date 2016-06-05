@@ -46,7 +46,7 @@ public class ModifyUserStatsServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
         String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
         log.debug(JSONString);
         Map<String, String> userStatsMap = ServletUtilities.convertJSONStringToMap(JSONString);
@@ -70,7 +70,7 @@ public class ModifyUserStatsServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

@@ -46,7 +46,7 @@ public class DatabaseUtils
      */
     protected static Connection getDatabaseConnection()
     {
-        log.trace("getDatabaseConnection");
+        log.trace("getDatabaseConnection()");
         InitialContext initialContext = null;
         try
         {
@@ -82,7 +82,7 @@ public class DatabaseUtils
 
     public static void loadDatabaseDriver()
     {
-        log.trace("loadDatabaseDriver");
+        log.trace("loadDatabaseDriver()");
         try
         {
             Class.forName("org.postgresql.Driver");
@@ -94,7 +94,7 @@ public class DatabaseUtils
 
     public static void dersgisterDatabaseDriver()
     {
-        log.trace("dersgisterDatabaseDriver");
+        log.trace("dersgisterDatabaseDriver()");
         ClassLoader aClassLoader = Thread.currentThread().getContextClassLoader();
         Enumeration<Driver> driverEnumeration = DriverManager.getDrivers();
 

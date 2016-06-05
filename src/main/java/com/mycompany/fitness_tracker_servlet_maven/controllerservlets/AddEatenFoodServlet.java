@@ -46,7 +46,7 @@ public class AddEatenFoodServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
         String eatenFoodJSONString = ServletUtilities.getPOSTRequestJSONString(request);
         Map<String, String> eatenFoodMap = ServletUtilities.convertJSONStringToMap(eatenFoodJSONString);
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
@@ -70,7 +70,7 @@ public class AddEatenFoodServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject output)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = output.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

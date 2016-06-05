@@ -12,7 +12,6 @@ import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -47,7 +46,7 @@ public class GetUserStatsServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet");
+        log.trace("doGet()");
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
         Map userStatsMap = DatabaseAccess.getUserStats(currentUser.getId_user());
         boolean success = (userStatsMap != null);
@@ -66,7 +65,7 @@ public class GetUserStatsServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

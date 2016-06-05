@@ -15,7 +15,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -69,7 +68,7 @@ public class DatabaseAccess
      */
     public static Map<String, String> getUserCredentialsFromEmail(String loginAttemptEmail)
     {
-        log.trace("getUserCredentialsFromEmail");
+        log.trace("getUserCredentialsFromEmail()");
         log.debug(loginAttemptEmail);
         String getusercredentialsfromemailSQL = "SELECT email,password,id_user FROM user_table WHERE email = ?";
 
@@ -112,7 +111,7 @@ public class DatabaseAccess
 
     public static String getStoredPassword(UserObject userObject)
     {
-        log.trace("getStoredPassword");
+        log.trace("getStoredPassword()");
         log.debug(userObject.toString());
         String getusercredentialsfromid_userSQL = "SELECT password FROM user_table WHERE id_user = ?";
 
@@ -142,7 +141,7 @@ public class DatabaseAccess
 
     public static Map<String, String> getUserCredentialsFromid_user(String id_user)
     {
-        log.trace("getUserCredentialsFromid_user");
+        log.trace("getUserCredentialsFromid_user()");
         log.debug(id_user);
         String getusercredentialsfromid_userSQL = "SELECT email,password,id_user FROM user_table WHERE id_user = ?";
 
@@ -184,7 +183,7 @@ public class DatabaseAccess
 
     public static boolean addUser(String anEmail, String aPassword)
     {
-        log.trace("addUser");
+        log.trace("addUser()");
         log.debug(anEmail + " " + aPassword);
         String adduserSQL = "INSERT INTO user_table (email,password) VALUES (?,?)";
         int userAdded = 0;
@@ -221,7 +220,7 @@ public class DatabaseAccess
 
     public static boolean userAlreadyExistsCheckEmail(String anEmail)
     {
-        log.trace("userAlreadyExistsCheckEmail");
+        log.trace("userAlreadyExistsCheckEmail()");
         log.debug(anEmail);
         String checkforuseremailSQL = "SELECT email FROM user_table WHERE email = ?";
 
@@ -254,7 +253,7 @@ public class DatabaseAccess
 
     public static boolean userAlreadyExistsCheckid_user(String id_user)
     {
-        log.trace("userAlreadyExistsCheckid_user");
+        log.trace("userAlreadyExistsCheckid_user()");
         log.debug(id_user);
         String checkforuserid_userSQL = "SELECT id_user FROM user_table WHERE id_user = ?";
 
@@ -287,7 +286,7 @@ public class DatabaseAccess
 
     public static String getid_user(String anEmail)
     {
-        log.trace("getid_user");
+        log.trace("getid_user()");
         log.debug(anEmail);
         String getid_userSQL = "SELECT id_user FROM user_table WHERE email = ?";
 
@@ -317,7 +316,7 @@ public class DatabaseAccess
 
     public static List getCustomFoodList(String id_user)
     {
-        log.trace("getCustomFoodList");
+        log.trace("getCustomFoodList()");
         log.debug(id_user);
         String getcustomfoodlistSQL = "SELECT * FROM custom_foods_table WHERE id_user = ?";
 
@@ -341,7 +340,7 @@ public class DatabaseAccess
 
     public static boolean deleteCustomFood(String id_customfood)
     {
-        log.trace("deleteCustomFood");
+        log.trace("deleteCustomFood()");
         log.debug(id_customfood);
         String removecustomfoodSQL = "DELETE FROM custom_foods_table WHERE id_customfood= ?";
 
@@ -365,7 +364,7 @@ public class DatabaseAccess
 
     private static List convertResultSetToList(ResultSet aResultSet) throws SQLException
     {
-        log.trace("convertResultSetToList");
+        log.trace("convertResultSetToList()");
         log.debug(aResultSet.toString());
         //turn resultset into arraylist with maps in iterator
         //each attributeMap represents a single row
@@ -390,7 +389,7 @@ public class DatabaseAccess
 
     private static Map convertResultSetToMap(ResultSet aResultSet) throws SQLException
     {
-        log.trace("convertResultSetToMap");
+        log.trace("convertResultSetToMap()");
         log.debug(aResultSet.toString());
         //turn resultset into a map
         ResultSetMetaData resultSetMetaData = aResultSet.getMetaData();
@@ -422,7 +421,7 @@ public class DatabaseAccess
      */
     private static List filterResults(List aList, String searchedString) throws SQLException
     {
-        log.trace("filterResults");
+        log.trace("filterResults()");
         log.debug(aList.toString());
         log.debug(searchedString);
         String[] searchWords = searchedString.split(" ");
@@ -474,7 +473,7 @@ public class DatabaseAccess
      */
     public static boolean createCustomFood(Map<String, String> customFoodMap, String id_user) throws SQLException
     {
-        log.trace("createCustomFood");
+        log.trace("createCustomFood()");
         log.debug(id_user);
         log.debug(customFoodMap.toString());
         StringBuilder addCustomFoodSQL = new StringBuilder();
@@ -549,7 +548,7 @@ public class DatabaseAccess
      */
     public static boolean editCustomFood(Map<String, String> customFoodMap, String id_user)
     {
-        log.trace("editCustomFood");
+        log.trace("editCustomFood()");
         log.debug(id_user);
         log.debug(customFoodMap.toString());
         StringBuilder editCustomFoodSQL = new StringBuilder();
@@ -606,7 +605,7 @@ public class DatabaseAccess
 
     public static List getEatenFoodList(String id_user, LocalDateTime inputTime)
     {
-        log.trace("getEatenFoodList");
+        log.trace("getEatenFoodList()");
         log.debug(id_user);
         log.debug(inputTime.toString());
         String getfoodeatenlistSQL = "SELECT * FROM eaten_foods_table WHERE id_user = ? AND timestamp >= ? AND timestamp < ?";
@@ -648,7 +647,7 @@ public class DatabaseAccess
 
     public static boolean addEatenFood(Map<String, String> eatenFoodMap, String id_user)
     {
-        log.trace("addEatenFood");
+        log.trace("addEatenFood()");
         log.debug(id_user);
         log.debug(eatenFoodMap.toString());
 
@@ -714,7 +713,7 @@ public class DatabaseAccess
 
     public static boolean removeEatenFood(String id_eatenfood)
     {
-        log.trace("removeEatenFood");
+        log.trace("removeEatenFood()");
         log.debug(id_eatenfood);
         String removeeatenfoodSQL = "DELETE FROM eaten_foods_table WHERE id_eatenfood= ?";
 
@@ -740,7 +739,7 @@ public class DatabaseAccess
 
     public static List searchForFood(String food)
     {
-        log.trace("searchForFood");
+        log.trace("searchForFood()");
         log.debug(food);
         String[] individualFoodWords = food.split(" ");
 
@@ -778,7 +777,7 @@ public class DatabaseAccess
 
     public static boolean setupSelectedAttributes(String id_user)
     {
-        log.trace("setupSelectedAttributes");
+        log.trace("setupSelectedAttributes()");
         log.debug(id_user);
         String setupFoodAttributesSQL = "INSERT INTO viewable_attributes_table (id_user) VALUES (?)";
 
@@ -803,7 +802,7 @@ public class DatabaseAccess
 
     public static boolean modifySelectedAttributes(Map<String, String> selectedAttributesMap, String id_user)
     {
-        log.trace("modifySelectedAttributes");
+        log.trace("modifySelectedAttributes()");
         log.debug(id_user);
         log.debug(selectedAttributesMap.toString());
 
@@ -875,7 +874,7 @@ public class DatabaseAccess
 
     public static Map getViewableAttributesList(String id_user)
     {
-        log.trace("getViewableAttributesList");
+        log.trace("getViewableAttributesList()");
         log.debug(id_user);
         String getSelectedAttributesSQL = "SELECT * FROM viewable_attributes_table WHERE id_user = ?";
 
@@ -900,7 +899,7 @@ public class DatabaseAccess
 
     public static boolean setupUserStats(String id_user)
     {
-        log.trace("setupUserStats");
+        log.trace("setupUserStats()");
         log.debug(id_user);
         String setupUserStatsSQL = "INSERT INTO user_stats_table (id_user, protein_goal, carbohydrate_goal, fat_goal, tee) VALUES (?,?,?,?,?)";
 
@@ -933,7 +932,7 @@ public class DatabaseAccess
 
     public static boolean modifyUserStats(Map<String, String> userStatsMap, String id_user)
     {
-        log.trace("modifyUserStats");
+        log.trace("modifyUserStats()");
         log.debug(id_user);
         log.debug(userStatsMap.toString());
 
@@ -979,7 +978,7 @@ public class DatabaseAccess
 
     public static Map getUserStats(String id_user)
     {
-        log.trace("getUserStats");
+        log.trace("getUserStats()");
         log.debug(id_user);
         String getuserstatsSQL = "SELECT * FROM user_stats_table WHERE id_user = ?";
 
@@ -1005,7 +1004,7 @@ public class DatabaseAccess
 
     public static UUID createForgotPasswordRecord(String id_user, String email)
     {
-        log.trace("createForgotPasswordRecord");
+        log.trace("createForgotPasswordRecord()");
         log.debug(email);
         log.debug(id_user);
         String forgotPasswordRecordSQL = "INSERT INTO forgot_passwords_table (id_user,identifier_token,expiry_date,email) VALUES (?,?,?,?)";
@@ -1036,7 +1035,7 @@ public class DatabaseAccess
 
     public static boolean validateForgotPasswordRequest(String identifierToken)
     {
-        log.trace("validateForgotPasswordRequest");
+        log.trace("validateForgotPasswordRequest()");
         log.debug(identifierToken);
         String validateForgotPasswordTokenSQL = "SELECT * FROM forgot_passwords_table WHERE identifier_token = ?";
 
@@ -1082,7 +1081,7 @@ public class DatabaseAccess
 
     public static void removeExpiredTokens()
     {
-        log.trace("removeExpiredTokens");
+        log.trace("removeExpiredTokens()");
         String removeExpiredTokensSQL = "DELETE FROM forgot_passwords_table WHERE expiry_date < ?";
 
         LocalDateTime currentTime = LocalDateTime.now();
@@ -1103,7 +1102,7 @@ public class DatabaseAccess
 
     public static boolean removeToken(String identifierToken)
     {
-        log.trace("removeToken");
+        log.trace("removeToken()");
         log.debug(identifierToken);
         String removeExpiredTokensSQL = "DELETE FROM forgot_passwords_table WHERE identifier_token = ?";
 
@@ -1126,7 +1125,7 @@ public class DatabaseAccess
 
     public static String getIdentifierTokenEmail(String identifierToken)
     {
-        log.trace("getIdentifierTokenEmail");
+        log.trace("getIdentifierTokenEmail()");
         log.debug(identifierToken);
         String getIdentifierTokenEmailSQL = "SELECT email FROM forgot_passwords_table WHERE identifier_token = ?";
 
@@ -1154,7 +1153,7 @@ public class DatabaseAccess
 
     public static boolean changePasswordByEmail(String email, String password)
     {
-        log.trace("changePasswordByEmail");
+        log.trace("changePasswordByEmail()");
         log.debug(email);
         log.debug(password);
         String changePasswordSQL = "UPDATE user_table SET password =? WHERE email=?";
@@ -1180,7 +1179,7 @@ public class DatabaseAccess
 
     public static boolean changePassword(String id_user, String password)
     {
-        log.trace("changePassword");
+        log.trace("changePassword()");
         log.debug(id_user);
         log.debug(password);
         String changePasswordSQL = "UPDATE user_table SET password =? WHERE id_user=?";
@@ -1206,7 +1205,7 @@ public class DatabaseAccess
 
     public static boolean changeEmail(String newEmail, String id_user)
     {
-        log.trace("changeEmail");
+        log.trace("changeEmail()");
         log.debug(id_user);
         log.debug(newEmail);
         String changeEmailSQL = "UPDATE user_table SET email =? WHERE id_user=?";
@@ -1232,7 +1231,7 @@ public class DatabaseAccess
 
     public static boolean deleteAccount(String id_user)
     {
-        log.trace("deleteAccount");
+        log.trace("deleteAccount()");
         log.debug(id_user);
         String deleteAccountSQL = "DELETE FROM user_table WHERE id_user = ?";
         int returnValue = 0;

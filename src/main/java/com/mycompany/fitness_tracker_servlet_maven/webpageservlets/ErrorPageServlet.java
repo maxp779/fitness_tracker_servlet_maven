@@ -39,7 +39,7 @@ public class ErrorPageServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("processRequest");
+        log.trace("processRequest()");
         response.setContentType("text/html;charset=UTF-8");
         try (PrintWriter out = response.getWriter())
         {

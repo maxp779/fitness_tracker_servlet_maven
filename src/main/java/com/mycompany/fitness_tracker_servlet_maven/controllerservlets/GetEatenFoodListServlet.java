@@ -12,7 +12,6 @@ import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -49,7 +48,7 @@ public class GetEatenFoodListServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet");
+        log.trace("doGet()");
 
         //format query string correctly so it can be a valid JSON
         //String queryString = request.getQueryString();
@@ -79,7 +78,7 @@ public class GetEatenFoodListServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         response.setContentType("application/json");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);

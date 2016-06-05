@@ -21,7 +21,7 @@ public class Authorization
 
     protected static boolean isCurrentUserAuthorized(String password, String id_user)
     {
-        log.trace("isCurrentUserAuthorized");
+        log.trace("isCurrentUserAuthorized()");
         boolean output = false;
 
         Map<String, String> userCredentials = DatabaseAccess.getUserCredentialsFromid_user(id_user);

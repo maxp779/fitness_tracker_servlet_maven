@@ -36,7 +36,7 @@ public class GlobalValues
     //html pages
     private static final String LOGIN_PAGE = "loginPage.html";
     private static final String COOKIES_POLICY = "cookiesPolicyPage.html";
-    private static final String LOGOUT_PAGE = "logoutPage.html";
+    //private static final String LOGOUT_PAGE = "logoutPage.html";
     private static final String ABOUT_PAGE = "aboutPage.html";
     private static final String MAIN_PAGE = "mainPage.html";
     private static final String WORKOUT_LOG_PAGE = "workoutLogPage.html";
@@ -80,26 +80,32 @@ public class GlobalValues
 //        ServerAPIReference.get(Request.GET_SERVER_API)
 //    };
 
-    private static final Request[] AUTH_RESOURCES =
+    private static final String[] AUTH_RESOURCES =
     {
-        Request.MAIN_PAGE_REQUEST,
-        Request.WORKOUT_LOG_PAGE_REQUEST,
-        Request.CUSTOM_FOODS_PAGE_REQUEST,
-        Request.MY_STATS_PAGE_REQUEST,
-        Request.CHANGE_EMAIL_REQUEST,
-        Request.SETTINGS_PAGE_REQUEST,
-        Request.DELETE_ACCOUNT_REQUEST,
-        Request.GET_CUSTOM_FOOD_LIST,
-        Request.DELETE_CUSTOM_FOOD,
-        Request.CREATE_CUSTOM_FOOD,
-        Request.EDIT_CUSTOM_FOOD,
-        Request.ADD_EATEN_FOOD,
-        Request.GET_EATEN_FOOD_LIST,
-        Request.REMOVE_EATEN_FOOD,
-        Request.SEARCH_FOR_FOOD,
-        Request.MODIFY_SELECTED_ATTRIBUTES,
-        Request.MODIFY_USER_STATS,
-        Request.GET_USER_STATS,
+        Request.MAIN_PAGE_REQUEST.toString(),
+        Request.WORKOUT_LOG_PAGE_REQUEST.toString(),
+        Request.CUSTOM_FOODS_PAGE_REQUEST.toString(),
+        Request.MY_STATS_PAGE_REQUEST.toString(),
+        Request.CHANGE_EMAIL_REQUEST.toString(),
+        Request.SETTINGS_PAGE_REQUEST.toString(),
+        Request.DELETE_ACCOUNT_REQUEST.toString(),
+        Request.GET_CUSTOM_FOOD_LIST.toString(),
+        Request.DELETE_CUSTOM_FOOD.toString(),
+        Request.CREATE_CUSTOM_FOOD.toString(),
+        Request.EDIT_CUSTOM_FOOD.toString(),
+        Request.ADD_EATEN_FOOD.toString(),
+        Request.GET_EATEN_FOOD_LIST.toString(),
+        Request.REMOVE_EATEN_FOOD.toString(),
+        Request.SEARCH_FOR_FOOD.toString(),
+        Request.MODIFY_SELECTED_ATTRIBUTES.toString(),
+        Request.MODIFY_USER_STATS.toString(),
+        Request.GET_USER_STATS.toString(),
+        MAIN_PAGE,
+        WORKOUT_LOG_PAGE,
+        SETTINGS_PAGE,
+        CREATE_ACCOUNT_PAGE,
+        CUSTOM_FOODS_PAGE,
+        MY_STATS_PAGE
     };
 
     private static final Map<String, String> FRIENDLY_VALUES_MAP;
@@ -154,7 +160,7 @@ public class GlobalValues
     
     
     
-    public static Request[] getAUTH_RESOURCES()
+    public static String[] getAUTH_RESOURCES()
     {
         return AUTH_RESOURCES;
     }
@@ -274,16 +280,6 @@ public class GlobalValues
     public static int getSESSION_TIMEOUT_VALUE()
     {
         return SESSION_TIMEOUT_VALUE;
-    }
-
-//    public static String[] getNON_AUTH_RESOURCES()
-//    {
-//        return NON_AUTH_RESOURCES;
-//    }
-
-    public static String getLOGOUT_PAGE()
-    {
-        return LOGOUT_PAGE;
     }
 
     public static String getPROJECT_NAME()

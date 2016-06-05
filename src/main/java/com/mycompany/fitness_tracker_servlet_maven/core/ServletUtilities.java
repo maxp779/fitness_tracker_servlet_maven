@@ -37,7 +37,7 @@ public class ServletUtilities
      */
     public static String getPOSTRequestJSONString(HttpServletRequest request)
     {
-        log.trace("getPOSTRequestJSONString");        
+        log.trace("getPOSTRequestJSONString()");        
         
         BufferedReader reader = null;
         try
@@ -70,7 +70,7 @@ public class ServletUtilities
 
     public static Map<String, String> convertJSONStringToMap(String aJSONString)
     {
-        log.trace("convertJSONStringToMap");
+        log.trace("convertJSONStringToMap()");
         log.debug("aJSONString:"+aJSONString);
         Gson gson = new Gson();
         Type stringStringMap = new TypeToken<LinkedHashMap<String, String>>()
@@ -83,7 +83,7 @@ public class ServletUtilities
 
     public static String convertMapToJSONString(Map aMap)
     {
-        log.trace("convertMapToJSONString");
+        log.trace("convertMapToJSONString()");
         Gson gson = new Gson();
         String JSONString = gson.toJson(aMap);
         log.debug(JSONString);
@@ -103,7 +103,7 @@ public class ServletUtilities
      */
     public static Map<String, String> convertJSONFormDataToMap(String aJSONArray)
     {
-        log.trace("convertJSONFormDataToMap");
+        log.trace("convertJSONFormDataToMap()");
         Gson gson = new Gson();
         Type arrayListMap = new TypeToken<ArrayList<Map>>()
         {

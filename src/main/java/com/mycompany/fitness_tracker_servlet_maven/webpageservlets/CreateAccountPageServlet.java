@@ -26,35 +26,9 @@ import org.slf4j.LoggerFactory;
 })
 public class CreateAccountPageServlet extends HttpServlet
 {
+
     private static final Logger log = LoggerFactory.getLogger(CreateAccountPageServlet.class);
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        log.trace("processRequest");
-        ServletContext servletContext = this.getServletContext();
-        String webPageURL = servletContext.getContextPath()
-                +"/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY() 
-                +"/"
-                + GlobalValues.getCREATE_ACCOUNT_PAGE_FOLDER()
-                +"/"
-                + GlobalValues.getCREATE_ACCOUNT_PAGE();
-
-
-        response.sendRedirect(webPageURL);
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -67,22 +41,17 @@ public class CreateAccountPageServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        processRequest(request, response);
-    }
+        log.trace("doGet()");
+        ServletContext servletContext = this.getServletContext();
+        String webPageURL = servletContext.getContextPath()
+                + "/"
+                + GlobalValues.getWEB_PAGES_DIRECTORY()
+                + "/"
+                + GlobalValues.getCREATE_ACCOUNT_PAGE_FOLDER()
+                + "/"
+                + GlobalValues.getCREATE_ACCOUNT_PAGE();
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        processRequest(request, response);
+        response.sendRedirect(webPageURL);
     }
 
     /**

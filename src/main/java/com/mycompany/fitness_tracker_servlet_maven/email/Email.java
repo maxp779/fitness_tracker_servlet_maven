@@ -28,7 +28,7 @@ public class Email
 
     public static boolean sendEmail(String emailAddress, String subject, String emailContent)
     {
-        log.trace("sendEmail");
+        log.trace("sendEmail()");
         boolean output = false;
 
         // Sender's email ID needs to be mentioned

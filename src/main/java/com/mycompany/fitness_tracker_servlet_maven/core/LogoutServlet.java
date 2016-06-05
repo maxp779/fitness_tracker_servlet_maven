@@ -6,7 +6,9 @@
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
 import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
+import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -43,18 +45,56 @@ public class LogoutServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
 
         SessionManager.httpSessionRemove(request.getSession());
         ServletContext sc = request.getServletContext();
 
-        response.sendRedirect(sc.getContextPath()
-                + "/"
-                + GlobalValues.getWEB_PAGES_DIRECTORY()
-                + "/"
-                + GlobalValues.getLOGIN_PAGE_FOLDER()
-                + "/"
-                + GlobalValues.getLOGIN_PAGE());
+        StandardOutputObject outputObject = new StandardOutputObject();
+        boolean success = request.getSession(false) == null;
+        outputObject.setSuccess(success);
+
+        if (success)
+        {
+            outputObject.setData(sc.getContextPath()
+                    + "/"
+                    + GlobalValues.getWEB_PAGES_DIRECTORY()
+                    + "/"
+                    + GlobalValues.getLOGIN_PAGE_FOLDER()
+                    + "/"
+                    + GlobalValues.getLOGIN_PAGE());
+        } else
+        {
+            outputObject.setErrorCode(ErrorCode.LOGOUT_FAILED);
+        }
+
+        writeOutput(response, outputObject);
+
+        /**
+         * sendRedirect dosent work with POST request, this is what the servlet
+         * used to do as a GET request however logging in/out with POST is
+         * better practice 
+         * 
+         * response.sendRedirect(sc.getContextPath() + "/" +
+         * GlobalValues.getWEB_PAGES_DIRECTORY() + "/" +
+         * GlobalValues.getLOGIN_PAGE_FOLDER() + "/" +
+         * GlobalValues.getLOGIN_PAGE());
+         */
+    }
+
+    private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
+    {
+        log.trace("writeOutput()");
+        String outputJSON = outputObject.getJSONString();
+        log.debug(outputJSON);
+        response.setContentType("application/json");
+        try (PrintWriter out = response.getWriter())
+        {
+            out.print(outputJSON);
+        } catch (IOException ex)
+        {
+            log.error(ErrorCode.SENDING_CLIENT_DATA_FAILED.toString(), ex);
+        }
     }
 
     /**

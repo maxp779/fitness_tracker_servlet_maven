@@ -44,7 +44,7 @@ public class GetIdentifierTokenEmailServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet");
+        log.trace("doGet()");
         String identifierToken = ServletUtilities.getPOSTRequestJSONString(request);
         log.debug(identifierToken);
         String email = DatabaseAccess.getIdentifierTokenEmail(identifierToken);
@@ -64,7 +64,7 @@ public class GetIdentifierTokenEmailServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

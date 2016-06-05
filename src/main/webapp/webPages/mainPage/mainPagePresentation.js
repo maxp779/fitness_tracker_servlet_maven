@@ -262,11 +262,9 @@ function calculateTotalMacros(callback)
                 //if first occurrance of aProperty
                 if (globalFunctions.isUndefinedOrNull(totalMacrosToday[aProperty]))
                 {
-                    console.log("first occurrance:"+totalMacrosToday[aProperty]);
                     totalMacrosToday[aProperty] = parseInt(currentFoodJSON[aProperty]);
                 } else
                 {
-                    console.log("not first occurrance:"+totalMacrosToday[aProperty]);
                     totalMacrosToday[aProperty] = parseInt(totalMacrosToday[aProperty]) + parseInt(currentFoodJSON[aProperty]);
                 }
             }

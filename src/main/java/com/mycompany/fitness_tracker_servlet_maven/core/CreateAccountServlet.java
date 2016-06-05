@@ -45,7 +45,7 @@ public class CreateAccountServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
         String accountDetails = ServletUtilities.getPOSTRequestJSONString(request);
         Map<String, String> accountDetailsMap = ServletUtilities.convertJSONFormDataToMap(accountDetails);
         String newAccountPassword = accountDetailsMap.get("password");
@@ -85,7 +85,7 @@ public class CreateAccountServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         try (PrintWriter out = response.getWriter())

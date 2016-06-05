@@ -44,7 +44,7 @@ public class GetFriendlyNamesServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet");
+        log.trace("doGet()");
         Map<String, String> friendlyNamesMap = GlobalValues.getFRIENDLY_VALUES_MAP();
         boolean success = (friendlyNamesMap != null);
         StandardOutputObject outputObject = new StandardOutputObject();
@@ -63,7 +63,7 @@ public class GetFriendlyNamesServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

@@ -49,7 +49,7 @@ public class StandardOutputObject
      */
     public String getJSONString()
     {
-        log.trace("getJSONString");
+        log.trace("getJSONString()");
         Gson gson = new Gson();
         Map<String, Object> tempMap = new HashMap();
         tempMap.put("success", success);

@@ -47,7 +47,7 @@ public class CreateCustomFoodServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
         String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
         Map<String, String> customFoodMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
@@ -78,7 +78,7 @@ public class CreateCustomFoodServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

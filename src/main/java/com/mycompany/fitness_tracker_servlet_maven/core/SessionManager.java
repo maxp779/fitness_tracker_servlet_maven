@@ -34,7 +34,7 @@ public class SessionManager
      */
     public static boolean sessionValidate(HttpServletRequest request)
     {
-        log.trace("sessionValidate");
+        log.trace("sessionValidate()");
         HttpSession session = request.getSession(false);
         boolean sessionValid;
 
@@ -52,7 +52,7 @@ public class SessionManager
 
     public static void httpSessionRemove(HttpSession session)
     {
-        log.trace("httpSessionRemove");
+        log.trace("httpSessionRemove()");
         session.invalidate();
     }
 

@@ -48,7 +48,7 @@ public class DeleteAccountServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
         HttpSession session = request.getSession();
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
         String id_user = currentUser.getId_user();
@@ -88,7 +88,7 @@ public class DeleteAccountServlet extends HttpServlet
 
     private void writeOutput(HttpServletRequest request, HttpServletResponse response, String output, boolean accountDeleted) throws IOException, ServletException
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         ServletContext servletContext = this.getServletContext();
         RequestDispatcher requestDispatcher;
 

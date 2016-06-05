@@ -7,16 +7,21 @@
 $(document).ready(function () {
     document.getElementById("myStats").href = serverAPI.requests.MY_STATS_PAGE_REQUEST;
     document.getElementById("workoutLog").href = serverAPI.requests.WORKOUT_LOG_PAGE_REQUEST;
-    document.getElementById("logout").href = serverAPI.requests.LOGOUT_REQUEST;
     document.getElementById("mainPage").href = serverAPI.requests.MAIN_PAGE_REQUEST;
     document.getElementById("customFoods").href = serverAPI.requests.CUSTOM_FOODS_PAGE_REQUEST;
     document.getElementById("settings").href = serverAPI.requests.SETTINGS_PAGE_REQUEST;
     document.getElementById("aboutPage").href = "../aboutPage/aboutPage.html";
     document.getElementById("cookiesPage").href = "../cookiesPolicyPage/cookiesPolicyPage.html";
     
-    //#mainPage works differently because AJAX is needed to give feedback when the user is trying to login
-//    $(document).on("click", "#mainPage", function () {
-//        globalFunctionsAJAX.makeRedirectRequestAJAX("/" + serverAPI.requests.frontController + "/" + serverAPI.requests.mainPageRequest);
-//    });
-      
+    /**
+     * "javascript:;" is used when a function is intended to be called when an href link is clicked
+     * an empty string "" or "#" are alternatives but behave differently 
+     * "javascript:;" is the most ideal
+     */
+    document.getElementById("logout").href = "javascript:;";
+
+    $(document).on("click", "#logout", function () {
+        globalFunctionsAJAX.logout();
+    });
+
 });

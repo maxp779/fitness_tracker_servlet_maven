@@ -268,6 +268,30 @@ var globalFunctionsAJAX = {
                 console.log("AJAX request failed:" + error.toString());
             }
         });
+    },
+    logout: function()
+    {
+        $.ajax({
+            url: serverAPI.requests.LOGOUT_REQUEST,
+            type: "POST",
+            dataType: "json",
+            success: function (returnObject)
+            {
+                console.log("logout() returnObject.data:"+returnObject.data);
+                if (returnObject.success === true)
+                {
+                    window.location.href = returnObject.data;
+                } else
+                {
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
+                }
+
+            },
+            error: function (xhr, status, error)
+            {
+                console.log("AJAX request failed:" + error.toString());
+            }
+        });
     }
 
 };

@@ -88,7 +88,7 @@ public class FrontControllerServlet extends HttpServlet
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("processRequest");
+        log.trace("processRequest()");
         log.info(request.getRequestURI());
         log.info("querystring:"+request.getQueryString());
         String currentRequest = request.getRequestURI();
@@ -109,7 +109,7 @@ public class FrontControllerServlet extends HttpServlet
 
     private void forwardRequest(HttpServletRequest request, HttpServletResponse response, String servletName) throws ServletException, IOException
     {
-        log.trace("forwardRequest");
+        log.trace("forwardRequest()");
         log.info(servletName);
         RequestDispatcher rd = request.getRequestDispatcher(servletName);
         rd.forward(request, response);

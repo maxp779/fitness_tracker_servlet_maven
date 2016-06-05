@@ -44,17 +44,17 @@ public class ChangePasswordServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
         HttpSession session = request.getSession(false);
         StandardOutputObject outputObject;
         String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
         Map<String, String> requestDetailsMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
         if (session == null)
         {
-            outputObject = changePasswordWithoutSession(request, requestDetailsMap);
+            outputObject = changePasswordSessionValid(request, requestDetailsMap);
         } else
         {
-            outputObject = changePasswordWithSession(request, requestDetailsMap);
+            outputObject = changePasswordSessionInvalid(request, requestDetailsMap);
         }
 
         writeOutput(response, outputObject);
@@ -68,9 +68,9 @@ public class ChangePasswordServlet extends HttpServlet
      * @param requestDetails
      * @return
      */
-    private StandardOutputObject changePasswordWithoutSession(HttpServletRequest request, Map<String, String> requestDetails)
+    private StandardOutputObject changePasswordSessionValid(HttpServletRequest request, Map<String, String> requestDetails)
     {
-        log.trace("changePasswordWithoutSession");
+        log.trace("changePasswordSessionValid()");
 
         String identifierToken = requestDetails.get("identifierToken");
         boolean tokenValid = DatabaseAccess.validateForgotPasswordRequest(identifierToken);
@@ -114,9 +114,9 @@ public class ChangePasswordServlet extends HttpServlet
      * @param requestDetails
      * @return
      */
-    private StandardOutputObject changePasswordWithSession(HttpServletRequest request, Map<String, String> requestDetails)
+    private StandardOutputObject changePasswordSessionInvalid(HttpServletRequest request, Map<String, String> requestDetails)
     {
-        log.trace("changePasswordWithSession");
+        log.trace("changePasswordSessionInvalid()");
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
         StandardOutputObject outputObject = new StandardOutputObject();
 
@@ -148,7 +148,7 @@ public class ChangePasswordServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         try (PrintWriter out = response.getWriter())

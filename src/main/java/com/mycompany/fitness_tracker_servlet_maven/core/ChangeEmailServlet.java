@@ -45,7 +45,7 @@ public class ChangeEmailServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
         HttpSession session = request.getSession();
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
         String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
@@ -95,7 +95,7 @@ public class ChangeEmailServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputMap)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputMap.getJSONString();
         log.debug(outputJSON);
         try (PrintWriter out = response.getWriter())

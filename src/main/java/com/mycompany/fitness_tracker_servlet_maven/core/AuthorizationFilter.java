@@ -6,7 +6,6 @@
 package com.mycompany.fitness_tracker_servlet_maven.core;
 
 import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
-import com.mycompany.fitness_tracker_servlet_maven.serverAPI.Request;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -115,7 +114,7 @@ public class AuthorizationFilter implements Filter
             FilterChain chain)
             throws IOException, ServletException
     {
-        log.trace("doFilter");
+        log.trace("doFilter()");
         HttpServletRequest aRequest = (HttpServletRequest) request;
         HttpServletResponse aResponse = (HttpServletResponse) response;
         String currentURL = aRequest.getRequestURL().toString();
@@ -149,17 +148,17 @@ public class AuthorizationFilter implements Filter
      */
     private boolean needsAuthentication(String url)
     {
-        log.trace("needsAuthentication");
-        Request[] authResources = GlobalValues.getAUTH_RESOURCES();
-        for (Request authRequest : authResources)
+        log.trace("needsAuthentication()");
+        String[] authResources = GlobalValues.getAUTH_RESOURCES();
+        for (String authRequest : authResources)
         {
-            String authRequestString = authRequest.toString();
-            if (url.contains(authRequestString))
+            if (url.contains(authRequest))
             {
                 log.debug("auth required for: "+url);
                 return true;
             }
         }
+        log.debug("auth not required for: "+url);
         return false;
     }
 

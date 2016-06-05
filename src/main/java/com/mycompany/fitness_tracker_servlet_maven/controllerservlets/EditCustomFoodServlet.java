@@ -46,7 +46,7 @@ public class EditCustomFoodServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
         String customFoodJSONString = ServletUtilities.getPOSTRequestJSONString(request);
         log.debug(customFoodJSONString);
@@ -71,7 +71,7 @@ public class EditCustomFoodServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

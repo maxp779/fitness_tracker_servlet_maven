@@ -46,7 +46,7 @@ public class GetViewableAttributesListServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet");
+        log.trace("doGet()");
         UserObject currentUser = (UserObject) request.getSession().getAttribute("user");
         Map viewableAttributesMap = DatabaseAccess.getViewableAttributesList(currentUser.getId_user());
         boolean success = (viewableAttributesMap != null);
@@ -65,7 +65,7 @@ public class GetViewableAttributesListServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

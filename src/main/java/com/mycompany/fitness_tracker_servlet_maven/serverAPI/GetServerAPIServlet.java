@@ -43,7 +43,7 @@ public class GetServerAPIServlet extends HttpServlet
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
-        log.trace("doGet");
+        log.trace("doGet()");
 
         Map<String, Map<String, String>> serverAPIMap = new HashMap<>();
         serverAPIMap.put("requests", ServerAPI.getREQUESTS_API_MAP_STRING());
@@ -57,7 +57,7 @@ public class GetServerAPIServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         response.setContentType("application/json");

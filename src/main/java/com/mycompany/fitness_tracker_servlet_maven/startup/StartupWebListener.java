@@ -30,7 +30,7 @@ public class StartupWebListener implements ServletContextListener
     @Override
     public void contextInitialized(ServletContextEvent event)
     {
-        log.trace("contextInitialized");
+        log.trace("contextInitialized()");
     //do on application init
 
         //load the database driver
@@ -48,7 +48,7 @@ public class StartupWebListener implements ServletContextListener
     @Override
     public void contextDestroyed(ServletContextEvent event)
     {
-        log.trace("contextDestroyed");
+        log.trace("contextDestroyed()");
     //do on application destroy
 
         //deregister database driver **this may not even be needed**

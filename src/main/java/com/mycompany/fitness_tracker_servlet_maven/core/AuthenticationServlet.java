@@ -47,7 +47,7 @@ public class AuthenticationServlet extends HttpServlet
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException
     {
-        log.trace("doPost");
+        log.trace("doPost()");
         String loginDetailsJSON = ServletUtilities.getPOSTRequestJSONString(request);
         Map<String, String> loginDetailsMap = ServletUtilities.convertJSONFormDataToMap(loginDetailsJSON);
         
@@ -84,7 +84,7 @@ public class AuthenticationServlet extends HttpServlet
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)
     {
-        log.trace("writeOutput");
+        log.trace("writeOutput()");
         String outputJSON = outputObject.getJSONString();
         log.debug(outputJSON);
         try (PrintWriter out = response.getWriter())
@@ -98,7 +98,7 @@ public class AuthenticationServlet extends HttpServlet
 
     private void createNewSession(HttpServletRequest request, Map<String,String> userCredentials)
     {
-        log.trace("createNewSession");
+        log.trace("createNewSession()");
         HttpSession session = request.getSession(true);
         UserObject user = new UserObject();
         user.setEmail(userCredentials.get("email"));
