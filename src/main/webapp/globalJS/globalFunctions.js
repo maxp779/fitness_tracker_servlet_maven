@@ -552,6 +552,39 @@ var globalFunctions = {
     }, //Did not write this, no idea how it works :(
     getURLParameter: function (name) {
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
+    },
+    /**
+     * This function converts a forms serializeArray() output into a single
+     * object.
+     * 
+     * e.g this array:
+     * 
+     * [{"name":"foodname", "value":"tasty pie"},{"name":"protein", "value":"25"}]
+     * 
+     * will be converted to:
+     * 
+     * {"foodname":"tasty pie", "protein":"25"}
+     *
+     * @param {type} formArray an array derived from serializeArray()
+     * @returns a javascript object with the values from formArray
+     */
+    convertFormArrayToJSON: function (formArray)
+    {
+        var outputObject = {};
+        
+        for(var index = 0; index < formArray.length; index++)
+        {
+            var currentObject = formArray[index];
+            /**
+             * this condition prevents data like {"fat":""} being sent to the server
+             * if we dont know the value theres no point in sending it
+             */
+            if(currentObject.value !== "")
+            {
+                outputObject[currentObject.name] = currentObject.value;
+            }
+        }
+        return outputObject;
     }
 
 

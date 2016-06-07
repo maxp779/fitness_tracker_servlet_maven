@@ -49,7 +49,12 @@ public class CreateCustomFoodServlet extends HttpServlet
     {
         log.trace("doPost()");
         String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
-        Map<String, String> customFoodMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
+                log.debug("requestDetails:"+requestDetails);
+        Map<String, String> customFoodMap = ServletUtilities.convertJSONStringToMap(requestDetails);
+        
+        
+        
+       // Map<String, String> customFoodMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
         
         boolean success = false;

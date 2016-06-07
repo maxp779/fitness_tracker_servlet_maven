@@ -12,13 +12,6 @@ $(document).ready(function () {
         populateCustomFoodList();
     });
 
-
-    //listener to keep track of which food the user has selected
-//    $(document).on("click", ".list-group-item", function () {
-//        selectedFood = $(this).attr("id");
-//        console.log("id_customfood " + selectedFood + " selected");
-//    });
-
     //remove food listener
     $(document).on("click", ".remove-food-button", function () {
         var id_customfood = $(this).attr("id");
@@ -102,14 +95,14 @@ function deleteCustomFood(id_customfood, callback)
     $.ajax({
         url: serverAPI.requests.DELETE_CUSTOM_FOOD,
         type: "POST",
-        data: foodToDelete,
+        data: JSON.stringify(foodToDelete),
         contentType: "application/json",
         dataType: "json",
         success: function (returnObject)
         {
             if (returnObject.success === true)
             {
-                console.log("removal suceeded");
+                console.log("custom food removal suceeded");
                 globalFunctionsAJAX.getCustomFoodList(function () {
                     if (callback)
                     {
@@ -136,7 +129,8 @@ function createCustomFood()
     //form data held in name/value pairs like so:
     //[{"name":"foodname", "value":"tasty pie"},{"name":"protein", "value":"25"}]
     var formData = $("#addFoodForm").serializeArray();
-
+    
+    var newCustomFood = globalFunctions.convertFormArrayToJSON(formData);
     //prepare the JSON to send to server
 //    var outputJSON = {};
 //    for (var count in formData)
@@ -146,11 +140,11 @@ function createCustomFood()
 //            outputJSON[formData[count]["name"]] = formData[count]["value"];
 //        }
 //    }
-    console.log("attempting to create custom food " + JSON.stringify(formData));
+    console.log("attempting to create custom food " + newCustomFood);
     $.ajax({
         url: serverAPI.requests.CREATE_CUSTOM_FOOD,
         type: "POST",
-        data: JSON.stringify(formData),
+        data: JSON.stringify(newCustomFood),
         contentType: "application/json",
         dataType: "json",
         success: function (returnObject)
@@ -173,8 +167,7 @@ function createCustomFood()
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("AJAX request failed:" + error.toString());
         }
     });
 }
@@ -240,9 +233,10 @@ function saveEditedCustomFood()
         type: "POST",
         data: JSON.stringify(outputJSON),
         contentType: "application/json",
-        success: function (data)
+        dataType: "json",
+        success: function (returnObject)
         {
-            if (data === "true")
+            if (returnObject.success === true)
             {
                 console.log("food edit suceeded");
                 globalFunctionsAJAX.getCustomFoodList(function () {
@@ -250,13 +244,12 @@ function saveEditedCustomFood()
                 });
             } else
             {
-                console.log("food edit failed");
+                console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
             }
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("AJAX request failed:" + error.toString());
         }
     });
 }
@@ -296,8 +289,6 @@ function generateCustomFoodsFormHTML()
         }
     }
 
-
-
     outputHTML = outputHTML.concat("<div class='form-group'>"
             + "<div class='row'>"
             + "<div class='col-sm-3'>"
@@ -312,33 +303,6 @@ function generateCustomFoodsFormHTML()
             + "<label for='calories'>Calories:</label>"
             + "<input type='number' max='100000' class='form-control' id='calorie' step='any' name='calorie'>"
             + "</div>");
-
-
-
-
-//    outputHTML = outputHTML.concat("<div class='col-sm-3'>");
-//    var maxIndex;
-//    if(secondaryAttributeArray.length > 5)
-//    {
-//        maxIndex = secondaryAttributeArray.length;
-//    }
-//    else
-//    {
-//        maxIndex = 5;
-//    }
-//    
-//    for (var index = 0; index < maxIndex; index++)
-//    {
-//        var currentFoodAttribute = secondaryAttributeArray[index];
-//        var currentFoodAttributeFriendlyName = globalValues.friendlyNames[currentFoodAttribute];
-//
-//        outputHTML = outputHTML.concat(
-//                + "<label for=" + currentFoodAttribute + ">" + currentFoodAttributeFriendlyName + ":</label>"
-//                + "<input type='number' max='100000' class='form-control' id=" + currentFoodAttribute + " name=" + currentFoodAttribute + ">");
-//    }
-
-
-
 
     var inputsPerColumn = 5;
     var currentColumnInputs = 0;
@@ -373,56 +337,6 @@ function generateCustomFoodsFormHTML()
     outputHTML = outputHTML.concat("</div>"); //end row
     outputHTML = outputHTML.concat("<button id='addFoodButton' type='submit' class='btn btn-primary spacer'>Create food</button>");
     outputHTML = outputHTML.concat("</div>"); //end form group
-
-
-
-
-
-
-
-//            + "<div class='form-group'>"
-//            + "<div class='row'>"
-//            + "<div class='col-sm-3'>"
-//            + "<label for='food'>Food:</label>"
-//            + "<input type='text' class='form-control' id='foodname' name='foodname' placeholder='Name of the food?' required autofocus>"
-//            + "<label for='protein'>Protein:</label>"
-//            + "<input type='number' max='100000' class='form-control' id='protein' name='protein' placeholder='How much protein?'>"
-//            + "<label for='carbs'>Carbs:</label>"
-//            + "<input type='number' max='100000' class='form-control' id='carbohydrate' name='carbohydrate' placeholder='How many carbs?'>"
-//            + "<label for='fats'>Fats:</label>"
-//            + "<input type='number' max='100000' class='form-control' id='fat' name='fat' placeholder='How much fat?'>"
-//            + "<label for='calories'>Calories:</label>"
-//            + "<input type='number' max='100000' class='form-control' id='calorie' name='calorie' placeholder='Total calories?'>"
-//            + "<button id='addFoodButton' type='submit' class='btn btn-primary spacer'>Create food</button>"
-//            + "</div>"
-//            + "<div class='col-sm-3'>"
-//            
-//            + "</div>"
-//            + "</div>"
-//            + "</div>"
-//            + "</form>"
-
-
-
-
-
-//    <form id="addFoodForm" role="form" onsubmit="addCustomFood();
-//                                        return false;">
-//                                    <div class="form-group">
-//                                        <label for="food">Food:</label>
-//                                        <input type="text" class="form-control" id="foodname" name="foodname" placeholder="Name of the food?" required autofocus>
-//                                        <label for="protein">Protein:</label>
-//                                        <input type="number" max="100000" class="form-control" id="protein" name="protein" placeholder="How much protein?">
-//                                        <label for="carbs">Carbs:</label>
-//                                        <input type="number" max="100000" class="form-control" id="carbohydrate" name="carbohydrate" placeholder="How many carbs?">
-//                                        <label for="fats">Fats:</label>
-//                                        <input type="number" max="100000" class="form-control" id="fat" name="fat" placeholder="How much fat?">
-//                                        <label for="calories">Calories:</label>
-//                                        <input type="number" max="100000" class="form-control" id="calorie" name="calorie" placeholder="Total calories?">
-//                                        <button id="addFoodButton" type="submit" class="btn btn-primary spacer">Create food</button>
-//                                    </div>
-//                                </form>
-
 
     document.getElementById("addFoodForm").innerHTML = outputHTML;
 }

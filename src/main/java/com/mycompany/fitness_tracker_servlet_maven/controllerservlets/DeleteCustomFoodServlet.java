@@ -49,13 +49,13 @@ public class DeleteCustomFoodServlet extends HttpServlet
         log.trace("doPost()");
         String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
         log.debug(JSONString);
-        Map<String, String> JSONMap = ServletUtilities.convertJSONStringToMap(JSONString);
+        Map<String, String> customFoodToDelete = ServletUtilities.convertJSONStringToMap(JSONString);
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        boolean success = DatabaseAccess.deleteCustomFood(currentUser.getId_user());
+        boolean success = DatabaseAccess.deleteCustomFood(customFoodToDelete.get("id_customfood"));
 
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
-        outputObject.setData(JSONMap);
+        outputObject.setData(customFoodToDelete);
         if (success)
         {
             log.info("custom food deleted successfully");

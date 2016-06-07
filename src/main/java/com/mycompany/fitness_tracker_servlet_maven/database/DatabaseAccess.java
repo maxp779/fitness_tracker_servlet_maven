@@ -489,14 +489,22 @@ public class DatabaseAccess
 
             if (count < supportedFoodAttributeList.size())
             {
+
+                String currentAttributeValue = customFoodMap.get(currentAttribute);
+                //empty strings should not be sent to this method but if they are they are replaced with null
+                if (currentAttributeValue != null && currentAttributeValue.equals(""))
+                {
+                    currentAttributeValue = null;
+                }
+
                 //if value is a varchar aka string such as the food name it must be surrounded
                 //in quotes e.g 'oats'
                 if (varcharAttributeList.contains(currentAttribute))
                 {
-                    addCustomFoodValues.append("'").append(customFoodMap.get(currentAttribute)).append("'");
+                    addCustomFoodValues.append("'").append(currentAttributeValue).append("'");
                 } else //otherwise it is numeric and can be added without quotes
                 {
-                    addCustomFoodValues.append(customFoodMap.get(currentAttribute));
+                    addCustomFoodValues.append(currentAttributeValue);
                 }
             }
 
@@ -560,14 +568,21 @@ public class DatabaseAccess
 
             if (!"id_user".equals(currentAttribute))
             {
+
+                String currentAttributeValue = customFoodMap.get(currentAttribute);
+                //empty strings should not be sent to this method but if they are they are replaced with null
+                if (currentAttributeValue != null && currentAttributeValue.equals(""))
+                {
+                    currentAttributeValue = null;
+                }
                 if (varcharAttributeList.contains(currentAttribute))
                 {
                     //if value is a varchar aka string such as the food name it must be surrounded
                     //in quotes e.g 'oats'
-                    editCustomFoodSQL.append(currentAttribute).append("=").append("'").append(customFoodMap.get(currentAttribute)).append("'");
+                    editCustomFoodSQL.append(currentAttribute).append("=").append("'").append(currentAttributeValue).append("'");
                 } else
                 {
-                    editCustomFoodSQL.append(currentAttribute).append("=").append(customFoodMap.get(currentAttribute));
+                    editCustomFoodSQL.append(currentAttribute).append("=").append(currentAttributeValue);
                 }
             }
 
@@ -615,10 +630,10 @@ public class DatabaseAccess
         LocalDate toLocalDate = inputTime.toLocalDate();
         LocalDateTime atStartOfDay = toLocalDate.atStartOfDay();
         LocalDateTime atEndOfDay = atStartOfDay.plusDays(1L);
-        
+
         /**
-         * remember if changing this UNIX time is generally in seconds
-         * however java.sql.Timestamp objects need milliseconds so seconds *1000
+         * remember if changing this UNIX time is generally in seconds however
+         * java.sql.Timestamp objects need milliseconds so seconds *1000
          */
         Timestamp currentDayStartTimestamp = Timestamp.valueOf(atStartOfDay);
         Timestamp nextDayStartTimestamp = Timestamp.valueOf(atEndOfDay);
@@ -665,12 +680,19 @@ public class DatabaseAccess
             String currentAttribute = supportedFoodAttributeList.get(count);
             addEatenFoodColumns.append(currentAttribute);
 
+            String currentAttributeValue = eatenFoodMap.get(currentAttribute);
+            //empty strings should not be sent to this method but if they are they are replaced with null
+            if (currentAttributeValue != null && currentAttributeValue.equals(""))
+            {
+                currentAttributeValue = null;
+            }
+            
             if (varcharAttributeList.contains(currentAttribute))
             {
-                addEatenFoodValues.append("'").append(eatenFoodMap.get(currentAttribute)).append("'");
+                addEatenFoodValues.append("'").append(currentAttributeValue).append("'");
             } else
             {
-                addEatenFoodValues.append(eatenFoodMap.get(currentAttribute));
+                addEatenFoodValues.append(currentAttributeValue);
             }
 
             //if not at the last attribute put a comma to separate it from the next attribute
