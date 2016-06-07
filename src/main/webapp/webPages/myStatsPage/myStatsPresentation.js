@@ -4,79 +4,78 @@
  * and open the template in the editor.
  */
 
+
 //MEN: BMR = [9.99 x weight (kg)] + [6.25 x height (cm)] - [4.92 x age (years)] + 5
 //WOMEN: BMR = [9.99 x weight (kg)] + [6.25 x height (cm)] - [4.92 x age (years)] -161
 function calculateMacros()
 {
-    var newUserStats = {};
-    
-    newUserStats.sex = $('input[name="sex"]:checked').val();
-    newUserStats.weight = $('input[name="weight"]').val();
-    newUserStats.height = $('input[name="height"]').val();
-    newUserStats.age = $('input[name="age"]').val();
-    newUserStats.activitylevel = $('#activitylevel').val(); //this should be a float
-    newUserStats.goal = $('input[name="goal"]:checked').val();
+    var tempUserStats = {};
+
+    tempUserStats.sex = $('input[name="sex"]:checked').val();
+    tempUserStats.weight = $('input[name="weight"]').val();
+    tempUserStats.height = $('input[name="height"]').val();
+    tempUserStats.age = $('input[name="age"]').val();
+    tempUserStats.activitylevel = $('#activitylevel').val(); //this should be a float
+    tempUserStats.goal = $('input[name="goal"]:checked').val();
 
     //BMR = Basic Metabolic Rate, this is calories required to stay alive   
     //calculate BMR
-    if (newUserStats.sex === "m")
+    if (tempUserStats.sex === "m")
     {
-        newUserStats.bmr = Math.round((9.99 * newUserStats.weight) + (6.25 * newUserStats.height) - (4.92 * newUserStats.age) + 5);
-    }
-    else
+        tempUserStats.bmr = Math.round((9.99 * tempUserStats.weight) + (6.25 * tempUserStats.height) - (4.92 * tempUserStats.age) + 5);
+    } else
     {
-        newUserStats.bmr = Math.round((9.99 * newUserStats.weight) + (6.25 * newUserStats.height) - (4.92 * newUserStats.age) - 161);
+        tempUserStats.bmr = Math.round((9.99 * tempUserStats.weight) + (6.25 * tempUserStats.height) - (4.92 * tempUserStats.age) - 161);
     }
 
     //TEE = Total Energy Expenditure, this is calories required including activity level
     //calculate TEE
-    newUserStats.tee = newUserStats.bmr * newUserStats.activitylevel; //this should be a float
+    tempUserStats.tee = tempUserStats.bmr * tempUserStats.activitylevel; //this should be a float
 
     //goalTEE = Ideal Total Energy Expenditure based on the users goal, it is normal TEE +15% to gain weight or -15% to lose weight
     //calculate goalTEE
-    if (newUserStats.goal === "gain")
+    if (tempUserStats.goal === "gain")
     {
-        newUserStats.tee_goal = Math.round(newUserStats.tee * 1.15);
-    }
-    else if (newUserStats.goal === "lose")
+        tempUserStats.tee_goal = Math.round(tempUserStats.tee * 1.15);
+    } else if (tempUserStats.goal === "lose")
     {
-        newUserStats.tee_goal = Math.round(newUserStats.tee * 0.85);
-    }
-    else
+        tempUserStats.tee_goal = Math.round(tempUserStats.tee * 0.85);
+    } else
     {
-        newUserStats.tee_goal = newUserStats.tee;
+        tempUserStats.tee_goal = tempUserStats.tee;
     }
 
     //calculate nutrient macros
-    newUserStats.protein_goal = newUserStats.weight * 2;
-    newUserStats.fat_goal = newUserStats.weight * 1;
+    tempUserStats.protein_goal = tempUserStats.weight * 2;
+    tempUserStats.fat_goal = tempUserStats.weight * 1;
 
     //1g of protein = 4 calories, 1g of fat = 9 calories, 1g of carbs = 4 calories.
-    newUserStats.proteincalorie = newUserStats.protein_goal * 4;
-    newUserStats.fatcalorie = newUserStats.fat_goal * 9;
-    newUserStats.carbohydratecalorie = newUserStats.tee_goal - (newUserStats.proteincalorie + newUserStats.fatcalorie);
+    tempUserStats.proteincalorie = tempUserStats.protein_goal * 4;
+    tempUserStats.fatcalorie = tempUserStats.fat_goal * 9;
+    tempUserStats.carbohydratecalorie = tempUserStats.tee_goal - (tempUserStats.proteincalorie + tempUserStats.fatcalorie);
 
-    newUserStats.carbohydrate_goal = newUserStats.carbohydratecalorie / 4;
-    console.log(JSON.stringify(newUserStats));
-    
-    setGlobalValues.setUserStats(newUserStats);
+    tempUserStats.carbohydrate_goal = tempUserStats.carbohydratecalorie / 4;
+    console.log(JSON.stringify(tempUserStats));
 
-    updateCalculationResult();
+    setGlobalValues.setTempUserStatsCalculated(tempUserStats, function () {
+        updateCalculationResult();
+    });
 }
 
 function updateCalculationResult()
 {
     var calculationResultElement = document.getElementById("calculationResult");
     var innerHTML = "";
+    var tempUserStatsRef = globalValues.tempValues.tempUserStatsCalculated;
 
-    innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + globalValues.userStats.protein_goal + "</font></p>"
-            + "<p><font color='blue'>Daily carbohydrates: " + globalValues.userStats.carbohydrate_goal + "</font></p>"
-            + "<p><font color='orange'>Daily fats: " + globalValues.userStats.fat_goal + "</font></p>"
+    innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + tempUserStatsRef.protein_goal + "</font></p>"
+            + "<p><font color='blue'>Daily carbohydrates: " + tempUserStatsRef.carbohydrate_goal + "</font></p>"
+            + "<p><font color='orange'>Daily fats: " + tempUserStatsRef.fat_goal + "</font></p>"
             + "<hr>"
-            + "<p>Calories from protein: " + globalValues.userStats.proteincalorie + "</p>"
-            + "<p>Calories from carbohydrates: " + globalValues.userStats.carbohydratecalorie + "</p>"
-            + "<p>Calories from fats: " + globalValues.userStats.fatcalorie + "</p>"
-            + "<p>Total daily calories: " + globalValues.userStats.tee_goal + "</p>"
+            + "<p>Calories from protein: " + tempUserStatsRef.proteincalorie + "</p>"
+            + "<p>Calories from carbohydrates: " + tempUserStatsRef.carbohydratecalorie + "</p>"
+            + "<p>Calories from fats: " + tempUserStatsRef.fatcalorie + "</p>"
+            + "<p>Total daily calories: " + tempUserStatsRef.tee_goal + "</p>"
             + "<hr>"
             + "<p>Any value shown may not be 100% accurate. Please consult your physician before starting any diet or nutrition plan.</p>");
 
@@ -87,27 +86,29 @@ function populateUserStats(callback)
 {
     var currentStatsElement = document.getElementById("currentMacros");
     var innerHTML = "";
+    var userStatsRef = globalValues.userValues.userStats;
 
-    innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + globalValues.userStats.protein_goal + "</font></p>"
-            + "<p><font color='blue'>Daily carbohydrates: " + globalValues.userStats.carbohydrate_goal + "</font></p>"
-            + "<p><font color='orange'>Daily fats: " + globalValues.userStats.fat_goal + "</font></p>"
+    innerHTML = innerHTML.concat("<p><font color='green'>Daily protein: " + userStatsRef.protein_goal + "</font></p>"
+            + "<p><font color='blue'>Daily carbohydrates: " + userStatsRef.carbohydrate_goal + "</font></p>"
+            + "<p><font color='orange'>Daily fats: " + userStatsRef.fat_goal + "</font></p>"
             + "<hr>"
-            + "<p>Calories from protein: " + (globalValues.userStats.protein_goal *4) + "</p>"
-            + "<p>Calories from carbohydrates: " + (globalValues.userStats.carbohydrate_goal *4) + "</p>"
-            + "<p>Calories from fats: " + (globalValues.userStats.fat_goal *9) + "</p>"
-            + "<p>Total daily calories: " + globalValues.userStats.tee + "</p>");
+            + "<p>Calories from protein: " + (userStatsRef.protein_goal * 4) + "</p>"
+            + "<p>Calories from carbohydrates: " + (userStatsRef.carbohydrate_goal * 4) + "</p>"
+            + "<p>Calories from fats: " + (userStatsRef.fat_goal * 9) + "</p>"
+            + "<p>Total daily calories: " + userStatsRef.tee + "</p>");
 
     currentStatsElement.innerHTML = innerHTML;
-    
-    if(callback)
+
+    if (callback)
     {
-        callback();   
+        callback();
     }
 }
 
 function updateMyStatsPieChart(callback)
 {
     var currentMacroSplitPie;
+    var userStatsRef = globalValues.userValues.userStats;
     $(function () {
         // Create the chart
         currentMacroSplitPie = new Highcharts.Chart({
@@ -154,16 +155,15 @@ function updateMyStatsPieChart(callback)
                     }
                 }]
         });
-        
-        var protein_goal = parseInt(globalValues.userStats.protein_goal);
-        var carbohydrate_goal = parseInt(globalValues.userStats.carbohydrate_goal);
-        var fat_goal = parseInt(globalValues.userStats.fat_goal);
-        
+
+        var protein_goal = parseInt(userStatsRef.protein_goal);
+        var carbohydrate_goal = parseInt(userStatsRef.carbohydrate_goal);
+        var fat_goal = parseInt(userStatsRef.fat_goal);
+
         if (protein_goal === 0 && carbohydrate_goal === 0 && fat_goal === 0)
         {
             currentMacroSplitPie.series[0].setData([]);
-        }
-        else
+        } else
         {
             currentMacroSplitPie.series[0].setData([{
                     name: "Protein",
@@ -180,9 +180,9 @@ function updateMyStatsPieChart(callback)
                 }]);
         }
     });
-    
-    if(callback)
+
+    if (callback)
     {
-        callback();   
+        callback();
     }
 }

@@ -60,12 +60,13 @@ function populateCustomFoodList()
     //list must be emptied first, if not then the final list item will still show
     //even if it was deleted from the database
     $('#customFoodList').empty();
+    var customFoodsArrayRef = globalValues.userValues.customFoodsArray;
 
     //iterate through each array (database record) in the JSON
     var innerHTML = "";
-    for (var index = 0; index < globalValues.customFoodsArray.length; index++)
+    for (var index = 0; index < customFoodsArrayRef.length; index++)
     {
-        var currentFood = globalValues.customFoodsArray[index];
+        var currentFood = customFoodsArrayRef[index];
         innerHTML = innerHTML.concat("<div class='row'>"
                 + "<div class='col-sm-12'>"
                 + "<li class='list-group-item' id='" + currentFood.id_customfood + "eatenfood" + "'>"
@@ -259,11 +260,12 @@ function saveEditedCustomFood()
 function findCustomFood(id_customfood)
 {
     var foodObject;
-    for (var index in globalValues.customFoodsArray)
+    var customFoodsArrayRef = globalValues.userValues.customFoodsArray;
+    for (var index in customFoodsArrayRef)
     {
-        if (globalValues.customFoodsArray[index].id_customfood === id_customfood)
+        if (customFoodsArrayRef[index].id_customfood === id_customfood)
         {
-            foodObject = globalValues.customFoodsArray[index];
+            foodObject = customFoodsArrayRef[index];
             return foodObject;
         }
     }
@@ -274,7 +276,6 @@ function findCustomFood(id_customfood)
 function generateCustomFoodsFormHTML()
 {
     var outputHTML = "";
-    //var selectedFoodAttributeJSON = globalValues.foodAttributes;
     var selectedAttributeArray = globalFunctions.getSelectedAttributes();
     var primaryAttributeArray = ["foodname", "protein", "carbohydrate", "fat", "calorie"];
     var secondaryAttributeArray = [];
@@ -321,7 +322,7 @@ function generateCustomFoodsFormHTML()
         }
 
         var currentFoodAttribute = secondaryAttributeArray[index];
-        var currentFoodAttributeFriendlyName = globalValues.friendlyNames[currentFoodAttribute];
+        var currentFoodAttributeFriendlyName = globalValues.friendlyValues.friendlyFoodAttributes[currentFoodAttribute];
 
         outputHTML = outputHTML.concat("<label for=" + currentFoodAttribute + ">" + currentFoodAttributeFriendlyName + ":</label>"
                 + "<input type='number' max='100000' class='form-control' step='any' id=" + currentFoodAttribute + " name=" + currentFoodAttribute + ">");

@@ -6,26 +6,11 @@
 
 
 $(document).ready(function () {
-
-//currentMacroSplitPieSetup(function () {
-//getUserStats = globalAJAXFunctions["getUserStats"];
-//        getUserStats.call(globalAJAXFunctions);
-//        populateUserStats();
-//        updateMyStatsPieChart();
-
-    globalFunctions["refreshGlobalValuesFromLocalStorage"](function ()
+    globalFunctions.refreshGlobalValuesFromLocalStorage(function ()
     {
         populateUserStats(function () {
             updateMyStatsPieChart(function () {
             });
         });
     });
-//    globalValues = JSON.parse(localStorage.getItem("globalValues"));
-//    //getUserStats = globalFunctionsAJAX["getUserStats"];
-//    //getUserStats.call(globalFunctionsAJAX, function () {
-//        populateUserStats(function () {
-//            updateMyStatsPieChart(function () {
-//            });
-//        });
-//    });
 });

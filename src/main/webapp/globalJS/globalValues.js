@@ -4,26 +4,41 @@
  * and open the template in the editor.
  */
 
+$(document).ready(function () {
+    globalFunctions.refreshGlobalValuesFromLocalStorage();
+});
 var globalValues = {
-    userStats: {}, //an object containing the users ideal protein/carb/fat/calorie consumption values, they set these up themselves
-    customFoodsArray: [], //an array of objects which represent the current users custom foods
-    eatenFoodsArray: [], //an array of objects which represent the current users eaten foods
-    searchResultsArray: [], //an array of objects which represent the current users search results if they searched the database
-    foodAttributes: {}, //a single object containing food attributes the user wants to see e.g protein,carbs,saturated fats
-    friendlyNames: {}, //friendly names for the food attributes e.g {"satfod":"Saturated fat","totsug":"Total Sugar"}
-    totalMacrosToday: {},
-    nonOperableAttributes: ["foodcode", "foodname", "foodnameoriginal", "description",
-        "foodgroup", "previous", "foodreferences", "footnote", "id_user", "id_eatenfood", "id_searchablefood", "timestamp"], //attributes that should not be operated on mathematically
-    wholeIntegerAttributes: ["calorie", "kj", "weight"], //attributes that are whole integers as opposed to floats
-    
+    userValues: {
+        userStats: {}, //an object containing the users ideal protein/carb/fat/calorie consumption values, they set these up themselves
+        customFoodsArray: [], //an array of objects which represent the current users custom foods
+        eatenFoodsArray: [], //an array of objects which represent the current users eaten foods
+        searchResultsArray: [], //an array of objects which represent the current users search results if they searched the database
+        selectedFoodAttributes: {}, //a single object containing food attributes the user wants to see e.g protein,carbs,saturated fats
+        totalMacrosToday: {} //the total of all food attributes of the eaten foods e.g total protein today, total fat today etc
+    },
+    miscValues: {
+        nonOperableAttributes: ["foodcode", "foodname", "foodnameoriginal", "description",
+            "foodgroup", "previous", "foodreferences", "footnote", "id_user", "id_eatenfood", "id_searchablefood", "timestamp"], //attributes that should not be operated on mathematically
+        wholeIntegerAttributes: ["calorie", "kj", "weight"] //attributes that are whole integers as opposed to floats
+    },
+    friendlyValues: {
+        friendlyFoodAttributes: {}, //friendly names for the food attributes e.g {"satfod":"Saturated fat","totsug":"Total Sugar"}
+        errorCodeHints: {} //hints for the error codes
+    },
+    tempValues: {
+        /**
+         * These are stored seperately to avoid a situation where the user uses the calculator, clicks save
+         * then manually enters their own stats, then decides they want to go back to the calcualtors values again
+         * so they click save again, but it dosent work because the manual entry would have already overwritten the previously caluclated stats.
+         * The user would have to click calculate again.
+         */
+        tempUserStatsManual: {}, //manually entered stats are stored here, if the user chooses to save them they become userValues.userStats
+        tempUserStatsCalculated: {} //calculated stats are stored here, if the user chooses to save them they become userValues.userStats
+    },
     //neither of these belong here either, will take out in future
-    passwordValid:false,
-    emailValid:false
-    //taken out of globalvalues, dosent really belong here 
-    //viewDate: null, //global viewdate object, this represents the date the user is currently viewing
-    //eventTriggered: false //this is used to prevent an infinite loop when syncing the two datepickers
+    passwordValid: false,
+    emailValid: false
 };
-
 //not currently used but may be of use in the future!
 //var errorCodes = {
 //    "10":"Error 10: password too short",
@@ -43,25 +58,23 @@ var globalValues = {
  * serverAPI which should look like the following:
  * 
  * {
-	"serverAPI": {
-		"errorCodes": {
-			"10": "SAMPLE_ERROR1",
-			"11": "SAMPLE_ERROR2",
-			"12": "SAMPLE_ERROR3"
-
-		},
-		"requests": {
-			"SAMPLE_REQUEST1": "/FrontControllerServlet/SAMPLE_REQUEST1",
-			"SAMPLE_REQUEST2": "/FrontControllerServlet/SAMPLE_REQUEST2",
-			"SAMPLE_REQUEST3": "/FrontControllerServlet/SAMPLE_REQUEST3"
-		}
-	}
-}
+ "serverAPI": {
+ "errorCodes": {
+ "10": "SAMPLE_ERROR1",
+ "11": "SAMPLE_ERROR2",
+ "12": "SAMPLE_ERROR3"
+ 
+ },
+ "requests": {
+ "SAMPLE_REQUEST1": "/FrontControllerServlet/SAMPLE_REQUEST1",
+ "SAMPLE_REQUEST2": "/FrontControllerServlet/SAMPLE_REQUEST2",
+ "SAMPLE_REQUEST3": "/FrontControllerServlet/SAMPLE_REQUEST3"
+ }
+ }
+ }
  * @type Array|Object
  */
 var serverAPI = JSON.parse(localStorage.getItem("serverAPI"));
-
-
 //    parameters: {
 //        port: 8080,
 //        projectName: "fitness_tracker_servlet_maven",
@@ -104,7 +117,7 @@ var serverAPI = JSON.parse(localStorage.getItem("serverAPI"));
 //        AJAX_ModifyUserStats: "AJAX_ModifyUserStats",
 //        AJAX_GetUserStats: "AJAX_GetUserStats",
 //        AJAX_GetIdentifierTokenEmail:"AJAX_GetIdentifierTokenEmail"
-    
+
 
 
 

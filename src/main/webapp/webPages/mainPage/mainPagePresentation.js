@@ -49,12 +49,12 @@ function populateCustomFoodList()
 {
     $('#customFoodList').empty();
     var innerHTML = "";
-
+    var customFoodsArrayRef = globalValues.userValues.customFoodsArray;
     //iterate through each JSON object (currentFood) in the Array
     //populates the foods eaten table, one row = one food item
-    for (var index = 0; index < globalValues.customFoodsArray.length; index++)
+    for (var index = 0; index < customFoodsArrayRef.length; index++)
     {
-        var currentFoodJSON = globalValues.customFoodsArray[index];
+        var currentFoodJSON = customFoodsArrayRef[index];
 
         innerHTML = innerHTML.concat("<a href='javascript:void(0)' class='list-group-item customfood' id='" + currentFoodJSON["id_customfood"] + "customfood" + "'>"
                 + globalFunctions.createFoodAttributesHTML(currentFoodJSON, "id_customfood")
@@ -92,15 +92,16 @@ function populateSearchResultList()
 {
     //empty table
     $('#searchResultList').empty();
+    var searchResultArrayRef = globalValues.userValues.searchResultsArray;
 
-    if ($.isEmptyObject(globalValues.searchResultsArray))
+    if ($.isEmptyObject(searchResultArrayRef))
     {
         document.getElementById("searchResultList").innerHTML = "<li class='list-group-item searchresult'> No results </li>";
     } else
     {
 
         //sort list by size of "foodname" property
-        globalValues.searchResultsArray.sort(function (a, b) {
+        searchResultArrayRef.sort(function (a, b) {
             return a.foodname.length - b.foodname.length;
         });
 
@@ -108,9 +109,9 @@ function populateSearchResultList()
 
         //iterate through each JSON object (currentFood) in the Array
         //populates the foods eaten table, one row = one food item
-        for (var index = 0; index < globalValues.searchResultsArray.length; index++)
+        for (var index = 0; index < searchResultArrayRef.length; index++)
         {
-            var currentFoodObject = globalValues.searchResultsArray[index];
+            var currentFoodObject = searchResultArrayRef[index];
             innerHTML = innerHTML.concat("<div class='row'>"
                     + "<div class='col-sm-12'>"
                     + "<a href='javascript:void(0)' class='list-group-item searchresult' id='" + currentFoodObject["id_searchablefood"] + "searchablefood" + "'>"
@@ -152,13 +153,13 @@ function populateSearchResultList()
 function populateEatenFoodList()
 {
     $('#eatenFoodList').empty();
-
+    var eatenFoodsArrayRef = globalValues.userValues.eatenFoodsArray;
     var innerHTML = "";
     //iterate through each JSON object (currentFood) in the Array
     //populates the foods eaten table, one row = one food item
-    for (var index = 0; index < globalValues.eatenFoodsArray.length; index++)
+    for (var index = 0; index < eatenFoodsArrayRef.length; index++)
     {
-        var currentFoodJSON = globalValues.eatenFoodsArray[index];
+        var currentFoodJSON = eatenFoodsArrayRef[index];
 
         innerHTML = innerHTML.concat("<div class='row'>"
                 + "<div class='col-sm-12'>"
@@ -222,10 +223,10 @@ function calculateMacrosFromWeight(id_searchablefood, foodObject)
         var currentValue = foodObject[aProperty];
 
         //if non operable e.g "foodname" then ignore
-        if (globalValues.nonOperableAttributes.indexOf(aProperty) === -1)
+        if (globalValues.miscValues.nonOperableAttributes.indexOf(aProperty) === -1)
         {
             //if operable but treated as float to 1 decimal place
-            if (globalValues.wholeIntegerAttributes.indexOf(aProperty) === -1)
+            if (globalValues.miscValues.wholeIntegerAttributes.indexOf(aProperty) === -1)
             {
                 currentValue = currentValue * multiplier;
                 foodObject[aProperty] = currentValue.toFixed(1);
@@ -249,15 +250,15 @@ function calculateMacrosFromWeight(id_searchablefood, foodObject)
 function calculateTotalMacros(callback)
 {
     var totalMacrosToday = {};
+    var eatenFoodsArrayRef = globalValues.userValues.eatenFoodsArray;
 
-
-    for (var index = 0; index < globalValues.eatenFoodsArray.length; index++)
+    for (var index = 0; index < eatenFoodsArrayRef.length; index++)
     {
-        var currentFoodJSON = globalValues.eatenFoodsArray[index];
+        var currentFoodJSON = eatenFoodsArrayRef[index];
         for (var aProperty in currentFoodJSON)
         {
             //if non operable e.g "foodname" then ignore
-            if (globalValues.nonOperableAttributes.indexOf(aProperty) === -1 && !globalFunctions.isUndefinedOrNull(currentFoodJSON[aProperty]))
+            if (globalValues.miscValues.nonOperableAttributes.indexOf(aProperty) === -1 && !globalFunctions.isUndefinedOrNull(currentFoodJSON[aProperty]))
             {
                 //if first occurrance of aProperty
                 if (globalFunctions.isUndefinedOrNull(totalMacrosToday[aProperty]))
@@ -300,13 +301,16 @@ function calculateTotalMacros(callback)
 
 function updateGraphs(callback)
 {
-    var proteinEaten = parseInt(globalValues.totalMacrosToday.protein);
-    var carbohydrateEaten = parseInt(globalValues.totalMacrosToday.carbohydrate);
-    var fatEaten = parseInt(globalValues.totalMacrosToday.fat);
+    var totalMacrosTodayRef = globalValues.userValues.totalMacrosToday;
+    var userStatsRef = globalValues.userValues.userStats;
 
-    var proteinGoal = parseInt(globalValues.userStats.protein_goal);
-    var carbohydrateGoal = parseInt(globalValues.userStats.carbohydrate_goal);
-    var fatGoal = parseInt(globalValues.userStats.fat_goal);
+    var proteinEaten = parseInt(totalMacrosTodayRef.protein);
+    var carbohydrateEaten = parseInt(totalMacrosTodayRef.carbohydrate);
+    var fatEaten = parseInt(totalMacrosTodayRef.fat);
+
+    var proteinGoal = parseInt(userStatsRef.protein_goal);
+    var carbohydrateGoal = parseInt(userStatsRef.carbohydrate_goal);
+    var fatGoal = parseInt(userStatsRef.fat_goal);
 
     var macroArray = [proteinEaten, carbohydrateEaten, fatEaten, proteinGoal, carbohydrateGoal, fatGoal];
 
@@ -374,8 +378,8 @@ function updateGraphs(callback)
             color: "orange"
         }]);
 
-    var calorieGoal = parseInt(globalValues.userStats.tee);
-    var calorieEaten = parseInt(globalValues.totalMacrosToday.calorie);
+    var calorieGoal = parseInt(userStatsRef.tee);
+    var calorieEaten = parseInt(totalMacrosTodayRef.calorie);
     var calorieArray = [calorieGoal, calorieEaten];
     var calorieChart;
 
@@ -498,13 +502,13 @@ function updateSearchResultMacros(id)
     console.log("updating macros for:" + id_searchablefood);
     var id_searchablefoodmacros = document.getElementById(id_searchablefood + "macros");
     var currentFood = {};
+    var searchResultArrayRef = globalValues.userValues.searchResultsArray;
 
-
-    for (var aFood in globalValues.searchResultsArray)
+    for (var aFood in searchResultArrayRef)
     {
-        if (globalValues.searchResultsArray[aFood].id_searchablefood === id_searchablefood)
+        if (searchResultArrayRef[aFood].id_searchablefood === id_searchablefood)
         {
-            var matchingFood = globalValues.searchResultsArray[aFood];
+            var matchingFood = searchResultArrayRef[aFood];
             for (var currentProperty in matchingFood)
             {
                 currentFood[currentProperty] = matchingFood[currentProperty];
@@ -520,12 +524,15 @@ function updateSearchResultMacros(id)
 
 function updateMacrosNeededPanel()
 {
+    var userStatsRef = globalValues.userValues.userStats;
+    var totalMacrosTodayRef = globalValues.userValues.totalMacrosToday;
+
     var macroPanel = document.getElementById("currentMacros");
     var innerHTML = "";
-    var proteinNeeded = parseInt(globalValues.userStats.protein_goal) - parseInt(globalValues.totalMacrosToday.protein);
-    var carbohydrateNeeded = parseInt(globalValues.userStats.carbohydrate_goal) - parseInt(globalValues.totalMacrosToday.carbohydrate);
-    var fatNeeded = parseInt(globalValues.userStats.fat_goal) - parseInt(globalValues.totalMacrosToday.fat);
-    var calorieRemaining = parseInt(globalValues.userStats.tee) - parseInt(globalValues.totalMacrosToday.calorie);
+    var proteinNeeded = parseInt(userStatsRef.protein_goal) - parseInt(totalMacrosTodayRef.protein);
+    var carbohydrateNeeded = parseInt(userStatsRef.carbohydrate_goal) - parseInt(totalMacrosTodayRef.carbohydrate);
+    var fatNeeded = parseInt(userStatsRef.fat_goal) - parseInt(totalMacrosTodayRef.fat);
+    var calorieRemaining = parseInt(userStatsRef.tee) - parseInt(totalMacrosTodayRef.calorie);
 
     if (proteinNeeded <= 0)
     {

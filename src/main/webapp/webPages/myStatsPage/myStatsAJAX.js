@@ -4,77 +4,37 @@
  * and open the template in the editor.
  */
 
-function updateUserStatsManually()
+function updateUserStats(updatedUserStats)
 {
-    //iterate through each stat
-    if ($.isEmptyObject(globalValues.userStats))
+    if (!globalFunctions.isUndefinedOrNull(updatedUserStats))
     {
-        
-    }
-    else
-    {
-        //send updated stats to server for severside update
         $.ajax({
             url: serverAPI.requests.MODIFY_USER_STATS,
             type: "POST",
-            data: JSON.stringify(globalValues.userStats),
+            data: JSON.stringify(updatedUserStats),
             contentType: "application/json",
-            success: function (data)
+            dataType: "json",
+            success: function (returnObject)
             {
-                if (data === "true")
+                if (returnObject.success === true)
                 {
                     console.log("save user stats suceeded");
+                    setGlobalValues.setUserStats(returnObject.data);
                     populateUserStats();
                     updateMyStatsPieChart();
-                }
-                else
+                } else
                 {
-                    console.log("save user stats failed");
+                    console.log("Error:" + serverAPI.errorCodes[returnObject.errorCode]);
                 }
             },
             error: function (xhr, status, error)
             {
-                // check status && error
-                console.log("ajax failed");
+                console.log("AJAX request failed:" + error.toString());
             }
         });
-    }
-}
-
-function updateUserStats()
-{
-    //iterate through each stat
-    if ($.isEmptyObject(globalValues.userStats))
+    } else
     {
-        
-    }
-    else
-    {
-        //send updated stats to server for severside update
-        $.ajax({
-            url: serverAPI.requests.MODIFY_USER_STATS,
-            type: "POST",
-            data: JSON.stringify(globalValues.userStats),
-            contentType: "application/json",
-            success: function (data)
-            {
-                if (data === "true")
-                {
-                    console.log("save user stats suceeded");
-                    populateUserStats();
-                    updateMyStatsPieChart();
-                }
-                else
-                {
-                    console.log("save user stats failed");
-                }
-            },
-            error: function (xhr, status, error)
-            {
-                // check status && error
-                console.log("ajax failed");
-            }
-        });
+        console.log("cannot save stats, no stats found");
     }
 }
 

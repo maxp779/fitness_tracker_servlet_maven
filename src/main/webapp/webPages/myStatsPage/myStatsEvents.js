@@ -13,30 +13,15 @@ $(document).ready(function () {
 
     $('#manualMacroForm').submit(function () {
         getNewMacros(function () {
-            updateUserStats();
+            updateUserStats(globalValues.tempValues.tempUserStatsManual);
         });
         return false;
     });
 
     $(document).on("click", "#saveCalculatedMacros", function (e) {
         console.log("saving calculated macros");
-        updateUserStats();
+        updateUserStats(globalValues.tempValues.tempUserStatsCalculated);
     });
-
-//    $(document).on("click", ".selectAttributesButton", function (e) {
-//        console.log("edit attributes button clicked");
-//        globalFunctions.editSelectedAttributes(function () {
-//            updateMainPage();
-//        });
-//    });
-//
-//    $('#editSelectedAttributesForm').submit(function () {
-//        globalFunctionsAJAX.updateSelectedAttributes(function () {
-//            updateMainPage();
-//        });
-//        $('#foodAttributeModal').modal('hide');
-//        return false;
-//    });
 
 //auto selects form input text when clicked
     $(document).on('click', 'input', function () {
@@ -51,19 +36,19 @@ function getNewMacros(callback)
     var caloriesInProtein = 4;
     var caloriesInCarbs = 4;
     var caloriesInFat = 9;
-    var newUserStats = {};
+    var tempUserStats = {};
     
     
-    newUserStats.protein_goal = document.getElementById("protein_goal").value;
-    newUserStats.carbohydrate_goal = document.getElementById("carbohydrate_goal").value;
-    newUserStats.fat_goal = document.getElementById("fat_goal").value;
+    tempUserStats.protein_goal = document.getElementById("protein_goal").value;
+    tempUserStats.carbohydrate_goal = document.getElementById("carbohydrate_goal").value;
+    tempUserStats.fat_goal = document.getElementById("fat_goal").value;
 
     //fat has 9 calories per gram, protein and carbs both have 4 calories per gram. So to get
     //the total energy expenditure (calories) we must multiply accordingly e.g 160g of protein = 160*4 = 640 calories
-    newUserStats.teegoal = (newUserStats.fat_goal * caloriesInFat) + (newUserStats.carbohydrate_goal * caloriesInCarbs)
-            + (newUserStats.protein_goal * caloriesInProtein);
+    tempUserStats.teegoal = (tempUserStats.fat_goal * caloriesInFat) + (tempUserStats.carbohydrate_goal * caloriesInCarbs)
+            + (tempUserStats.protein_goal * caloriesInProtein);
     
-    setGlobalValues.setUserStats(newUserStats);
+    setGlobalValues.setTempUserStatsManual(tempUserStats);
 
     if (callback)
     {

@@ -5,41 +5,82 @@
  */
 
 var setGlobalValues = {
-    setUserStats: function (userStats) {
-        globalValues.userStats = userStats;
+    setUserStats: function (userStats, callback) {
+        globalValues.userValues.userStats = userStats;
         globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
     },
-    setCustomFoodsArray: function (customFoods) {
-        globalValues.customFoodsArray = customFoods;
+    setCustomFoodsArray: function (customFoods, callback) {
+        globalValues.userValues.customFoodsArray = customFoods;
         globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
     },
-    setEatenFoodsArray: function (eatenFoods) {
-        globalValues.eatenFoodsArray = eatenFoods;
+    setEatenFoodsArray: function (eatenFoods, callback) {
+        globalValues.userValues.eatenFoodsArray = eatenFoods;
         globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
     },
-    setSearchResultsArray: function (searchResults) {
-        globalValues.searchResultsArray = searchResults;
+    setSearchResultsArray: function (searchResults, callback) {
+        globalValues.userValues.searchResultsArray = searchResults;
         globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
     },
-    setFoodAttributes: function (foodAttributes) {
-        globalValues.foodAttributes = foodAttributes;
+    setFoodAttributes: function (foodAttributes, callback) {
+        globalValues.userValues.selectedFoodAttributes = foodAttributes;
         globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
     },
-    setFriendlyNames: function (friendlyNames) {
-        globalValues.friendlyNames = friendlyNames;
+    setFriendlyNames: function (friendlyNames, callback) {
+        globalValues.friendlyValues.friendlyFoodAttributes = friendlyNames;
         globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
     },
-    setTotalMacrosToday: function (totalMacros) {
-        globalValues.totalMacrosToday = totalMacros;
+    setTotalMacrosToday: function (totalMacros, callback) {
+        globalValues.userValues.totalMacrosToday = totalMacros;
         globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
     },
-    setNonOperableAttributes: function (nonOperableAttributes) {
-        globalValues.nonOperableAttributes = nonOperableAttributes;
+    setNonOperableAttributes: function (nonOperableAttributes, callback) {
+        globalValues.miscValues.nonOperableAttributes = nonOperableAttributes;
         globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
     },
-    setWholeIntegerAttributes: function (wholeIntegerAttributes) {
-        globalValues.wholeIntegerAttributes = wholeIntegerAttributes;
+    setWholeIntegerAttributes: function (wholeIntegerAttributes, callback) {
+        globalValues.miscValues.wholeIntegerAttributes = wholeIntegerAttributes;
         globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
+    },
+    setTempUserStatsManual: function (tempUserStatsManual, callback) {
+        globalValues.tempValues.tempUserStatsManual = tempUserStatsManual;
+        globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
+    },
+    setTempUserStatsCalculated: function (tempUserStatsCalculated, callback) {
+        globalValues.tempValues.tempUserStatsCalculated = tempUserStatsCalculated;
+        globalFunctions.setGlobalValuesLocalStorage();
+        if (callback) {
+            callback();
+        }
     },
 };
 
@@ -358,21 +399,21 @@ var helperFunctions = {
 var globalFunctions = {
     showSelectedAttributes: function (callback)
     {
-        console.log("showSelectedAttributes(): current selected attributes " + JSON.stringify(globalValues.foodAttributes));
+        var selectedFoodAttributesRef = globalValues.userValues.selectedFoodAttributes;
+        console.log("showSelectedAttributes(): current selected attributes " + JSON.stringify(selectedFoodAttributesRef));
 
         //clear form
         document.getElementById("editSelectedAttributesForm").reset();
 
-        //var attributesJSON = globalValues["foodAttributes"][0];
 
-        for (var currentProperty in globalValues.foodAttributes)
+        for (var currentProperty in selectedFoodAttributesRef)
         {
             var currentElementName = currentProperty.toString();
             currentElementName = currentElementName + "checkbox";
             var currentElement = document.getElementById(currentElementName);
             if (currentElement !== null)
             {
-                if (globalValues.foodAttributes[currentProperty] === "t")
+                if (selectedFoodAttributesRef[currentProperty] === "t")
                 {
                     currentElement.checked = true;
                 }
@@ -393,7 +434,11 @@ var globalFunctions = {
      */
     refreshGlobalValuesFromLocalStorage: function (callback)
     {
-        globalValues = JSON.parse(localStorage.getItem("globalValues"));
+        var localStorageContents = localStorage.getItem("globalValues");
+        if (!globalFunctions.isUndefinedOrNull(localStorageContents))
+        {
+            globalValues = JSON.parse(localStorageContents);
+        }
 
         if (callback)
         {
@@ -491,7 +536,7 @@ var globalFunctions = {
         for (var index = 0; index < primaryAttributeArray.length; index++)
         {
             var currentAttributeValue = currentFoodJSON[primaryAttributeArray[index]];
-            outputHTML = outputHTML.concat("<font color='" + colorMapJSON[primaryAttributeArray[index]] + "'>" + globalValues["friendlyNames"][primaryAttributeArray[index]] + ":");
+            outputHTML = outputHTML.concat("<font color='" + colorMapJSON[primaryAttributeArray[index]] + "'>" + globalValues.friendlyValues.friendlyFoodAttributes[primaryAttributeArray[index]] + ":");
 
             if (globalFunctions.isUndefinedOrNull(currentAttributeValue))
             {
@@ -508,7 +553,7 @@ var globalFunctions = {
         for (var index = 0; index < secondaryAttributeArray.length; index++)
         {
             var currentAttributeValue = currentFoodJSON[secondaryAttributeArray[index]];
-            outputHTML = outputHTML.concat("<font color='#0099FF'>" + globalValues["friendlyNames"][secondaryAttributeArray[index]] + ":");
+            outputHTML = outputHTML.concat("<font color='#0099FF'>" + globalValues.friendlyValues.friendlyFoodAttributes[secondaryAttributeArray[index]] + ":");
 
             if (globalFunctions.isUndefinedOrNull(currentAttributeValue))
             {
@@ -525,11 +570,12 @@ var globalFunctions = {
     },
     getSelectedAttributes: function ()
     {
+        var selectedFoodAttributesRef = globalValues.userValues.selectedFoodAttributes;
         var outputArray = [];
 
-        for (var aProperty in globalValues.foodAttributes)
+        for (var aProperty in selectedFoodAttributesRef)
         {
-            if (globalValues.foodAttributes[aProperty] === "t")
+            if (selectedFoodAttributesRef[aProperty] === "t")
             {
                 outputArray.push(aProperty);
             }
@@ -571,15 +617,15 @@ var globalFunctions = {
     convertFormArrayToJSON: function (formArray)
     {
         var outputObject = {};
-        
-        for(var index = 0; index < formArray.length; index++)
+
+        for (var index = 0; index < formArray.length; index++)
         {
             var currentObject = formArray[index];
             /**
              * this condition prevents data like {"fat":""} being sent to the server
              * if we dont know the value theres no point in sending it
              */
-            if(currentObject.value !== "")
+            if (currentObject.value !== "")
             {
                 outputObject[currentObject.name] = currentObject.value;
             }

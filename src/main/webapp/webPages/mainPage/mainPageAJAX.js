@@ -65,13 +65,13 @@ function searchForFood(searchInput)
 function addCustomFood(id_customfood)
 {
     var outputJSON = {};
-
+    var customFoodsArrayRef = globalValues.userValues.customFoodsArray;
     //search customFoodListJSON for the food the user wants to add to their food log
-    for (var currentFood in globalValues.customFoodsArray)
+    for (var currentFood in customFoodsArrayRef)
     {
-        if (globalValues.customFoodsArray[currentFood].id_customfood === id_customfood)
+        if (customFoodsArrayRef[currentFood].id_customfood === id_customfood)
         {
-            outputJSON = globalValues.customFoodsArray[currentFood];
+            outputJSON = customFoodsArrayRef[currentFood];
         }
     }
     addEatenFood(outputJSON);
@@ -88,13 +88,13 @@ function addCustomFood(id_customfood)
 function addEatenFoodFromSearchResult(id_searchablefood)
 {
     var outputJSON = {};
-
+    var searchResultArrayRef = globalValues.userValues.searchResultsArray;
     //search customFoodListJSON for the food the user wants to add to their food log
-    for (var currentFood in globalValues.searchResultsArray)
+    for (var currentFood in searchResultArrayRef)
     {
-        if (globalValues.searchResultsArray[currentFood].id_searchablefood === id_searchablefood)
+        if (searchResultArrayRef[currentFood].id_searchablefood === id_searchablefood)
         {
-            var matchingFood = globalValues.searchResultsArray[currentFood];
+            var matchingFood = searchResultArrayRef[currentFood];
 
             for (var currentProperty in matchingFood)
             {
@@ -114,21 +114,9 @@ function addEatenFoodFromSearchResult(id_searchablefood)
  */
 function addEatenFoodManually()
 {
-    //get data from HTML form, it is formatted as an array of JSON object with the
-    //form data held in name/value pairs like so:
-    //[{"name":"foodname", "value":"tasty pie"},{"name":"protein", "value":"25"}]
     var formData = $("#addEatenFoodForm").serializeArray();
-
-    //prepare the JSON to send to server
-    var outputJSON = {};
-    for (var count in formData)
-    {
-        if (formData[count]["value"] !== "")
-        {
-            outputJSON[formData[count]["name"]] = formData[count]["value"];
-        }
-    }
-    addEatenFood(outputJSON);
+    var eatenFood = globalFunctions.convertFormArrayToJSON(formData);
+    addEatenFood(eatenFood);
 }
 
 /**
