@@ -17,11 +17,11 @@ $(document).ready(function () {
     $('#editSelectedAttributesForm').submit(function (event) {
         event.preventDefault();
 
-        var newFoodAttributes = {};
+        var updatedFoodAttributes = jQuery.extend(true, {}, globalValues.userValues.foodAttributes)
 
-        getNewFoodAttributes(newFoodAttributes, function ()
+        getNewFoodAttributes(updatedFoodAttributes, function ()
         {
-            globalFunctionsAJAX.updateSelectedAttributes(newFoodAttributes, function () {
+            globalFunctionsAjax.updateSelectedAttributes(updatedFoodAttributes, function () {
                 globalFunctions.showSelectedAttributes();
             });
         });
@@ -29,23 +29,27 @@ $(document).ready(function () {
 
     $('#changePasswordForm').submit(function (event) {
         event.preventDefault();
-        if (globalValues.passwordValid)
+        if (globalValues.miscValues.passwordValid)
         {
-            changePasswordRequestAJAX();
+            changePasswordRequestAjax();
+        }
+        else
+        {
+            console.log("password does not meet strength requirements");
         }
     });
 
     $('#changeEmailForm').submit(function (event) {
         event.preventDefault();
-        if (globalValues.emailValid)
+        if (globalValues.miscValues.emailValid)
         {
-            changeEmailRequestAJAX();
+            changeEmailRequestAjax();
+        }
+        else
+        {
+            console.log("emails do not match");
         }
     });
-
-//    $('#oldPassword, #newPassword, #confirmNewPassword').on('keyup', function () {
-//        document.getElementById("passwordFeedback").innerHTML = "";
-//    });
 
     $("#changePasswordForm :input").focus(function () {
         document.getElementById("passwordFeedback").innerHTML = "";
@@ -64,7 +68,7 @@ $(document).ready(function () {
         this.select();
     });
 
-    //this adds an event from passwordStrength.js which gives user feedback and controls globalValues.passwordValid
+    //this adds an event from passwordStrength.js which gives user feedback and controls globalValues.miscValues.passwordValid
     passwordStrengthTester("newPassword", "confirmNewPassword", "passwordStrength");
     //this adds an event from emailValid.js which gives user feedback and controls globalValues.emailValid
     emailMatchValidator("newEmail", "confirmNewEmail", "emailFeedback");
@@ -75,41 +79,48 @@ function emailsMatch()
     return document.getElementById("newEmail").value === document.getElementById("confirmNewEmail").value;
 }
 
-function changePasswordRequestAJAX()
+function changePasswordRequestAjax()
 {
     var formData = $("#changePasswordForm").serializeArray();
+    var inputObject = globalFunctions.convertFormArrayToJSON(formData);
+
     $.ajax({
         url: serverAPI.requests.CHANGE_PASSWORD_REQUEST,
         type: "POST",
-        data: JSON.stringify(formData),
+        data: JSON.stringify(inputObject),
         contentType: "application/json",
-        success: function (data)
+        dataType: "json",
+        success: function (returnObject)
         {
-            var returnObject = JSON.parse(data);
-
-            if (returnObject.success === "true")
+            if (returnObject.success === true)
             {
                 console.log("password changed");
                 document.getElementById("passwordStrength").innerHTML = "";
                 document.getElementById("changePasswordForm").reset();
-                document.getElementById("passwordFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Password changed successfully for " + returnObject.email + "</div>";
+                document.getElementById("passwordFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Password changed successfully for " + returnObject.data.email + "</div>";
             } else
             {
                 document.getElementById("passwordStrength").innerHTML = "";
-                document.getElementById("passwordFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + errorCodes[returnObject.errorCode] + ", no action taken</div>";
+                document.getElementById("passwordFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + ", no action taken</div>";
             }
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }
 
-
-function getNewFoodAttributes(newFoodAttributesObject, callback) {
-    for (var currentAttribute in globalValues.foodAttributes)
+/**
+ * Iterates through every food attribute in globalValues.userValues.foodAttributes
+ * and updates the "t" or "f" values of food attributes that the user has changed
+ * 
+ * @param {type} updatedFoodAttributes - The new food attributes object that is intended to replace the old one
+ * @param {type} callback
+ * @returns {undefined}
+ */
+function getNewFoodAttributes(updatedFoodAttributes, callback) {
+    for (var currentAttribute in globalValues.userValues.foodAttributes)
     {
         var currentAttributeElementName = currentAttribute + "checkbox";
         var currentElement = document.getElementById(currentAttributeElementName);
@@ -118,10 +129,10 @@ function getNewFoodAttributes(newFoodAttributesObject, callback) {
         {
             if (currentElement.checked)
             {
-                newFoodAttributesObject[currentAttribute] = "t";
+                updatedFoodAttributes[currentAttribute] = "true";
             } else
             {
-                newFoodAttributesObject[currentAttribute] = "f";
+                updatedFoodAttributes[currentAttribute] = "false";
             }
         }
     }
@@ -131,37 +142,37 @@ function getNewFoodAttributes(newFoodAttributesObject, callback) {
     }
 }
 
-function changeEmailRequestAJAX()
+function changeEmailRequestAjax()
 {
     var formData = $("#changeEmailForm").serializeArray();
+    var inputObject = globalFunctions.convertFormArrayToJSON(formData);
     $.ajax({
         url: serverAPI.requests.CHANGE_EMAIL_REQUEST,
         type: "POST",
-        data: JSON.stringify(formData),
+        data: JSON.stringify(inputObject),
         contentType: "application/json",
-        success: function (data)
+        dataType: "json",
+        success: function (returnObject)
         {
-            var returnObject = JSON.parse(data);
             //{"success":"true", "oldEmail":"123@123.com", "newEmail":"bawbags@baws.com", "errorCode":"13"}
 
-            if (returnObject.success === "true")
+            if (returnObject.success === true)
             {
                 console.log("email changed");
                 document.getElementById("changeEmailForm").reset();
                 document.getElementById("emailFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Email changed successfully from "
-                        + returnObject.oldEmail
+                        + returnObject.data.oldEmail
                         + " to "
-                        + returnObject.newEmail
+                        + returnObject.data.newEmail
                         + "</div>";
             } else
             {
-                document.getElementById("emailFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + errorCodes[returnObject.errorCode] + ", no action taken</div>";
+                document.getElementById("emailFeedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + ", no action taken</div>";
             }
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }

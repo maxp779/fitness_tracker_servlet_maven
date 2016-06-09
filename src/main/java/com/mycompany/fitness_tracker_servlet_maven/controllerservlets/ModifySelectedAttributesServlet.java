@@ -9,9 +9,14 @@ import com.mycompany.fitness_tracker_servlet_maven.core.ServletUtilities;
 import com.mycompany.fitness_tracker_servlet_maven.core.StandardOutputObject;
 import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -49,18 +54,20 @@ public class ModifySelectedAttributesServlet extends HttpServlet
         log.trace("doPost()");
         String JSONString = ServletUtilities.getPOSTRequestJSONString(request);
         log.debug(JSONString);
-        Map<String, String> selectedAttributesMap = ServletUtilities.convertJSONStringToMap(JSONString);
+        Map<String, String> clientAttributesMap = ServletUtilities.convertJSONStringToMap(JSONString);
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
-        //selectedAttributesMap.put("id_user", id_user); <-- might break it, not sure why this is needed
 
-        //execute database command and send response to client
-        boolean success = DatabaseAccess.modifySelectedAttributes(selectedAttributesMap, currentUser.getId_user());
+        //selectedAttributesMap.put("id_user", id_user); <-- might break it, not sure why this is needed
+        log.debug("current user: " + currentUser.toString());
+        
+        Map<String, Boolean> updatedAttributesMap = createUpdatedAttributesMap(clientAttributesMap);
+        boolean success = DatabaseAccess.modifySelectedAttributes(updatedAttributesMap, currentUser.getId_user());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
 
         if (success)
         {
-            outputObject.setData(selectedAttributesMap);
+            outputObject.setData(updatedAttributesMap);
             writeOutput(response, outputObject);
         } else
         {
@@ -68,6 +75,58 @@ public class ModifySelectedAttributesServlet extends HttpServlet
             outputObject.setErrorCode(ErrorCode.UPDATE_ATTRIBUTES_FAILED);
             writeOutput(response, outputObject);
         }
+    }
+    
+    /**
+     * This method ensures that the Map object sent to the database method is populated with
+     * every attribute and each attribute has a true/false value. It also converts the true/false
+     * Strings to Boolean values.
+     * 
+     * This ensures that if the client misses some attributes for any reason or decided to only
+     * send attrbutes that are changed that the database will not end up in an inconsistent state e.g
+     * with null values instead of false.
+     * 
+     * @param inputMap The map send from the client
+     * @return a map ready to be sent to the database to modify the users selected food attributes
+     */
+    private Map<String,Boolean> createUpdatedAttributesMap(Map<String, String> inputMap)
+    {
+        Map<String, String> updatedAttributesMap = new HashMap<>();
+        List<String> supportedFoodAttributes = GlobalValues.getSUPPORTED_FOOD_ATTRIBUTES();
+
+        for (String foodAttribute : supportedFoodAttributes)
+        {
+            if (inputMap.containsKey(foodAttribute))
+            {
+                updatedAttributesMap.put(foodAttribute, inputMap.get(foodAttribute));
+            } else
+            {
+                updatedAttributesMap.put(foodAttribute, "false");
+            }
+        }
+        
+        //change string attributes into boolean
+        Map<String, Boolean> attributeMapBoolean = new LinkedHashMap();
+        Iterator it = updatedAttributesMap.entrySet().iterator();
+        while (it.hasNext())
+        {
+            Map.Entry pair = (Map.Entry) it.next();
+            String value = (String) pair.getValue();
+            String key = (String) pair.getKey();
+
+            if (!key.equals("id_user"))
+            {
+                if (value.equals("true"))
+                {
+                    attributeMapBoolean.put(key, Boolean.TRUE);
+                } else
+                {
+                    attributeMapBoolean.put(key, Boolean.FALSE);
+                }
+            }
+        }
+
+        return attributeMapBoolean;
     }
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)

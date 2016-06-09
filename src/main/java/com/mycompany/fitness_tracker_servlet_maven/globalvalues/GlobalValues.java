@@ -6,7 +6,9 @@
 package com.mycompany.fitness_tracker_servlet_maven.globalvalues;
 
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.Request;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,9 +17,10 @@ import java.util.Map;
  * @author max
  */
 public class GlobalValues
-{    
+{
+
     private static final String FIRST_LOGIN_SERVLET = "LoginPageServlet";
-    
+
     //html page URL
     private static final String LOGIN_PAGE_URL = "/webPages/loginPage/loginPage.html";
     private static final String COOKIES_POLICY_URL = "/webPages/cookiesPolicyPage/cookiesPolicyPage.html";
@@ -30,7 +33,6 @@ public class GlobalValues
     private static final String MY_STATS_PAGE_URL = "/webPages/myStatsPage/myStatsPage.html";
     private static final String FORGOT_PASSWORD_PAGE_URL = "/webPages/forgotPasswordPage/forgotPasswordPage.html";
     private static final String CHANGE_PASSWORD_PAGE_URL = "/webPages/changePasswordPage/changePasswordPage.html";
-
 
     //html pages
     private static final String LOGIN_PAGE = "loginPage.html";
@@ -48,11 +50,11 @@ public class GlobalValues
     //misc values
     private static final int SESSION_TIMEOUT_VALUE = 21600; // session timeout, 0 or less will never timeout, this value is in seconds, currently 21600 is 6 hours    
     private static final int MIN_PASSWORD_LENGTH = 6;
-    
+
     //database values
     private static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/fitnessTrackerDatabase";
     private static final String DATABASE_CONNECTION_POOL = "jdbc/fitnessTrackerDB"; //JNDI name for connection pool
-    
+
     //requests which require authentication
     private static final String[] AUTH_RESOURCES =
     {
@@ -80,7 +82,7 @@ public class GlobalValues
         CUSTOM_FOODS_PAGE,
         MY_STATS_PAGE
     };
-    
+
     //user friendly values for the database column names
     private static final Map<String, String> FRIENDLY_VALUES_MAP;
 
@@ -127,13 +129,40 @@ public class GlobalValues
         FRIENDLY_VALUES_MAP.put("iodine", "Iodine");
     }
 
+    private static final List<String> SUPPORTED_FOOD_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote", "water",
+            "totnit", "protein", "fat", "carbohydrate", "calorie", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", "engfib", "aoacfib", "satfac",
+            "satfod", "totn6pfac", "totn6pfod", "totn3pfac", "totn3pfod", "monofacc", "monofodc", "monofac", "monofod", "polyfacc", "polyfodc", "polyfac", "polyfod", "satfacx6", "satfodx6",
+            "totbrfac", "totbrfod", "factrans", "fodtrans", "chol", "weight", "sodium"));
+    private static final List<String> VARCHAR_ATTRIBUTES = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
+    private static final List<String> INTEGER_ATTRIBUTES = (Arrays.asList("calorie", "kj", "weight", "id_user"));
+    private static final List<String> SUPPORTED_USER_STATS = (Arrays.asList("weight", "height", "protein_goal", "carbohydrate_goal", "fat_goal", "tee", "tee_goal", "date_of_birth",
+            "gender", "activity_level", "excercise_intensity", "excercise_days_per_week", "excercise_minutes_per_day"));
+
+    public static List<String> getSUPPORTED_FOOD_ATTRIBUTES()
+    {
+        return SUPPORTED_FOOD_ATTRIBUTES;
+    }
+
+    public static List<String> getVARCHAR_ATTRIBUTES()
+    {
+        return VARCHAR_ATTRIBUTES;
+    }
+
+    public static List<String> getINTEGER_ATTRIBUTES()
+    {
+        return INTEGER_ATTRIBUTES;
+    }
+
+    public static List<String> getSUPPORTED_USER_STATS()
+    {
+        return SUPPORTED_USER_STATS;
+    }
+    
     public static int getMIN_PASSWORD_LENGTH()
     {
         return MIN_PASSWORD_LENGTH;
     }
-    
-    
-    
+
     public static String[] getAUTH_RESOURCES()
     {
         return AUTH_RESOURCES;

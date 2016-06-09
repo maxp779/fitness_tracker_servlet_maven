@@ -9,7 +9,7 @@ $(document).ready(function () {
 
     setupEvents(function ()
     {
-        globalFunctionsAJAX.getAllClientData(function ()
+        globalFunctionsAjax.getAllClientData(function ()
         {
             updateMainPage();
         });

@@ -77,7 +77,7 @@ public class ServerAPI
 //        outputMap.put(Request.REMOVE_EATEN_FOOD, "removeEatenFood");
 //        outputMap.put(Request.SEARCH_FOR_FOOD, "searchForFood");
 //        outputMap.put(Request.MODIFY_SELECTED_ATTRIBUTES, "modifySelectedAttributes");
-//        outputMap.put(Request.GET_VIEWABLE_ATTRIBUTES, "getViewableAttributesList");
+//        outputMap.put(Request.GET_FOOD_ATTRIBUTES, "getViewableAttributesList");
 //        outputMap.put(Request.GET_FRIENDLY_NAMES, "getFriendlyNames");
 //        outputMap.put(Request.MODIFY_USER_STATS, "modifyUserStats");
 //        outputMap.put(Request.GET_USER_STATS, "getUserStats");

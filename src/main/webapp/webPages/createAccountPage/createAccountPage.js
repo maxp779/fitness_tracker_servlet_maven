@@ -13,7 +13,7 @@ $(document).ready(function () {
         
         if(globalValues.passwordValid)
         {
-            createAccountRequestAJAX();
+            createAccountRequestAjax();
         }
     });
     
@@ -28,7 +28,7 @@ $(document).ready(function () {
 
 });
 
-function createAccountRequestAJAX()
+function createAccountRequestAjax()
 {
     var formData = $("#createAccountForm").serializeArray();
     var email = document.getElementById("email").value;

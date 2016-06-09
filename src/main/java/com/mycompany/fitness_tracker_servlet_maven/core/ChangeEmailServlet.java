@@ -39,7 +39,6 @@ public class ChangeEmailServlet extends HttpServlet
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -49,7 +48,7 @@ public class ChangeEmailServlet extends HttpServlet
         HttpSession session = request.getSession();
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
         String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
-        Map<String, String> requestDetailsMap = ServletUtilities.convertJSONFormDataToMap(requestDetails);
+        Map<String, String> requestDetailsMap = ServletUtilities.convertJSONStringToMap(requestDetails);
         String password = requestDetailsMap.get("changeEmailPassword");
 
         StandardOutputObject outputObject = new StandardOutputObject();

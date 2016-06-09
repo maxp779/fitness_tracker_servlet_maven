@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,13 +71,13 @@ public class GetAllClientDataServlet extends HttpServlet
 
         List customFoodList = DatabaseAccess.getCustomFoodList(currentUser.getId_user());
         Map<String, String> friendlyNamesMap = GlobalValues.getFRIENDLY_VALUES_MAP();
-        Map viewableAttributesMap = DatabaseAccess.getViewableAttributesList(currentUser.getId_user());
+        Map foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getId_user());
         Map userStatsMap = DatabaseAccess.getUserStats(currentUser.getId_user());
         List eatenFoodList = DatabaseAccess.getEatenFoodList(currentUser.getId_user(), inputTime);
 
         boolean success = (customFoodList != null
                 && friendlyNamesMap != null
-                && viewableAttributesMap != null
+                && foodAttributesMap != null
                 && userStatsMap != null
                 && eatenFoodList != null);
 
@@ -90,7 +89,7 @@ public class GetAllClientDataServlet extends HttpServlet
             Map<String, Object> data = new HashMap<>();
             data.put("customFoods", customFoodList);
             data.put("friendlyNames", friendlyNamesMap);
-            data.put("viewableAttributes", viewableAttributesMap);
+            data.put("foodAttributes", foodAttributesMap);
             data.put("userStats", userStatsMap);
             data.put("eatenFoods", eatenFoodList);
             outputObject.setData(data);

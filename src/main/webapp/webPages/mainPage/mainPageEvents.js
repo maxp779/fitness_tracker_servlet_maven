@@ -39,7 +39,7 @@ function setupEvents(callback)
             eventTriggered = true;
 
             $('#macroDatepicker').datepicker('setDate', viewDate);
-            globalFunctionsAJAX["getEatenFoodList"](function () {
+            globalFunctionsAjax["getEatenFoodList"](function () {
                 updateMainPage();
             });
         }
@@ -56,7 +56,7 @@ function setupEvents(callback)
             eventTriggered = true;
 
             $('#foodDatepicker').datepicker('setDate', viewDate);
-            globalFunctionsAJAX["getEatenFoodList"](function () {
+            globalFunctionsAjax["getEatenFoodList"](function () {
                 updateMainPage();
             });
         }
@@ -70,7 +70,7 @@ function setupEvents(callback)
         event.preventDefault(); //this prevents the default actions of the form
         addEatenFoodManually(function () {
 
-            globalFunctionsAJAX["getEatenFoodList"](function () {
+            globalFunctionsAjax["getEatenFoodList"](function () {
                 updateMainPage();
 
             });

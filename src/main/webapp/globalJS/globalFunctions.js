@@ -34,7 +34,7 @@ var setGlobalValues = {
         }
     },
     setFoodAttributes: function (foodAttributes, callback) {
-        globalValues.userValues.selectedFoodAttributes = foodAttributes;
+        globalValues.userValues.foodAttributes = foodAttributes;
         globalFunctions.setGlobalValuesLocalStorage();
         if (callback) {
             callback();
@@ -85,7 +85,7 @@ var setGlobalValues = {
 };
 
 
-var globalFunctionsAJAX = {
+var globalFunctionsAjax = {
     /**
      * gets the users stats from the server
      * 
@@ -116,7 +116,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -157,7 +157,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -189,7 +189,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -221,7 +221,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -253,7 +253,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -275,7 +275,7 @@ var globalFunctionsAJAX = {
                 if (returnObject.success === true)
                 {
                     console.log("updateSelectedAttributes() succeeded");
-                    setGlobalValues.setFoodAttributes(newFoodAttributes);
+                    setGlobalValues.setFoodAttributes(returnObject.data);
                     document.getElementById("attributeFeedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Attributes updated successfully</div>";
                 } else
                 {
@@ -288,20 +288,20 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
             }
         });
 
     },
     /**
      *  This method is currently redundant however it has been left in as an 
-     *  optional way to redirect the user to another page via an AJAX request.
+     *  optional way to redirect the user to another page via an Ajax request.
      * @param {type} URL
      * @returns {undefined}
      */
-    makeRedirectRequestAJAX: function (URL)
+    makeRedirectRequestAjax: function (URL)
     {
-        console.log("makeRedirectRequestAJAX()");
+        console.log("makeRedirectRequestAjax()");
         $.ajax({
             url: URL,
             type: "POST",
@@ -312,7 +312,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
             }
         });
     },
@@ -336,7 +336,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
             }
         });
     },
@@ -361,7 +361,7 @@ var globalFunctionsAJAX = {
                     console.log("getAllClientData() succeeded " + JSON.stringify(returnObject.data));
                     setGlobalValues.setCustomFoodsArray(returnObject.data.customFoods);
                     setGlobalValues.setFriendlyNames(returnObject.data.friendlyNames);
-                    setGlobalValues.setFoodAttributes(returnObject.data.viewableAttributes)
+                    setGlobalValues.setFoodAttributes(returnObject.data.foodAttributes)
                     setGlobalValues.setUserStats(returnObject.data.userStats)
                     setGlobalValues.setEatenFoodsArray(returnObject.data.eatenFoods);
 
@@ -378,7 +378,7 @@ var globalFunctionsAJAX = {
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
                 if (callback)
                 {
                     callback();
@@ -399,21 +399,21 @@ var helperFunctions = {
 var globalFunctions = {
     showSelectedAttributes: function (callback)
     {
-        var selectedFoodAttributesRef = globalValues.userValues.selectedFoodAttributes;
-        console.log("showSelectedAttributes(): current selected attributes " + JSON.stringify(selectedFoodAttributesRef));
+        var foodAttributesRef = globalValues.userValues.foodAttributes;
+        console.log("showSelectedAttributes(): current selected attributes " + JSON.stringify(foodAttributesRef));
 
         //clear form
         document.getElementById("editSelectedAttributesForm").reset();
 
 
-        for (var currentProperty in selectedFoodAttributesRef)
+        for (var currentProperty in foodAttributesRef)
         {
             var currentElementName = currentProperty.toString();
             currentElementName = currentElementName + "checkbox";
             var currentElement = document.getElementById(currentElementName);
             if (currentElement !== null)
             {
-                if (selectedFoodAttributesRef[currentProperty] === "t")
+                if (foodAttributesRef[currentProperty] === true)
                 {
                     currentElement.checked = true;
                 }
@@ -462,11 +462,11 @@ var globalFunctions = {
     },
 //    getAllGlobalValues: function (callback)
 //    {
-//        globalFunctionsAJAX["getFriendlyNamesJSON"](function () {
-//            globalFunctionsAJAX["getFoodAttributes"](function () {
-//                globalFunctionsAJAX["getUserStats"](function () {
-//                    globalFunctionsAJAX["getCustomFoodList"](function () {
-//                        globalFunctionsAJAX["getEatenFoodList"](function () {
+//        globalFunctionsAjax["getFriendlyNamesJSON"](function () {
+//            globalFunctionsAjax["getFoodAttributes"](function () {
+//                globalFunctionsAjax["getUserStats"](function () {
+//                    globalFunctionsAjax["getCustomFoodList"](function () {
+//                        globalFunctionsAjax["getEatenFoodList"](function () {
 //                            if (callback)
 //                            {
 //                                callback();
@@ -570,12 +570,12 @@ var globalFunctions = {
     },
     getSelectedAttributes: function ()
     {
-        var selectedFoodAttributesRef = globalValues.userValues.selectedFoodAttributes;
+        var foodAttributesRef = globalValues.userValues.foodAttributes;
         var outputArray = [];
 
-        for (var aProperty in selectedFoodAttributesRef)
+        for (var aProperty in foodAttributesRef)
         {
-            if (selectedFoodAttributesRef[aProperty] === "t")
+            if (foodAttributesRef[aProperty] === "t")
             {
                 outputArray.push(aProperty);
             }

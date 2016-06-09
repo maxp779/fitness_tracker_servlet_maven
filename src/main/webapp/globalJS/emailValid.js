@@ -30,12 +30,12 @@ function emailMatchValidator(emailID, confirmEmailID, feedbackDivID)
         {
             //$('#emailValidNotifier').removeClass().addClass('alert alert-danger').html('Email does not match!');
             document.getElementById(feedbackDivID).innerHTML = "<div class='alert alert-danger'>Emails do not match</div>";
-            globalValues.emailValid = false;
+            globalValues.miscValues.emailValid = false;
         } else
         {
             //$('#emailValidNotifier').removeClass().html('');
             document.getElementById(feedbackDivID).innerHTML = "";
-            globalValues.emailValid = true;
+            globalValues.miscValues.emailValid = true;
         }
 
     });

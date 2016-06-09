@@ -13,13 +13,18 @@ var globalValues = {
         customFoodsArray: [], //an array of objects which represent the current users custom foods
         eatenFoodsArray: [], //an array of objects which represent the current users eaten foods
         searchResultsArray: [], //an array of objects which represent the current users search results if they searched the database
-        selectedFoodAttributes: {}, //a single object containing food attributes the user wants to see e.g protein,carbs,saturated fats
+        foodAttributes: {}, //a single object containing ALL supported food attributes and defines if the user wants to see a particular attribute 
+        //e.g {"protein":"t","fat":"f"} if the user wants to see protein content but not fat
         totalMacrosToday: {} //the total of all food attributes of the eaten foods e.g total protein today, total fat today etc
     },
     miscValues: {
         nonOperableAttributes: ["foodcode", "foodname", "foodnameoriginal", "description",
             "foodgroup", "previous", "foodreferences", "footnote", "id_user", "id_eatenfood", "id_searchablefood", "timestamp"], //attributes that should not be operated on mathematically
-        wholeIntegerAttributes: ["calorie", "kj", "weight"] //attributes that are whole integers as opposed to floats
+        wholeIntegerAttributes: ["calorie", "kj", "weight"], //attributes that are whole integers as opposed to floats
+        
+        //these values are used by the passwordStrength.js and emailValid.js to validate a password and check if two emails match.
+        passwordValid: false,
+        emailValid: false
     },
     friendlyValues: {
         friendlyFoodAttributes: {}, //friendly names for the food attributes e.g {"satfod":"Saturated fat","totsug":"Total Sugar"}
@@ -34,10 +39,8 @@ var globalValues = {
          */
         tempUserStatsManual: {}, //manually entered stats are stored here, if the user chooses to save them they become userValues.userStats
         tempUserStatsCalculated: {} //calculated stats are stored here, if the user chooses to save them they become userValues.userStats
-    },
-    //neither of these belong here either, will take out in future
-    passwordValid: false,
-    emailValid: false
+    }
+
 };
 //not currently used but may be of use in the future!
 //var errorCodes = {
@@ -102,21 +105,21 @@ var serverAPI = JSON.parse(localStorage.getItem("serverAPI"));
 //        settingsPageRequest: "settingsPage",
 //        deleteAccountRequest: "deleteAccount",
 //        
-//        //AJAX requests
-//        AJAX_GetCustomFoodList: "AJAX_GetCustomFoodList",
-//        AJAX_GetEatenFoodList: "AJAX_GetEatenFoodList",
-//        AJAX_RemoveCustomFood: "AJAX_RemoveCustomFood",
-//        AJAX_AddCustomFood: "AJAX_AddCustomFood",
-//        AJAX_EditCustomFood: "AJAX_EditCustomFood",
-//        AJAX_AddEatenFood: "AJAX_AddEatenFood",
-//        AJAX_RemoveEatenFood: "AJAX_RemoveEatenFood",
-//        AJAX_SearchForFood: "AJAX_SearchForFood",
-//        AJAX_ModifySelectedAttributes: "AJAX_ModifySelectedAttributes",
-//        AJAX_GetViewableAttributesList: "AJAX_GetViewableAttributesList",
-//        AJAX_GetFriendlyNames: "AJAX_GetFriendlyNames",
-//        AJAX_ModifyUserStats: "AJAX_ModifyUserStats",
-//        AJAX_GetUserStats: "AJAX_GetUserStats",
-//        AJAX_GetIdentifierTokenEmail:"AJAX_GetIdentifierTokenEmail"
+//        //Ajax requests
+//        Ajax_GetCustomFoodList: "Ajax_GetCustomFoodList",
+//        Ajax_GetEatenFoodList: "Ajax_GetEatenFoodList",
+//        Ajax_RemoveCustomFood: "Ajax_RemoveCustomFood",
+//        Ajax_AddCustomFood: "Ajax_AddCustomFood",
+//        Ajax_EditCustomFood: "Ajax_EditCustomFood",
+//        Ajax_AddEatenFood: "Ajax_AddEatenFood",
+//        Ajax_RemoveEatenFood: "Ajax_RemoveEatenFood",
+//        Ajax_SearchForFood: "Ajax_SearchForFood",
+//        Ajax_ModifySelectedAttributes: "Ajax_ModifySelectedAttributes",
+//        Ajax_GetViewableAttributesList: "Ajax_GetViewableAttributesList",
+//        Ajax_GetFriendlyNames: "Ajax_GetFriendlyNames",
+//        Ajax_ModifyUserStats: "Ajax_ModifyUserStats",
+//        Ajax_GetUserStats: "Ajax_GetUserStats",
+//        Ajax_GetIdentifierTokenEmail:"Ajax_GetIdentifierTokenEmail"
 
 
 

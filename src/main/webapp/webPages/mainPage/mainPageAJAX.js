@@ -27,7 +27,7 @@ function searchForFood(searchInput)
     } else
     {
         searchInputJSON.searchInput = searchInput.toLowerCase(); //database is lower case so user input must be converted to lower case
-        console.log("AJAX request: searching for food: " + JSON.stringify(searchInputJSON));
+        console.log("Ajax request: searching for food: " + JSON.stringify(searchInputJSON));
         $.ajax({
             url: serverAPI.requests.SEARCH_FOR_FOOD,
             type: "GET",
@@ -48,7 +48,7 @@ function searchForFood(searchInput)
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
             }
         });
     }
@@ -142,7 +142,7 @@ function addEatenFood(foodJSON)
             if (returnObject.success === true)
             {
                 console.log("addEatenFood() suceeded");
-                globalFunctionsAJAX.getEatenFoodList(function () {
+                globalFunctionsAjax.getEatenFoodList(function () {
                     updateMainPage();
                 });
 
@@ -155,7 +155,7 @@ function addEatenFood(foodJSON)
         },
         error: function (xhr, status, error)
         {
-            console.log("AJAX request failed:" + error.toString());
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }
@@ -170,7 +170,7 @@ function removeEatenFood(id_eatenfood)
 {
     if (id_eatenfood !== null)
     {
-        console.log("AJAX request: attempting to remove " + id_eatenfood);
+        console.log("Ajax request: attempting to remove " + id_eatenfood);
         var eatenfoodJSON = {};
         eatenfoodJSON["id_eatenfood"] = id_eatenfood;
         $.ajax({
@@ -184,7 +184,7 @@ function removeEatenFood(id_eatenfood)
                 if (returnObject.success === true)
                 {
                     console.log("eaten food removal suceeded");
-                    globalFunctionsAJAX.getEatenFoodList(function () {
+                    globalFunctionsAjax.getEatenFoodList(function () {
                         updateMainPage();
                     });
                 } else
@@ -195,7 +195,7 @@ function removeEatenFood(id_eatenfood)
             error: function (xhr, status, error)
             {
                 // check status && error
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
             }
         });
     } else

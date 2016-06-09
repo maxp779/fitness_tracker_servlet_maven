@@ -32,7 +32,6 @@ public class ForgotPasswordEmailServlet extends HttpServlet
 {
 
     private static final Logger log = LoggerFactory.getLogger(ForgotPasswordEmailServlet.class);
-
     /**
      * Handles the HTTP <code>POST</code> method.
      *

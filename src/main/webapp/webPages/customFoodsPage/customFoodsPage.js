@@ -104,7 +104,7 @@ function deleteCustomFood(id_customfood, callback)
             if (returnObject.success === true)
             {
                 console.log("custom food removal suceeded");
-                globalFunctionsAJAX.getCustomFoodList(function () {
+                globalFunctionsAjax.getCustomFoodList(function () {
                     if (callback)
                     {
                         callback();
@@ -118,7 +118,7 @@ function deleteCustomFood(id_customfood, callback)
         },
         error: function (xhr, status, error)
         {
-            console.log("AJAX request failed:" + error.toString());
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 
@@ -153,7 +153,7 @@ function createCustomFood()
             if (returnObject.success === true)
             {
                 console.log("food add suceeded");
-                globalFunctionsAJAX.getCustomFoodList(function () {
+                globalFunctionsAjax.getCustomFoodList(function () {
                     populateCustomFoodList();
                 });
 
@@ -168,7 +168,7 @@ function createCustomFood()
         },
         error: function (xhr, status, error)
         {
-            console.log("AJAX request failed:" + error.toString());
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }
@@ -240,7 +240,7 @@ function saveEditedCustomFood()
             if (returnObject.success === true)
             {
                 console.log("food edit suceeded");
-                globalFunctionsAJAX.getCustomFoodList(function () {
+                globalFunctionsAjax.getCustomFoodList(function () {
                     populateCustomFoodList();
                 });
             } else
@@ -250,7 +250,7 @@ function saveEditedCustomFood()
         },
         error: function (xhr, status, error)
         {
-            console.log("AJAX request failed:" + error.toString());
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }

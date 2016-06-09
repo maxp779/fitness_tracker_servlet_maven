@@ -61,7 +61,7 @@ public class FrontControllerServlet extends HttpServlet
         requestToServletMapping.put(Request.REMOVE_EATEN_FOOD.toString(), "/" + RemoveEatenFoodServlet.class.getSimpleName());
         requestToServletMapping.put(Request.SEARCH_FOR_FOOD.toString(), "/" + SearchForFoodServlet.class.getSimpleName());
         requestToServletMapping.put(Request.MODIFY_SELECTED_ATTRIBUTES.toString(), "/" + ModifySelectedAttributesServlet.class.getSimpleName());
-        requestToServletMapping.put(Request.GET_VIEWABLE_ATTRIBUTES.toString(), "/" + GetViewableAttributesListServlet.class.getSimpleName());
+        requestToServletMapping.put(Request.GET_FOOD_ATTRIBUTES.toString(), "/" + GetFoodAttributesListServlet.class.getSimpleName());
         requestToServletMapping.put(Request.GET_FRIENDLY_NAMES.toString(), "/" + GetFriendlyNamesServlet.class.getSimpleName());
         requestToServletMapping.put(Request.MODIFY_USER_STATS.toString(), "/" + ModifyUserStatsServlet.class.getSimpleName());
         requestToServletMapping.put(Request.GET_USER_STATS.toString(), "/" + GetUserStatsServlet.class.getSimpleName());

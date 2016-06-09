@@ -12,7 +12,7 @@ $(document).ready(function () {
     });
 
     $('#loginForm').submit(function () {
-        loginRequestAJAX();
+        loginRequestAjax();
         return false;
     });
 
@@ -87,7 +87,7 @@ function getServerAPI(callback)
         },
         error: function (xhr, status, error)
         {
-            console.log("AJAX request failed:" + error.toString());
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }
@@ -97,7 +97,7 @@ function getServerAPI(callback)
  * 
  * @returns {undefined}
  */
-function loginRequestAJAX()
+function loginRequestAjax()
 {
     //get data from form, it is formatted as an array of JSON objects with the
     //form data held in name/value pairs like so:
@@ -124,7 +124,7 @@ function loginRequestAJAX()
         },
         error: function (xhr, status, error)
         {
-            console.log("AJAX request failed:" + error.toString());
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }

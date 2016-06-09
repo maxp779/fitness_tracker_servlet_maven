@@ -6,6 +6,7 @@
 package com.mycompany.fitness_tracker_servlet_maven.database;
 
 import com.mycompany.fitness_tracker_servlet_maven.core.UserObject;
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,18 +49,6 @@ public class DatabaseAccess
 //            + "satfod=?,totn6pfac=?,totn6pfod=?,totn3pfac=?,totn3pfod=?,monofacc=?,monofodc=?,monofac=?,monofod=?,polyfacc=?,polyfodc=?,polyfac=?,polyfod=?,satfacx6=?,satfodx6=?,"
 //            + "totbrfac=?,totbrfod=?,factrans=?,fodtrans=?,chol=?,weight=?,sodium=? WHERE id_user=?";
     //Supported food attributes, this omits items that are added automatically
-    private static final List<String> supportedFoodAttributeList = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote", "water",
-            "totnit", "protein", "fat", "carbohydrate", "calorie", "kj", "star", "oligo", "totsug", "gluc", "galact", "fruct", "sucr", "malt", "lact", "alco", "engfib", "aoacfib", "satfac",
-            "satfod", "totn6pfac", "totn6pfod", "totn3pfac", "totn3pfod", "monofacc", "monofodc", "monofac", "monofod", "polyfacc", "polyfodc", "polyfac", "polyfod", "satfacx6", "satfodx6",
-            "totbrfac", "totbrfod", "factrans", "fodtrans", "chol", "weight", "sodium"));
-
-    private static final List<String> varcharAttributeList = (Arrays.asList("foodcode", "foodname", "foodnameoriginal", "description", "foodgroup", "previous", "foodreferences", "footnote"));
-    private static final List<String> integerAttributeList = (Arrays.asList("calorie", "kj", "weight", "id_user"));
-
-    //Supported user stats
-    private static final List<String> supportedUserStatsList = (Arrays.asList("weight", "height", "protein_goal", "carbohydrate_goal", "fat_goal", "tee", "tee_goal", "date_of_birth",
-            "gender", "activity_level", "excercise_intensity", "excercise_days_per_week", "excercise_minutes_per_day"));
-
     /**
      *
      * @param loginAttemptEmail
@@ -480,14 +469,15 @@ public class DatabaseAccess
         addCustomFoodSQL.append("INSERT INTO custom_foods_table ");
         StringBuilder addCustomFoodColumns = new StringBuilder("(");
         StringBuilder addCustomFoodValues = new StringBuilder("VALUES (");
-
-        for (int count = 0; count < supportedFoodAttributeList.size(); count++)
+        List<String> supportedFoodAttributes = GlobalValues.getSUPPORTED_FOOD_ATTRIBUTES();
+        List<String> varcharAttributes = GlobalValues.getVARCHAR_ATTRIBUTES();
+        for (int count = 0; count < supportedFoodAttributes.size(); count++)
         {
-            String currentAttribute = supportedFoodAttributeList.get(count);
+            String currentAttribute = supportedFoodAttributes.get(count);
 
             addCustomFoodColumns.append(currentAttribute);
 
-            if (count < supportedFoodAttributeList.size())
+            if (count < supportedFoodAttributes.size())
             {
 
                 String currentAttributeValue = customFoodMap.get(currentAttribute);
@@ -499,7 +489,7 @@ public class DatabaseAccess
 
                 //if value is a varchar aka string such as the food name it must be surrounded
                 //in quotes e.g 'oats'
-                if (varcharAttributeList.contains(currentAttribute))
+                if (varcharAttributes.contains(currentAttribute))
                 {
                     addCustomFoodValues.append("'").append(currentAttributeValue).append("'");
                 } else //otherwise it is numeric and can be added without quotes
@@ -508,7 +498,7 @@ public class DatabaseAccess
                 }
             }
 
-            if (count != supportedFoodAttributeList.size() - 1)
+            if (count != supportedFoodAttributes.size() - 1)
             {
                 addCustomFoodColumns.append(",");
                 addCustomFoodValues.append(",");
@@ -561,10 +551,11 @@ public class DatabaseAccess
         log.debug(customFoodMap.toString());
         StringBuilder editCustomFoodSQL = new StringBuilder();
         editCustomFoodSQL.append("UPDATE custom_foods_table SET ");
-
-        for (int count = 0; count < supportedFoodAttributeList.size(); count++)
+        List<String> supportedFoodAttributes = GlobalValues.getSUPPORTED_FOOD_ATTRIBUTES();
+        List<String> varcharAttributes = GlobalValues.getVARCHAR_ATTRIBUTES();
+        for (int count = 0; count < supportedFoodAttributes.size(); count++)
         {
-            String currentAttribute = supportedFoodAttributeList.get(count);
+            String currentAttribute = supportedFoodAttributes.get(count);
 
             if (!"id_user".equals(currentAttribute))
             {
@@ -575,7 +566,7 @@ public class DatabaseAccess
                 {
                     currentAttributeValue = null;
                 }
-                if (varcharAttributeList.contains(currentAttribute))
+                if (varcharAttributes.contains(currentAttribute))
                 {
                     //if value is a varchar aka string such as the food name it must be surrounded
                     //in quotes e.g 'oats'
@@ -587,7 +578,7 @@ public class DatabaseAccess
             }
 
             //if not at the last attribute put a comma to separate it from the next attribute
-            if (count != supportedFoodAttributeList.size() - 1)
+            if (count != supportedFoodAttributes.size() - 1)
             {
                 editCustomFoodSQL.append(",");
             } else
@@ -672,12 +663,12 @@ public class DatabaseAccess
         addEatenFoodSQL.append("INSERT INTO eaten_foods_table ");
 
         StringBuilder addEatenFoodColumns = new StringBuilder("(");
-
         StringBuilder addEatenFoodValues = new StringBuilder("VALUES (");
-
-        for (int count = 0; count < supportedFoodAttributeList.size(); count++)
+        List<String> supportedFoodAttributes = GlobalValues.getSUPPORTED_FOOD_ATTRIBUTES();
+        List<String> varcharAttributes = GlobalValues.getVARCHAR_ATTRIBUTES();
+        for (int count = 0; count < supportedFoodAttributes.size(); count++)
         {
-            String currentAttribute = supportedFoodAttributeList.get(count);
+            String currentAttribute = supportedFoodAttributes.get(count);
             addEatenFoodColumns.append(currentAttribute);
 
             String currentAttributeValue = eatenFoodMap.get(currentAttribute);
@@ -686,8 +677,8 @@ public class DatabaseAccess
             {
                 currentAttributeValue = null;
             }
-            
-            if (varcharAttributeList.contains(currentAttribute))
+
+            if (varcharAttributes.contains(currentAttribute))
             {
                 addEatenFoodValues.append("'").append(currentAttributeValue).append("'");
             } else
@@ -696,7 +687,7 @@ public class DatabaseAccess
             }
 
             //if not at the last attribute put a comma to separate it from the next attribute
-            if (count != supportedFoodAttributeList.size() - 1)
+            if (count != supportedFoodAttributes.size() - 1)
             {
                 addEatenFoodColumns.append(",");
                 addEatenFoodValues.append(",");
@@ -797,11 +788,11 @@ public class DatabaseAccess
         return resultSetList;
     }
 
-    public static boolean setupSelectedAttributes(String id_user)
+    private static boolean setupSelectedAttributes(String id_user)
     {
         log.trace("setupSelectedAttributes()");
         log.debug(id_user);
-        String setupFoodAttributesSQL = "INSERT INTO viewable_attributes_table (id_user) VALUES (?)";
+        String setupFoodAttributesSQL = "INSERT INTO food_attributes_table (id_user) VALUES (?)";
 
         int returnValue = 0;
 
@@ -822,53 +813,31 @@ public class DatabaseAccess
         return success;
     }
 
-    public static boolean modifySelectedAttributes(Map<String, String> selectedAttributesMap, String id_user)
+    public static boolean modifySelectedAttributes(Map<String, Boolean> updatedFoodAttributesMap, String id_user)
     {
         log.trace("modifySelectedAttributes()");
         log.debug(id_user);
-        log.debug(selectedAttributesMap.toString());
-
-        //change string attributes into boolean, "t" = Boolean.TRUE, "f" = BOOLEAN.FALSE
-        Map<String, Boolean> attributeMapBoolean = new LinkedHashMap();
-        Iterator it = selectedAttributesMap.entrySet().iterator();
-        while (it.hasNext())
-        {
-            Map.Entry pair = (Map.Entry) it.next();
-            String value = (String) pair.getValue();
-            String key = (String) pair.getKey();
-
-            if (!key.equals("id_user"))
-            {
-                if (value.equals("t"))
-                {
-                    attributeMapBoolean.put(key, Boolean.TRUE);
-                } else
-                {
-                    attributeMapBoolean.put(key, Boolean.FALSE);
-                }
-            }
-        }
-
-        log.debug("DatabaseAccess: new attributes are " + attributeMapBoolean);
+        log.debug(updatedFoodAttributesMap.toString());
 
         //create SQL query e.g
         //UPDATE viewable_attributes_table SET foodcode=?,foodname=?,foodnameoriginal=?,description=?,foodgroup=? WHERE id_user=?
         StringBuilder modifyFoodAttributesSQL = new StringBuilder();
-        modifyFoodAttributesSQL.append("UPDATE viewable_attributes_table SET ");
-        for (int count = 0; count < supportedFoodAttributeList.size(); count++)
+        modifyFoodAttributesSQL.append("UPDATE food_attributes_table SET ");
+        List<String> supportedFoodAttributes = GlobalValues.getSUPPORTED_FOOD_ATTRIBUTES();
+        for (int count = 0; count < supportedFoodAttributes.size(); count++)
         {
-            String currentAttribute = supportedFoodAttributeList.get(count);
+            String currentAttribute = supportedFoodAttributes.get(count);
 
             if (currentAttribute.equals("id_user"))
             {
                 modifyFoodAttributesSQL.append(currentAttribute).append("=").append(id_user);
             } else
             {
-                modifyFoodAttributesSQL.append(currentAttribute).append("=").append(attributeMapBoolean.get(currentAttribute));
+                modifyFoodAttributesSQL.append(currentAttribute).append("=").append(updatedFoodAttributesMap.get(currentAttribute));
             }
 
             //if not at the last attribute put a comma to separate it from the next attribute
-            if (count != supportedFoodAttributeList.size() - 1)
+            if (count != supportedFoodAttributes.size() - 1)
             {
                 modifyFoodAttributesSQL.append(",");
             }
@@ -894,11 +863,11 @@ public class DatabaseAccess
         return success;
     }
 
-    public static Map getViewableAttributesList(String id_user)
+    public static Map getFoodAttributesList(String id_user)
     {
-        log.trace("getViewableAttributesList()");
+        log.trace("getFoodAttributesList()");
         log.debug(id_user);
-        String getSelectedAttributesSQL = "SELECT * FROM viewable_attributes_table WHERE id_user = ?";
+        String getSelectedAttributesSQL = "SELECT * FROM food_attributes_table WHERE id_user = ?";
 
         Map resultSetMap = null;
 
@@ -919,7 +888,7 @@ public class DatabaseAccess
         return resultSetMap;
     }
 
-    public static boolean setupUserStats(String id_user)
+    private static boolean setupUserStats(String id_user)
     {
         log.trace("setupUserStats()");
         log.debug(id_user);
@@ -962,9 +931,10 @@ public class DatabaseAccess
         //UPDATE user_stats_table SET weight=?,height=?,protein_goal=?,carbohydrate_goal=?,fat_goal=? WHERE id_user=?
         StringBuilder modifyUserStatsSQL = new StringBuilder();
         modifyUserStatsSQL.append("UPDATE user_stats_table SET ");
-        for (int count = 0; count < supportedUserStatsList.size(); count++)
+        List<String> supportedUserStats = GlobalValues.getSUPPORTED_USER_STATS();
+        for (int count = 0; count < supportedUserStats.size(); count++)
         {
-            String currentStat = supportedUserStatsList.get(count);
+            String currentStat = supportedUserStats.get(count);
 
             if (userStatsMap.get(currentStat) != null)
             {

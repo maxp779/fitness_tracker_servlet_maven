@@ -11,7 +11,7 @@ $(document).ready(function () {
     document.getElementById("loginPageForm").action = serverAPI.requests.LOGIN_PAGE_REQUEST;
     
     $('#forgottenPasswordForm').submit(function () {
-        forgottonPasswordRequestAJAX();
+        forgottonPasswordRequestAjax();
         return false;
     });
     
@@ -28,7 +28,7 @@ $(document).ready(function () {
 
 
 
-function forgottonPasswordRequestAJAX()
+function forgottonPasswordRequestAjax()
 {  
     var formData = $("#forgottenPasswordForm").serializeArray();
     var email = document.getElementById("email").value;

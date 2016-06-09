@@ -29,7 +29,7 @@ function updateUserStats(updatedUserStats)
             },
             error: function (xhr, status, error)
             {
-                console.log("AJAX request failed:" + error.toString());
+                console.log("Ajax request failed:" + error.toString());
             }
         });
     } else

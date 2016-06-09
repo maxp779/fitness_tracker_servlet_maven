@@ -28,7 +28,7 @@ $(document).ready(function () {
         event.preventDefault();
         if (globalValues.passwordValid)
         {
-            changePasswordRequestAJAX();
+            changePasswordRequestAjax();
         }
     });
 
@@ -109,7 +109,7 @@ function getEmail()
     });
 }
 
-function changePasswordRequestAJAX()
+function changePasswordRequestAjax()
 {
     var formData = $("#changePasswordForm").serializeArray();
 

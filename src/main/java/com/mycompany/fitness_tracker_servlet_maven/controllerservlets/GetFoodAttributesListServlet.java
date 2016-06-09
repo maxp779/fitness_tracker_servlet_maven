@@ -24,14 +24,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author max
  */
-@WebServlet(name = "GetViewableAttributesListServlet", urlPatterns =
+@WebServlet(name = "GetFoodAttributesListServlet", urlPatterns =
 {
-    "/GetViewableAttributesListServlet"
+    "/GetFoodAttributesListServlet"
 })
-public class GetViewableAttributesListServlet extends HttpServlet
+public class GetFoodAttributesListServlet extends HttpServlet
 {
 
-    private static final Logger log = LoggerFactory.getLogger(GetViewableAttributesListServlet.class);
+    private static final Logger log = LoggerFactory.getLogger(GetFoodAttributesListServlet.class);
 
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -47,17 +47,17 @@ public class GetViewableAttributesListServlet extends HttpServlet
     {
         log.trace("doGet()");
         UserObject currentUser = (UserObject) request.getSession().getAttribute("user");
-        Map viewableAttributesMap = DatabaseAccess.getViewableAttributesList(currentUser.getId_user());
-        boolean success = (viewableAttributesMap != null);
+        Map foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getId_user());
+        boolean success = (foodAttributesMap != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)
         {
-            outputObject.setData(viewableAttributesMap);
+            outputObject.setData(foodAttributesMap);
             writeOutput(response, outputObject);
         } else
         {
-            outputObject.setErrorCode(ErrorCode.GET_VIEWABLE_ATTRIBUTES_FAILED);
+            outputObject.setErrorCode(ErrorCode.GET_FOOD_ATTRIBUTES_FAILED);
             writeOutput(response, outputObject);
         }
     }
