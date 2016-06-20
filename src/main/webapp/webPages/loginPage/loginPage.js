@@ -6,7 +6,8 @@
 
 
 $(document).ready(function () {
-
+    
+    localStorage.setItem("loginState", false);
     getServerAPI(function () {
         setupForms();
     });
@@ -115,6 +116,7 @@ function loginRequestAjax()
             if (returnObject.success === true)
             {
                 console.log("valid credentials, redirecting to main page");
+                localStorage.setItem("loginState", true);
 
                 window.location = serverAPI.requests.MAIN_PAGE_REQUEST;
             } else

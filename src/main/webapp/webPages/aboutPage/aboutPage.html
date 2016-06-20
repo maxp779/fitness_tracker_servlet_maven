@@ -16,6 +16,8 @@
         <link rel="icon" href="../../icons/favicon.ico">
 
         <script type="text/javascript" src="../../globalJS/globalValues.js"></script>
+        <script type="text/javascript" src="../../globalJS/globalFunctions.js"></script>
+        <script type="text/javascript" src="../../globalJS/setupNavbar.js"></script>
 
 
         <!-- Bootstrap -->
@@ -23,25 +25,55 @@
 
         <!--Custom CSS. THIS MUST COME AFTER OTHER CSS TO TAKE EFFECT!!-->
         <link href="../../globalCSS/loginPage.css" rel="stylesheet">
+        <link href="../../globalCSS/global.css" rel="stylesheet">
+
     </head>
     <body>
         <div class="container">
+            <nav id ="navbar" class="navbar navbar-default navbar-fixed-top">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <!--note: removed "aria-expanded="false" argument from below line because netbeans moaned about it-->
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand"><img style="max-width:40px; margin-top: -10px;"
+                                                     src="../../globalIMG/logo.png"></a>
+                    </div>
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a id="mainPage" class="jsessionid">Nutrition Log</a></li>
+                            <li><a id="customFoods" class="jsessionid">Custom Foods</a></li>
+                            <li><a id="workoutLog" class="jsessionid">Workout Log</a></li>
+                            <li><a id="myStats" class="jsessionid">My Stats</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a id="settings" class="jsessionid">Settings</a></li>
+                            <li><a id="cookiesPage">Cookies Policy</a></li>
+                            <li class="active"><a id="aboutPage">About</a></li>
+                            <li><a id="logout" class="jsessionid">Logout</a></li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </nav>
+
             <div class="row">
                 <div class="col-sm-12">
-                    <div  class="panel panel-default">
+                    <div  class="panel panel-default spacer">
                         <div class="panel-heading"><h4 class="panel-title">
                                 About this website
                             </h4></div>
                         <div class="panel-body">
-                            <div class="row">
+                            <!--<div class="row">
                                 <div class="col-sm-2">
                                     <a href="javascript:history.back()"><button id="backButton" class="btn btn-lg btn-primary btn-block" type="button">Go back</button></a>
-                                    <!--<a href="javascript:history.back()">Go Back</a>-->
                                 </div>
-                            </div>
+                            </div>-->
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <br>
                                     <h3>What is it for?</h3>
                                     <p>This is a simple website you can use to track the food you eat and its nutritional content. In the future you may be able to track workout progress on this site as well. It is currently not finished though, there are a number of known bugs and rough edges that still need to be ironed out.</p>
 

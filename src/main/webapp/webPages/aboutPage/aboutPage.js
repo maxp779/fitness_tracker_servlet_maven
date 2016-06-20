@@ -4,18 +4,9 @@
  * and open the template in the editor.
  */
 
-//Setup code
+
 $(document).ready(function () {
 
     globalFunctions.setupNavbar();
 
-    setupEvents(function ()
-    {
-        globalFunctionsAjax.getAllClientData(function ()
-        {
-            updateMainPage();
-        });
-    });
-
 });
-

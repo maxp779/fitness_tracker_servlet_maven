@@ -327,6 +327,7 @@ var globalFunctionsAjax = {
                 console.log("logout() returnObject.data:" + returnObject.data);
                 if (returnObject.success === true)
                 {
+                    localStorage.setItem("loginState", false);
                     window.location.href = returnObject.data;
                 } else
                 {
@@ -631,6 +632,40 @@ var globalFunctions = {
             }
         }
         return outputObject;
+    },
+    setupNavbar: function (callback)
+    {
+        var loginState = JSON.parse(localStorage.getItem("loginState"));
+        if (loginState === true)
+        {
+            document.getElementById("myStats").href = serverAPI.requests.MY_STATS_PAGE_REQUEST;
+            document.getElementById("workoutLog").href = serverAPI.requests.WORKOUT_LOG_PAGE_REQUEST;
+            document.getElementById("mainPage").href = serverAPI.requests.MAIN_PAGE_REQUEST;
+            document.getElementById("customFoods").href = serverAPI.requests.CUSTOM_FOODS_PAGE_REQUEST;
+            document.getElementById("settings").href = serverAPI.requests.SETTINGS_PAGE_REQUEST;
+            document.getElementById("aboutPage").href = "../aboutPage/aboutPage.html";
+            document.getElementById("cookiesPage").href = "../cookiesPolicyPage/cookiesPolicyPage.html";
+
+            /**
+             * "javascript:;" is used when a function is intended to be called when an href link is clicked
+             * an empty string "" or "#" are alternatives but behave differently 
+             * "javascript:;" is the most ideal
+             */
+            document.getElementById("logout").href = "javascript:;";
+
+            $(document).on("click", "#logout", function () {
+                globalFunctionsAjax.logout();
+            });
+        } else
+        {
+            var navbar = document.getElementById("navbar");
+            navbar.style.display = "none";
+        }
+
+        if (callback)
+        {
+            callback();
+        }
     }
 
 

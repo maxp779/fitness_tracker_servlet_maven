@@ -7,7 +7,7 @@
 var id_customfoodBeingEdited;
 
 $(document).ready(function () {
-
+    globalFunctions.setupNavbar();
     globalFunctions.refreshGlobalValuesFromLocalStorage(function () {
         populateCustomFoodList();
     });
@@ -130,7 +130,7 @@ function createCustomFood()
     //form data held in name/value pairs like so:
     //[{"name":"foodname", "value":"tasty pie"},{"name":"protein", "value":"25"}]
     var formData = $("#addFoodForm").serializeArray();
-    
+
     var newCustomFood = globalFunctions.convertFormArrayToJSON(formData);
     //prepare the JSON to send to server
 //    var outputJSON = {};

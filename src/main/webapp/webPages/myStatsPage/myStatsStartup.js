@@ -6,6 +6,9 @@
 
 
 $(document).ready(function () {
+
+    globalFunctions.setupNavbar();
+
     globalFunctions.refreshGlobalValuesFromLocalStorage(function ()
     {
         populateUserStats(function () {

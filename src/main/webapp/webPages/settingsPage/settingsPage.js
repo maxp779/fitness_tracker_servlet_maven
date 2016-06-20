@@ -6,7 +6,9 @@
 var emailValid = false;
 
 $(document).ready(function () {
-
+    
+    globalFunctions.setupNavbar();
+    
     document.getElementById("deleteAccountForm").action = serverAPI.requests.DELETE_ACCOUNT_REQUEST;
 
     globalFunctions.refreshGlobalValuesFromLocalStorage(function () {
