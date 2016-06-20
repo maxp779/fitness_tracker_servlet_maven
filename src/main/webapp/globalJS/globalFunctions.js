@@ -635,7 +635,9 @@ var globalFunctions = {
     },
     setupNavbar: function (callback)
     {
+        console.log("setupNavbar()");
         var loginState = JSON.parse(localStorage.getItem("loginState"));
+        console.log("loginState:" + loginState);
         if (loginState === true)
         {
             document.getElementById("myStats").href = serverAPI.requests.MY_STATS_PAGE_REQUEST;
