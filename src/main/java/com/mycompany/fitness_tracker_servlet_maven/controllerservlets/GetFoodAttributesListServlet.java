@@ -47,7 +47,7 @@ public class GetFoodAttributesListServlet extends HttpServlet
     {
         log.trace("doGet()");
         UserObject currentUser = (UserObject) request.getSession().getAttribute("user");
-        Map foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getId_user());
+        Map<String, Boolean> foodAttributesMap = DatabaseAccess.getFoodAttributesList(currentUser.getId_user());
         boolean success = (foodAttributesMap != null);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);

@@ -21,7 +21,7 @@ $(document).ready(function () {
     document.getElementById("logout").href = "javascript:;";
 
     $(document).on("click", "#logout", function () {
-        globalFunctionsAJAX.logout();
+        globalFunctionsAjax.logout();
     });
 
 });

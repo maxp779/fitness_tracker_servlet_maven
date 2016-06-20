@@ -10,19 +10,18 @@ $(document).ready(function () {
 
     $('#createAccountForm').submit(function (event) {
         event.preventDefault();
-        
-        if(globalValues.passwordValid)
+
+        if (globalValues.miscValues.passwordValid)
         {
             createAccountRequestAjax();
         }
     });
-    
+
     //auto selects form input text when clicked
     $(document).on('click', 'input', function () {
         this.select();
     });
 
-    
     //this adds an event from passwordStrength.js which controls globalValues.passwordValid
     passwordStrengthTester("password", "confirmPassword", "passwordStrength");
 
@@ -31,29 +30,30 @@ $(document).ready(function () {
 function createAccountRequestAjax()
 {
     var formData = $("#createAccountForm").serializeArray();
-    var email = document.getElementById("email").value;
+    var inputObject = globalFunctions.convertFormArrayToJSON(formData);
+
     $.ajax({
         url: serverAPI.requests.CREATE_ACCOUNT_REQUEST,
         type: "POST",
-        data: JSON.stringify(formData),
+        data: JSON.stringify(inputObject),
         contentType: "application/json",
-        success: function (data)
+        dataType: "json",
+        success: function (returnObject)
         {
             document.getElementById("passwordStrength").innerHTML = "";
-            
-            if (data === "true")
+
+            if (returnObject.success === true)
             {
-                console.log("valid credentials");
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Account created successfully for " + email + "</div>";
+                console.log("valid credentials, accound created");
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Account created successfully for " + returnObject.data.email + "</div>";
             } else
             {
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + errorCodes[data] + "</div>";
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode] + "</div>";
             }
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }

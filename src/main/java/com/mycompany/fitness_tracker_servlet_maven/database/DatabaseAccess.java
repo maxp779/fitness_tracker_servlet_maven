@@ -813,7 +813,7 @@ public class DatabaseAccess
         return success;
     }
 
-    public static boolean modifySelectedAttributes(Map<String, Boolean> updatedFoodAttributesMap, String id_user)
+    public static boolean modifySelectedFoodAttributes(Map<String, Boolean> updatedFoodAttributesMap, String id_user)
     {
         log.trace("modifySelectedAttributes()");
         log.debug(id_user);
@@ -863,13 +863,13 @@ public class DatabaseAccess
         return success;
     }
 
-    public static Map getFoodAttributesList(String id_user)
+    public static Map<String, Boolean> getFoodAttributesList(String id_user)
     {
         log.trace("getFoodAttributesList()");
         log.debug(id_user);
         String getSelectedAttributesSQL = "SELECT * FROM food_attributes_table WHERE id_user = ?";
 
-        Map resultSetMap = null;
+        Map<String, String> resultSetMap = null;
 
         try (Connection databaseConnection = DatabaseUtils.getDatabaseConnection();
                 PreparedStatement getSelectedAttributesListStatement = databaseConnection.prepareStatement(getSelectedAttributesSQL);)
@@ -885,7 +885,23 @@ public class DatabaseAccess
             log.error(ErrorCode.DATABASE_ERROR.toString(), ex);
         }
         log.info(resultSetMap.toString());
-        return resultSetMap;
+        
+        //database outputs "t" and "f" in place of true and false so we replace these with boolean values
+        Map<String, Boolean> outputMap = new HashMap<>();
+        for (Map.Entry<String, String> entry : resultSetMap.entrySet())
+        {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (value.equals("t"))
+            {
+                outputMap.put(key, Boolean.TRUE);
+            } else
+            {
+                outputMap.put(key, Boolean.FALSE);
+            }
+        }
+
+        return outputMap;
     }
 
     private static boolean setupUserStats(String id_user)

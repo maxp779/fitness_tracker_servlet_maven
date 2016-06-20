@@ -23,10 +23,9 @@ $(document).ready(function () {
         getEmail();
     });
 
-
     $('#changePasswordForm').submit(function (event) {
         event.preventDefault();
-        if (globalValues.passwordValid)
+        if (globalValues.miscValues.passwordValid)
         {
             changePasswordRequestAjax();
         }
@@ -39,27 +38,14 @@ $(document).ready(function () {
         this.select();
     });
 
-
-
-//    location.search="?";   
-//    var identifierToken = location.search;
-
-
-//function getParameterByName(name) {
-//    name = name.replace(/[\[]/, "\\.).replace(/[\]]/, "\\]");
-//    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-//        results = regex.exec(location.search);
-//    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-//}
-//Usage:
-//
-//var prodId = getParameterByName('prodId');
-
-    //console.log(identifierToken);
-
-
 });
 
+/**
+ * This is needed to get the unique identifier token that is attached to every single forgot password request
+ * e.g http://localhost:8080/FrontControllerServlet/changePasswordPage?identifierToken=cf7a2606-5e7a-43e9-811b-abd8e55fc053
+ * @param {type} callback
+ * @returns {undefined}
+ */
 function getQueryStringParameters(callback)
 {
     var match,
@@ -82,29 +68,30 @@ function getQueryStringParameters(callback)
 
 function getEmail()
 {
-    var identifierToken = urlParams.identifierToken;
-    console.log(identifierToken);
+    var inputObject = {};
+    inputObject.identifierToken = urlParams.identifierToken;
+
     $.ajax({
         url: serverAPI.requests.GET_IDENTIFIER_TOKEN_EMAIL,
-        type: "POST",
-        data: identifierToken.toString(),
-        contentType: "text/plain",
-        success: function (returnedEmail)
+        type: "GET",
+        data: inputObject,
+        contentType: "application/json",
+        dataType: "json",
+        success: function (returnObject)
         {
 
-            requestEmail = returnedEmail;
-//            if (returnedEmail !== null)
-//            {
-//                document.getElementById("email").value = returnedEmail;
-//            } else
-//            {
-//
-//            }
+            if (returnObject.success === true)
+            {
+                requestEmail = returnObject.data.email;
+            } else
+            {
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\"> Error:" + serverAPI.errorCodes[returnObject.errorCode]
+                        + "</div>";
+            }
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }
@@ -112,42 +99,42 @@ function getEmail()
 function changePasswordRequestAjax()
 {
     var formData = $("#changePasswordForm").serializeArray();
+    var inputObject = globalFunctions.convertFormArrayToJSON(formData);
+    inputObject.identifierToken = urlParams.identifierToken;
+    inputObject.email = requestEmail;
+//    var identifierToken = {};
+//    identifierToken.name = "identifierToken";
+//    identifierToken.value = urlParams.identifierToken;
 
-    var identifierToken = {};
-    identifierToken.name = "identifierToken";
-    identifierToken.value = urlParams.identifierToken;
+//    var email = {};
+//    email.name = "email";
+//    email.value = requestEmail;
 
-    var email = {};
-    email.name = "email";
-    email.value = requestEmail;
-
-    formData.push(identifierToken);
-    formData.push(email);
+//    formData.push(identifierToken);
+//    formData.push(email);
 
     $.ajax({
         url: serverAPI.requests.CHANGE_PASSWORD_REQUEST,
         type: "POST",
-        data: JSON.stringify(formData),
+        data: JSON.stringify(inputObject),
         contentType: "application/json",
-        success: function (data)
+        dataType: "json",
+        success: function (returnObject)
         {
-            var returnObject = JSON.parse(data);
-            
             document.getElementById("passwordStrength").innerHTML = "";
-            if (returnObject.success === "true")
+            if (returnObject.success === true)
             {
                 console.log("valid credentials");
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Password changed successfully for email " + requestEmail + "</div>";
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-success\" role=\"alert\">Password changed successfully for email " + returnObject.data.email + "</div>";
             } else
             {
-                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + errorCodes[returnObject.errorCode]
+                document.getElementById("feedback").innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">" + serverAPI.errorCodes[returnObject.errorCode]
                         + " please make a new change password request </div>";
             }
         },
         error: function (xhr, status, error)
         {
-            // check status && error
-            console.log("ajax failed");
+            console.log("Ajax request failed:" + error.toString());
         }
     });
 }

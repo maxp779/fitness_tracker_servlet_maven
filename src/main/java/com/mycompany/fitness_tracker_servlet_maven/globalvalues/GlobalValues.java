@@ -20,6 +20,7 @@ public class GlobalValues
 {
 
     private static final String FIRST_LOGIN_SERVLET = "LoginPageServlet";
+    private static final String DOMAIN_NAME = "http://www.simplfitness.co.uk";
 
     //html page URL
     private static final String LOGIN_PAGE_URL = "/webPages/loginPage/loginPage.html";
@@ -138,6 +139,11 @@ public class GlobalValues
     private static final List<String> SUPPORTED_USER_STATS = (Arrays.asList("weight", "height", "protein_goal", "carbohydrate_goal", "fat_goal", "tee", "tee_goal", "date_of_birth",
             "gender", "activity_level", "excercise_intensity", "excercise_days_per_week", "excercise_minutes_per_day"));
 
+    public static String getDOMAIN_NAME()
+    {
+        return DOMAIN_NAME;
+    }
+    
     public static List<String> getSUPPORTED_FOOD_ATTRIBUTES()
     {
         return SUPPORTED_FOOD_ATTRIBUTES;

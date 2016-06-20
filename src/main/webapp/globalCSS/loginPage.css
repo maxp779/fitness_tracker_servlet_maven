@@ -7,21 +7,31 @@ and open the template in the editor.
     Created on : 01-Feb-2015, 12:41:12
     Author     : max
 */
-/*html { 
-background: url(../img/awesomeface.png) no-repeat center center fixed; 
--webkit-background-size: cover;
--moz-background-size: cover;
--o-background-size: cover;
-background-size: 100% 100%;
-}*/
-html
-{
-    background: url(../../globalIMG/fruit2.png) no-repeat center center fixed; 
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
 
+@media screen and (min-width: 980px) /* Desktop */ {
+    html {
+        background: url(../../globalIMG/fruit2-min.png) no-repeat center center fixed; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+}
+
+@media screen  and (max-width: 979px) /* Tablet */ {
+    html {
+        background: url(../../globalIMG/fruit2-min.png) no-repeat center center fixed; 
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+}
+
+@media screen and (max-width: 500px) /* Mobile */ {
+    html {
+        background: none;
+    }
 }
 
 

@@ -47,7 +47,8 @@ public class ChangePasswordServlet extends HttpServlet
         log.trace("doPost()");
         boolean sessionValid = SessionManager.sessionValidate(request);
         StandardOutputObject outputObject;
-        String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);      
+        String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
+        log.debug(requestDetails);
         Map<String, String> requestDetailsMap = ServletUtilities.convertJSONStringToMap(requestDetails);
         
         if (sessionValid)

@@ -39,7 +39,6 @@ public class CreateAccountServlet extends HttpServlet
      * @param request servlet request
      * @param response servlet response
      * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -47,7 +46,7 @@ public class CreateAccountServlet extends HttpServlet
     {
         log.trace("doPost()");
         String accountDetails = ServletUtilities.getPOSTRequestJSONString(request);
-        Map<String, String> accountDetailsMap = ServletUtilities.convertJSONFormDataToMap(accountDetails);
+        Map<String, String> accountDetailsMap = ServletUtilities.convertJSONStringToMap(accountDetails);
         String newAccountPassword = accountDetailsMap.get("password");
         StandardOutputObject outputObject = new StandardOutputObject();
 

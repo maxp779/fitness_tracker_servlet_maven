@@ -14,8 +14,6 @@ import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -57,11 +55,11 @@ public class ModifySelectedAttributesServlet extends HttpServlet
         Map<String, String> clientAttributesMap = ServletUtilities.convertJSONStringToMap(JSONString);
         UserObject currentUser = ServletUtilities.getCurrentUser(request);
 
-        //selectedAttributesMap.put("id_user", id_user); <-- might break it, not sure why this is needed
+        //selectedAttributesMap.put("id_user", id_user); <-- not sure why this is needed, likely redundant now
         log.debug("current user: " + currentUser.toString());
         
         Map<String, Boolean> updatedAttributesMap = createUpdatedAttributesMap(clientAttributesMap);
-        boolean success = DatabaseAccess.modifySelectedAttributes(updatedAttributesMap, currentUser.getId_user());
+        boolean success = DatabaseAccess.modifySelectedFoodAttributes(updatedAttributesMap, currentUser.getId_user());
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
 
@@ -83,7 +81,7 @@ public class ModifySelectedAttributesServlet extends HttpServlet
      * Strings to Boolean values.
      * 
      * This ensures that if the client misses some attributes for any reason or decided to only
-     * send attrbutes that are changed that the database will not end up in an inconsistent state e.g
+     * send attributes that are changed that the database will not end up in an inconsistent state e.g
      * with null values instead of false.
      * 
      * @param inputMap The map send from the client
@@ -91,42 +89,30 @@ public class ModifySelectedAttributesServlet extends HttpServlet
      */
     private Map<String,Boolean> createUpdatedAttributesMap(Map<String, String> inputMap)
     {
-        Map<String, String> updatedAttributesMap = new HashMap<>();
+        Map<String, Boolean> updatedAttributesMap = new HashMap<>();
         List<String> supportedFoodAttributes = GlobalValues.getSUPPORTED_FOOD_ATTRIBUTES();
 
         for (String foodAttribute : supportedFoodAttributes)
-        {
+        {                  
+            //if map client sent contains the key, check its value
             if (inputMap.containsKey(foodAttribute))
             {
-                updatedAttributesMap.put(foodAttribute, inputMap.get(foodAttribute));
+                if(inputMap.get(foodAttribute).equals("true"))
+                {
+                    updatedAttributesMap.put(foodAttribute, Boolean.TRUE);
+                }
+                else
+                {
+                    updatedAttributesMap.put(foodAttribute, Boolean.FALSE);
+                }
             } else
             {
-                updatedAttributesMap.put(foodAttribute, "false");
-            }
-        }
-        
-        //change string attributes into boolean
-        Map<String, Boolean> attributeMapBoolean = new LinkedHashMap();
-        Iterator it = updatedAttributesMap.entrySet().iterator();
-        while (it.hasNext())
-        {
-            Map.Entry pair = (Map.Entry) it.next();
-            String value = (String) pair.getValue();
-            String key = (String) pair.getKey();
-
-            if (!key.equals("id_user"))
-            {
-                if (value.equals("true"))
-                {
-                    attributeMapBoolean.put(key, Boolean.TRUE);
-                } else
-                {
-                    attributeMapBoolean.put(key, Boolean.FALSE);
-                }
+                //if map client sent does not contain the key, add it and set to false
+                updatedAttributesMap.put(foodAttribute, Boolean.FALSE);
             }
         }
 
-        return attributeMapBoolean;
+        return updatedAttributesMap;
     }
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)

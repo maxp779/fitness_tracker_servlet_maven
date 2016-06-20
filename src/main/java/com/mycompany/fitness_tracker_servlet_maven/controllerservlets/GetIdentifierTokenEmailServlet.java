@@ -11,6 +11,8 @@ import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -45,19 +47,28 @@ public class GetIdentifierTokenEmailServlet extends HttpServlet
             throws ServletException, IOException
     {
         log.trace("doGet()");
-        String identifierToken = ServletUtilities.getPOSTRequestJSONString(request);
-        log.debug(identifierToken);
+//        String queryString = request.getQueryString();
+//        Map<String,String> queryStringMap = ServletUtilities.convertJSONStringToMap(queryString);
+        //String requestDetails = ServletUtilities.getPOSTRequestJSONString(request);
+        String identifierToken = request.getParameter("identifierToken");
+
         String email = DatabaseAccess.getIdentifierTokenEmail(identifierToken);
+        log.debug("email:" + email);
+        log.debug("identifierToken:" + identifierToken);
+
         boolean success = (email != null);
+        log.debug("email found:" + success);
         StandardOutputObject outputObject = new StandardOutputObject();
         outputObject.setSuccess(success);
         if (success)
         {
-            outputObject.setData(email);
+            Map<String, String> outputMap = new HashMap<>();
+            outputMap.put("email", email);
+            outputObject.setData(outputMap);
             writeOutput(response, outputObject);
         } else
         {
-            outputObject.setErrorCode(ErrorCode.EMAIL_NOT_FOUND);
+            outputObject.setErrorCode(ErrorCode.FORGOT_PASSWORD_TOKEN_EXPIRED_OR_ALREADY_USED);
             writeOutput(response, outputObject);
         }
     }

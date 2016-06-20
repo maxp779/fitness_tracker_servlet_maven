@@ -8,6 +8,8 @@ package com.mycompany.fitness_tracker_servlet_maven.core;
 import com.mycompany.fitness_tracker_servlet_maven.serverAPI.ErrorCode;
 import com.mycompany.fitness_tracker_servlet_maven.email.Email;
 import com.mycompany.fitness_tracker_servlet_maven.database.DatabaseAccess;
+import com.mycompany.fitness_tracker_servlet_maven.globalvalues.GlobalValues;
+import com.mycompany.fitness_tracker_servlet_maven.serverAPI.Request;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
@@ -32,6 +34,7 @@ public class ForgotPasswordEmailServlet extends HttpServlet
 {
 
     private static final Logger log = LoggerFactory.getLogger(ForgotPasswordEmailServlet.class);
+
     /**
      * Handles the HTTP <code>POST</code> method.
      *
@@ -45,7 +48,7 @@ public class ForgotPasswordEmailServlet extends HttpServlet
     {
         log.trace("doPost()");
         String loginDetails = ServletUtilities.getPOSTRequestJSONString(request);
-        Map<String, String> loginDetailsMap = ServletUtilities.convertJSONFormDataToMap(loginDetails);
+        Map<String, String> loginDetailsMap = ServletUtilities.convertJSONStringToMap(loginDetails);
         String email = loginDetailsMap.get("email");
 
         boolean userExists = DatabaseAccess.userAlreadyExistsCheckEmail(email);
@@ -66,8 +69,7 @@ public class ForgotPasswordEmailServlet extends HttpServlet
 
         String subject = "simplfitness.co.uk password change request";
         String content = "Hello, please click the following link to change your password, it is valid for 60 minutes: "
-                + "http://localhost:8080/FrontControllerServlet/changePasswordPage?identifierToken="
-                + identifierToken.toString();
+                + createForgotPasswordLink(identifierToken);
 
         boolean sendEmailSuccess = Email.sendEmail(email, subject, content);
         outputObject.setSuccess(sendEmailSuccess);
@@ -81,6 +83,19 @@ public class ForgotPasswordEmailServlet extends HttpServlet
         log.debug("sending email successful");
         writeOutput(response, outputObject);
 
+    }
+
+    private String createForgotPasswordLink(UUID identifierToken)
+    {
+        StringBuilder output = new StringBuilder();
+        output.append(GlobalValues.getDOMAIN_NAME());
+        output.append("/");
+        output.append(FrontControllerServlet.class.getSimpleName());
+        output.append("/");
+        output.append(Request.CHANGE_PASSWORD_PAGE_REQUEST.toString());
+        output.append("?identifierToken=");
+        output.append(identifierToken.toString());
+        return output.toString();
     }
 
     private void writeOutput(HttpServletResponse response, StandardOutputObject outputObject)

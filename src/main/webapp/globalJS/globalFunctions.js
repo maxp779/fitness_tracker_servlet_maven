@@ -575,7 +575,7 @@ var globalFunctions = {
 
         for (var aProperty in foodAttributesRef)
         {
-            if (foodAttributesRef[aProperty] === "t")
+            if (foodAttributesRef[aProperty] === true)
             {
                 outputArray.push(aProperty);
             }
